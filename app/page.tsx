@@ -16,7 +16,7 @@ export default function Home() {
                 app twice.
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto tracking-tight">
-              Tempo keeps your Swift and Kotlin repositories synchronized on every push.
+              Tempo converts your IOS application to a complete Android version and keeps your Swift and Kotlin repositories synchronized on every push.
               </p>
               <Button size="lg" className="text-lg px-8 py-3">
                 Join the waitlist
