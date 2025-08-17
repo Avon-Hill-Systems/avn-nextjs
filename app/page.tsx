@@ -1,6 +1,6 @@
 import React from 'react';
 import TopBar from '@/components/(app)/landing/TopBar';
-import { Button } from '@/components/ui/button';
+import { Button } from '../components/ui/button';
 
 export default function Home() {
   return (
