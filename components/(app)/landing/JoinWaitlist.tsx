@@ -28,7 +28,7 @@ const JoinWaitlist: React.FC = () => {
           </div>
           
           <p className="text-sm text-muted-foreground">
-            We'll notify you when we launch. No spam, ever.
+            We&apos;ll notify you when we launch. No spam, ever.
           </p>
         </div>
       </div>

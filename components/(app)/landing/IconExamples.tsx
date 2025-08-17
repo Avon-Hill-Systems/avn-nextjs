@@ -8,16 +8,10 @@ import {
   Palette,
   Rocket,
   Cpu,
-  ArrowRight,
-  BookOpen,
   Heart,
   Star,
   Zap,
-  Shield,
-  Globe,
-  Smartphone,
-  Monitor,
-  Database
+  Shield
 } from 'lucide-react';
 
 const IconExamples: React.FC = () => {
