@@ -15,8 +15,8 @@ export default function Home() {
                 Stop building the same<br />
                 app twice.
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Connect your Swift repo and our AI generates a complete Kotlin Android version, automatically syncing changes so you never duplicate work again.
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto tracking-tight">
+              Tempo converts your Swift codebase into an equivalent Kotlin repo and keeps them synchronized on every push.
               </p>
               <Button size="lg" className="text-lg px-8 py-3">
                 Join the waitlist

@@ -8,7 +8,7 @@ const TopBar: React.FC = () => {
           {/* Logo/Brand */}
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-foreground">
-              Sync.
+              Tempo
             </h1>
           </div>
         </div>
