@@ -10,12 +10,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           {/* Hero Section */}
           <section className="text-center">
-            <div className="space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Turn your Swift app into Android automatically.
+            <div className="space-y-8">
+              <h1 className="text-6xl font-[700] text-foreground max-w-5xl mx-auto leading-tight">
+                Stop building the same<br />
+                app twice.
               </h1>
-              <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Connect your GitHub repo and our AI generates a Kotlin Android version — continuously synced, so you never duplicate work.
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Connect your Swift repo and our AI generates a complete Kotlin Android version, automatically syncing changes so you never duplicate work again.
               </p>
             </div>
           </section>
