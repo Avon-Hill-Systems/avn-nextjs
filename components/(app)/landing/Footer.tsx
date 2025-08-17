@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '../../ui/separator';
 
 const Footer: React.FC = () => {
   return (
