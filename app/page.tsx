@@ -1,5 +1,6 @@
 import React from 'react';
 import TopBar from '@/components/(app)/landing/TopBar';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   return (
@@ -10,13 +11,16 @@ export default function Home() {
           {/* Hero Section */}
           <section className="text-center">
             <div className="space-y-8">
-              <h1 className="text-6xl font-[700] text-foreground max-w-5xl mx-auto leading-tight">
+              <h1 className="text-6xl font-[700] text-foreground max-w-5xl mx-auto leading-tight tracking-tight">
                 Stop building the same<br />
                 app twice.
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Connect your Swift repo and our AI generates a complete Kotlin Android version, automatically syncing changes so you never duplicate work again.
               </p>
+              <Button size="lg" className="text-lg px-8 py-3">
+                Join the waitlist
+              </Button>
             </div>
           </section>
         </div>
