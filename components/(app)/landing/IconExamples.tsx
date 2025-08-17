@@ -1,104 +1,95 @@
 import React from 'react';
 import { 
-  // Outline icons (24x24, 1.5px stroke)
-  HomeIcon,
-  UserIcon,
-  CogIcon,
-  BellIcon,
-  // Solid icons (24x24, filled)
-  HomeIcon as HomeIconSolid,
-  UserIcon as UserIconSolid,
-  CogIcon as CogIconSolid,
-  BellIcon as BellIconSolid,
-  // Mini icons (20x20, 1.5px stroke)
-  HomeIcon as HomeIconMini,
-  UserIcon as UserIconMini,
-  CogIcon as CogIconMini,
-  BellIcon as BellIconMini,
-} from '@heroicons/react/24/outline';
-import { 
-  HomeIcon as HomeIconSolid24,
-  UserIcon as UserIconSolid24,
-  CogIcon as CogIconSolid24,
-  BellIcon as BellIconSolid24,
-} from '@heroicons/react/24/solid';
-import { 
-  HomeIcon as HomeIconMini20,
-  UserIcon as UserIconMini20,
-  CogIcon as CogIconMini20,
-  BellIcon as BellIconMini20,
-} from '@heroicons/react/20/solid';
+  Home,
+  User,
+  Settings,
+  Bell,
+  Code2,
+  Palette,
+  Rocket,
+  Cpu,
+  ArrowRight,
+  BookOpen,
+  Heart,
+  Star,
+  Zap,
+  Shield,
+  Globe,
+  Smartphone,
+  Monitor,
+  Database
+} from 'lucide-react';
 
 const IconExamples: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <h2 className="text-2xl font-bold text-center mb-8">Heroicons Examples</h2>
+      <h2 className="text-2xl font-bold text-center mb-8">Lucide Icons Examples</h2>
       
-      {/* Outline Icons (24x24) */}
+      {/* Basic Icons */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Outline Icons (24x24)</h3>
+        <h3 className="text-lg font-semibold">Basic Icons</h3>
         <div className="flex gap-4 flex-wrap">
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <HomeIcon className="h-6 w-6 text-blue-600" />
-            <span className="text-sm text-muted-foreground">HomeIcon</span>
+            <Home className="h-6 w-6 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Home</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <UserIcon className="h-6 w-6 text-green-600" />
-            <span className="text-sm text-muted-foreground">UserIcon</span>
+            <User className="h-6 w-6 text-green-600" />
+            <span className="text-sm text-muted-foreground">User</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <CogIcon className="h-6 w-6 text-purple-600" />
-            <span className="text-sm text-muted-foreground">CogIcon</span>
+            <Settings className="h-6 w-6 text-purple-600" />
+            <span className="text-sm text-muted-foreground">Settings</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <BellIcon className="h-6 w-6 text-orange-600" />
-            <span className="text-sm text-muted-foreground">BellIcon</span>
+            <Bell className="h-6 w-6 text-orange-600" />
+            <span className="text-sm text-muted-foreground">Bell</span>
           </div>
         </div>
       </div>
 
-      {/* Solid Icons (24x24) */}
+      {/* Technology Icons */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Solid Icons (24x24)</h3>
+        <h3 className="text-lg font-semibold">Technology Icons</h3>
         <div className="flex gap-4 flex-wrap">
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <HomeIconSolid24 className="h-6 w-6 text-blue-600" />
-            <span className="text-sm text-muted-foreground">HomeIcon (Solid)</span>
+            <Code2 className="h-6 w-6 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Code2</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <UserIconSolid24 className="h-6 w-6 text-green-600" />
-            <span className="text-sm text-muted-foreground">UserIcon (Solid)</span>
+            <Cpu className="h-6 w-6 text-green-600" />
+            <span className="text-sm text-muted-foreground">Cpu</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <CogIconSolid24 className="h-6 w-6 text-purple-600" />
-            <span className="text-sm text-muted-foreground">CogIcon (Solid)</span>
+            <Palette className="h-6 w-6 text-purple-600" />
+            <span className="text-sm text-muted-foreground">Palette</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <BellIconSolid24 className="h-6 w-6 text-orange-600" />
-            <span className="text-sm text-muted-foreground">BellIcon (Solid)</span>
+            <Rocket className="h-6 w-6 text-orange-600" />
+            <span className="text-sm text-muted-foreground">Rocket</span>
           </div>
         </div>
       </div>
 
-      {/* Mini Icons (20x20) */}
+      {/* Additional Icons */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Mini Icons (20x20)</h3>
+        <h3 className="text-lg font-semibold">More Icons</h3>
         <div className="flex gap-4 flex-wrap">
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <HomeIconMini20 className="h-5 w-5 text-blue-600" />
-            <span className="text-sm text-muted-foreground">HomeIcon (Mini)</span>
+            <Heart className="h-6 w-6 text-red-600" />
+            <span className="text-sm text-muted-foreground">Heart</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <UserIconMini20 className="h-5 w-5 text-green-600" />
-            <span className="text-sm text-muted-foreground">UserIcon (Mini)</span>
+            <Star className="h-6 w-6 text-yellow-600" />
+            <span className="text-sm text-muted-foreground">Star</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <CogIconMini20 className="h-5 w-5 text-purple-600" />
-            <span className="text-sm text-muted-foreground">CogIcon (Mini)</span>
+            <Zap className="h-6 w-6 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Zap</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-            <BellIconMini20 className="h-5 w-5 text-orange-600" />
-            <span className="text-sm text-muted-foreground">BellIcon (Mini)</span>
+            <Shield className="h-6 w-6 text-green-600" />
+            <span className="text-sm text-muted-foreground">Shield</span>
           </div>
         </div>
       </div>
@@ -110,21 +101,21 @@ const IconExamples: React.FC = () => {
           <div className="p-4 border rounded-lg">
             <h4 className="font-medium mb-2">With Text</h4>
             <div className="flex items-center gap-2 text-sm">
-              <HomeIcon className="h-4 w-4 text-blue-600" />
+              <Home className="h-4 w-4 text-blue-600" />
               <span>Navigate to home</span>
             </div>
           </div>
           <div className="p-4 border rounded-lg">
             <h4 className="font-medium mb-2">Button Icon</h4>
             <button className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
-              <UserIcon className="h-4 w-4" />
+              <User className="h-4 w-4" />
               Profile
             </button>
           </div>
           <div className="p-4 border rounded-lg">
             <h4 className="font-medium mb-2">Notification Badge</h4>
             <div className="relative inline-block">
-              <BellIcon className="h-6 w-6 text-gray-600" />
+              <Bell className="h-6 w-6 text-gray-600" />
               <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 3
               </span>
@@ -133,9 +124,32 @@ const IconExamples: React.FC = () => {
           <div className="p-4 border rounded-lg">
             <h4 className="font-medium mb-2">Loading State</h4>
             <div className="flex items-center gap-2">
-              <CogIcon className="h-4 w-4 text-gray-600 animate-spin" />
+              <Settings className="h-4 w-4 text-gray-600 animate-spin" />
               <span className="text-sm text-gray-600">Processing...</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Icon Sizes */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Icon Sizes</h3>
+        <div className="flex gap-4 flex-wrap items-center">
+          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+            <Home className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">h-4 w-4</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+            <Home className="h-6 w-6 text-blue-600" />
+            <span className="text-sm text-muted-foreground">h-6 w-6</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+            <Home className="h-8 w-8 text-blue-600" />
+            <span className="text-sm text-muted-foreground">h-8 w-8</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+            <Home className="h-12 w-12 text-blue-600" />
+            <span className="text-sm text-muted-foreground">h-12 w-12</span>
           </div>
         </div>
       </div>

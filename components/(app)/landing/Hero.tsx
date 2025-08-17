@@ -2,11 +2,11 @@ import React from 'react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { 
-  RocketLaunchIcon, 
-  CodeBracketIcon, 
-  CpuChipIcon, 
-  PaintBrushIcon 
-} from '@heroicons/react/24/outline';
+  Rocket, 
+  Code2, 
+  Cpu, 
+  Palette 
+} from 'lucide-react';
 
 const Hero: React.FC = () => {
   return (
@@ -33,19 +33,19 @@ const Hero: React.FC = () => {
       
       <div className="flex flex-wrap gap-2 justify-center">
         <Badge variant="secondary" className="flex items-center gap-1">
-          <CodeBracketIcon className="h-4 w-4" />
+          <Code2 className="h-4 w-4" />
           Next.js 15
         </Badge>
         <Badge variant="secondary" className="flex items-center gap-1">
-          <CpuChipIcon className="h-4 w-4" />
+          <Cpu className="h-4 w-4" />
           React 19
         </Badge>
         <Badge variant="secondary" className="flex items-center gap-1">
-          <CodeBracketIcon className="h-4 w-4" />
+          <Code2 className="h-4 w-4" />
           TypeScript
         </Badge>
         <Badge variant="secondary" className="flex items-center gap-1">
-          <PaintBrushIcon className="h-4 w-4" />
+          <Palette className="h-4 w-4" />
           Tailwind CSS 4
         </Badge>
       </div>
