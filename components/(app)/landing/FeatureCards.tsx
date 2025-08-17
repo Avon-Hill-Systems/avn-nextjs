@@ -1,4 +1,11 @@
 import React from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 const FeatureCards: React.FC = () => {
   const features = [
@@ -19,15 +26,14 @@ const FeatureCards: React.FC = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
       {features.map((feature, index) => (
-        <div
-          key={index}
-          className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-        >
-          <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
-            {feature.description}
-          </p>
-        </div>
+        <Card key={index}>
+          <CardHeader>
+            <CardTitle>{feature.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>{feature.description}</CardDescription>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
