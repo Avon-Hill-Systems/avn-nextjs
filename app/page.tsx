@@ -1,5 +1,4 @@
 import React from 'react';
-import Footer from '@/components/(app)/landing/Footer';
 import TopBar from '@/components/(app)/landing/TopBar';
 
 export default function Home() {
@@ -22,7 +21,6 @@ export default function Home() {
           </section>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
