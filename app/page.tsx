@@ -11,7 +11,7 @@ export default function Home() {
           {/* Hero Section */}
           <section className="text-center">
             <div className="space-y-8">
-              <h1 className="text-6xl font-[700] text-foreground max-w-5xl mx-auto leading-tight tracking-tight">
+              <h1 className="text-6xl text-foreground max-w-5xl mx-auto leading-tight tracking-tight">
                 Stop building the same<br />
                 app twice.
               </h1>
