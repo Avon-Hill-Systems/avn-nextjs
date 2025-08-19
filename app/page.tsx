@@ -31,12 +31,7 @@ export default function Home() {
             </div>
             
             {/* Right Column - Primary Color Block */}
-            <div className="hidden lg:flex items-center justify-center">
-              <div className="bg-primary text-primary-foreground p-8 rounded-lg text-center max-w-sm">
-                <h3 className="text-xl font-semibold mb-2">Primary</h3>
-                <p className="text-sm opacity-90">Main brand color</p>
-              </div>
-            </div>
+
           </section>
         </div>
       </main>
