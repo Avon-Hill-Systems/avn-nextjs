@@ -20,6 +20,14 @@ export default function Home() {
                 We help supermarkets accurately predict customer<br />
                 sentiment  before committing shelf space.
               </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]">
+                  Contact Sales
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)]">
+                  Join Waitlist
+                </Button>
+              </div>
             </div>
             
             {/* Right Column - Primary Color Block */}
