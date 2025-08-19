@@ -8,19 +8,26 @@ export default function Home() {
       <TopBar />
       <main className="flex-1 flex items-center justify-center min-h-screen">
         <div className="container mx-auto px-4">
-          {/* Hero Section */}
-          <section className="text-center">
-            <div className="space-y-8">
-              <h1 className="text-6xl text-foreground max-w-5xl mx-auto leading-tight tracking-tight">
-                Stop building the same<br />
-                app twice.
+                    {/* Hero Section */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        {/* Left Column - Current Content */}
+            <div className="text-left space-y-8 flex flex-col justify-center min-h-[60vh]">
+              <h1 className="text-7xl text-foreground leading-tight tracking-tight">
+                See the outcome<br />
+                before you decide.
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto tracking-tight">
-              Tempo converts your IOS application to a complete Android version and keeps your Swift and Kotlin repositories synchronized on every push.
+              <p className="text-xl text-muted-foreground tracking-tight">
+                We help supermarkets accurately predict customer<br />
+                sentiment  before committing shelf space.
               </p>
-              <Button size="lg" className="text-lg px-8 py-3">
-                Join the waitlist
-              </Button>
+            </div>
+            
+            {/* Right Column - Primary Color Block */}
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="bg-primary text-primary-foreground p-8 rounded-lg text-center max-w-sm">
+                <h3 className="text-xl font-semibold mb-2">Primary</h3>
+                <p className="text-sm opacity-90">Main brand color</p>
+              </div>
             </div>
           </section>
         </div>
