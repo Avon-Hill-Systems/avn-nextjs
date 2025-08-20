@@ -1,63 +1,136 @@
 import React from 'react';
-import Image from 'next/image';
-import { Separator } from '../../ui/separator';
 
 const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerSections = [
+    {
+      title: "Product",
+      links: [
+        { name: "Features", href: "#features" },
+        { name: "Technology", href: "#technology" },
+        { name: "Pricing", href: "#pricing" },
+        { name: "API Documentation", href: "#" },
+        { name: "Integrations", href: "#" }
+      ]
+    },
+    {
+      title: "Company",
+      links: [
+        { name: "About Us", href: "#" },
+        { name: "Careers", href: "#" },
+        { name: "Press", href: "#" },
+        { name: "Blog", href: "#" },
+        { name: "Contact", href: "#" }
+      ]
+    },
+    {
+      title: "Resources",
+      links: [
+        { name: "Help Center", href: "#" },
+        { name: "Community", href: "#" },
+        { name: "Case Studies", href: "#" },
+        { name: "Webinars", href: "#" },
+        { name: "Support", href: "#" }
+      ]
+    },
+    {
+      title: "Legal",
+      links: [
+        { name: "Privacy Policy", href: "#" },
+        { name: "Terms of Service", href: "#" },
+        { name: "Cookie Policy", href: "#" },
+        { name: "GDPR", href: "#" },
+        { name: "Security", href: "#" }
+      ]
+    }
+  ];
+
+  const socialLinks = [
+    { name: "Twitter", href: "#", icon: "𝕏" },
+    { name: "LinkedIn", href: "#", icon: "💼" },
+    { name: "GitHub", href: "#", icon: "🐙" },
+    { name: "YouTube", href: "#", icon: "📺" }
+  ];
+
   return (
-    <footer className="mt-16 border-t border-border bg-muted/30">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
-          <a
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/file.svg"
-              alt="File icon"
-              width={16}
-              height={16}
-            />
-            Learn
-          </a>
-          
-          <Separator orientation="vertical" className="h-4 hidden sm:block" />
-          
-          <a
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/window.svg"
-              alt="Window icon"
-              width={16}
-              height={16}
-            />
-            Examples
-          </a>
-          
-          <Separator orientation="vertical" className="h-4 hidden sm:block" />
-          
-          <a
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/globe.svg"
-              alt="Globe icon"
-              width={16}
-              height={16}
-            />
-            Go to nextjs.org →
-          </a>
+    <footer className="bg-muted/30 border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          {/* Company Info */}
+          <div className="lg:col-span-2">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Avon Hill Systems
+            </h3>
+            <p className="text-foreground/70 mb-6 max-w-md">
+              Transforming supermarket operations with AI-powered simulations and predictive analytics. 
+              See the outcome before you decide.
+            </p>
+            <div className="flex space-x-4">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-foreground/70 hover:text-foreground hover:bg-muted/80 transition-colors duration-200"
+                  aria-label={social.name}
+                >
+                  <span className="text-lg">{social.icon}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer Links */}
+          {footerSections.map((section) => (
+            <div key={section.title}>
+              <h4 className="font-semibold text-foreground mb-4">{section.title}</h4>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-foreground/70 hover:text-foreground transition-colors duration-200 text-sm"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Newsletter Signup */}
+        <div className="border-t border-border pt-8 mb-8">
+          <div className="max-w-md">
+            <h4 className="font-semibold text-foreground mb-3">Stay Updated</h4>
+            <p className="text-foreground/70 mb-4 text-sm">
+              Get the latest insights on AI in retail and supermarket optimization.
+            </p>
+            <div className="flex space-x-2">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="text-sm text-foreground/60">
+            © {currentYear} Avon Hill Systems. All rights reserved.
+          </div>
+          <div className="flex items-center space-x-6 text-sm text-foreground/60">
+            <span>Made with ❤️ for supermarkets</span>
+            <span>•</span>
+            <span>Cambridge, MA</span>
+          </div>
         </div>
       </div>
     </footer>
