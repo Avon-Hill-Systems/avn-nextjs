@@ -58,7 +58,7 @@ const Pricing: React.FC = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
-            Choose the plan that fits your supermarket's size and needs. 
+            Choose the plan that fits your supermarket&apos;s size and needs. 
             All plans include our core AI simulation technology.
           </p>
         </div>

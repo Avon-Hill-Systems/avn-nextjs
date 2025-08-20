@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import TopBar from '@/components/(app)/landing/TopBar';
 import Features from '@/components/(app)/landing/Features';
 import Technology from '@/components/(app)/landing/Technology';
@@ -43,10 +44,13 @@ export default function Home() {
               
               {/* Right Column - Landing Image */}
               <div className="flex items-center justify-center">
-                <img 
+                <Image 
                   src="/landing/landing2.png" 
                   alt="Network visualization showing connected nodes and data relationships" 
                   className="w-full h-auto max-w-2xl object-contain"
+                  width={800}
+                  height={600}
+                  priority
                 />
               </div>
             </div>
