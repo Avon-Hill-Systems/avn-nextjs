@@ -16,7 +16,7 @@ export default function Home() {
                 See the outcome<br />
                 before you decide.
               </h1>
-              <p className="text-xl text-muted-foreground tracking-tight">
+              <p className="text-xl font-normal text-muted-foreground tracking-tight">
                 We help supermarkets accurately predict customer<br />
                 sentiment  before committing shelf space.
               </p>

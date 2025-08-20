@@ -7,8 +7,8 @@ const TopBar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-foreground">
-              Tempo
+            <h1 className="text-xl font-normal text-foreground">
+              Avon Hill Systems
             </h1>
           </div>
         </div>
