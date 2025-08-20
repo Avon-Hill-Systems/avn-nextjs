@@ -17,8 +17,8 @@ const TopBar: React.FC = () => {
     <header 
       className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-700 ease-in-out ${
         isScrolled 
-          ? 'w-[min(90vw,800px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50' 
-          : 'w-[calc(100%-2rem)] max-w-7xl bg-background/80 backdrop-blur-sm rounded-lg'
+          ? 'w-[min(90vw,700px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50' 
+          : 'w-[min(calc(100%-2rem),1280px)] bg-background/80 backdrop-blur-sm rounded-lg'
       }`}
     >
       <div className={`transition-all duration-700 ${
@@ -29,7 +29,7 @@ const TopBar: React.FC = () => {
         }`}>
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <h1 className={`font-normal text-foreground transition-all duration-500 ${
+            <h1 className={`font-normal text-foreground transition-all duration-700 ${
               isScrolled ? 'text-lg' : 'text-xl'
             }`}>
               Avon Hill Systems
