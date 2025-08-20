@@ -8,8 +8,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Tempo - Swift to Android Conversion",
-  description: "Convert your Swift iOS codebase into an equivalent Kotlin Android repo and keep them synchronized on every push.",
+  title: "Avon Hill Systems",
+  description: "AI simulations of your customers",
   icons: {
     icon: [
       { url: '/tempo-icon.svg', type: 'image/svg+xml' },

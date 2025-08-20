@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
@@ -17,11 +19,15 @@ export default function Home() {
                 before you decide.
               </h1>
               <p className="text-xl font-normal text-muted-foreground tracking-tight">
-                We help supermarkets accurately predict customer<br />
-                sentiment  before committing shelf space.
+                We use AI simulations to help supermarkets accurately predict customer
+                sentiment before committing shelf space.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]">
+                <Button 
+                  size="lg" 
+                  className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
+                  onClick={() => window.open('mailto:vhenz@college.harvard.edu', '_blank')}
+                >
                   Contact Sales
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)]">
@@ -30,8 +36,14 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Right Column - Primary Color Block */}
-
+            {/* Right Column - Landing Image */}
+            <div className="flex items-center justify-center">
+              <img 
+                src="/landing/landing2.png" 
+                alt="Network visualization showing connected nodes and data relationships" 
+                className="w-full h-auto max-w-2xl object-contain"
+              />
+            </div>
           </section>
         </div>
       </main>
