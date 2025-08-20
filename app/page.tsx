@@ -24,10 +24,10 @@ export default function Home() {
                   See the outcome<br />
                   before you decide.
                 </h1>
-                <p className="text-xl font-normal text-muted-foreground tracking-tight">
-                  We use AI simulations to help supermarkets accurately predict customer
-                  sentiment before committing shelf space.
-                </p>
+                              <p className="text-xl font-normal text-muted-foreground tracking-tight">
+                We use AI to simulate the behaviors of Harvard students, 
+                giving businesses a way to validate products and services before launch.
+              </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button 
                     size="lg" 
@@ -57,18 +57,19 @@ export default function Home() {
           </div>
         </section>
 
+
         {/* Features Section */}
-        <Features />
+        {/* <Features /> */}
 
         {/* Technology Section */}
-        <Technology />
+        {/* <Technology /> */}
 
         {/* Pricing Section */}
-        <Pricing />
+        {/* <Pricing /> */}
       </main>
-      
+
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
