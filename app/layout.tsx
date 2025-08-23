@@ -9,7 +9,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "Avon Hill Systems",
-  description: "AI simulations of your customers",
+  description: "AI simulations for your product decisions",
   icons: {
     icon: [
       { url: '/tempo-icon.svg', type: 'image/svg+xml' },
