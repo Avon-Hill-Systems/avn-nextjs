@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
-      <main className="flex-1 pt-4 sm:pt-0">
+      <main className="flex-1 sm:pt-0">
         {/* Hero Section */}
-        <section className="flex items-center justify-center min-h-screen">
+        <section className="flex items-center justify-center min-h-[calc(100vh-5rem)] sm:min-h-screen">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center">
               {/* Centered Content */}
               <div className="text-center space-y-6 sm:space-y-8 max-w-4xl">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight">
+                <h1 className="text-5xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight">
                   See outcomes before <br className="hidden sm:block" />
                   <span className="sm:hidden"> </span>you decide.
                 </h1>
