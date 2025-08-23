@@ -15,31 +15,31 @@ export default function Home() {
       <TopBar />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="flex items-center justify-center min-h-screen">
-          <div className="container mx-auto px-4">
+        <section className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
+          <div className="container mx-auto">
             <div className="flex justify-center">
               {/* Centered Content */}
-              <div className="text-center space-y-8 max-w-4xl">
-                <h1 className="text-7xl text-foreground leading-tight tracking-tight">
-                  See outcomes before <br />
+              <div className="text-center space-y-6 sm:space-y-8 max-w-4xl">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight px-4 font-bold">
+                  See outcomes before <br className="hidden sm:block" />
                   you decide.
                 </h1>
-                <p className="text-xl font-normal text-muted-foreground tracking-tight max-w-xl mx-auto">
+                <p className="text-lg sm:text-xl font-normal text-muted-foreground tracking-tight max-w-xl mx-auto px-4 leading-relaxed">
                   We use AI to simulate the behavior of Harvard students, 
                   giving businesses a way to validate products before launch.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 max-w-sm sm:max-w-none mx-auto">
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="text-lg px-8 py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)] w-full sm:w-auto transition-all duration-200 active:scale-95"
                     onClick={() => window.open('mailto:vhenz@college.harvard.edu', '_blank')}
                   >
                     Contact Sales
                   </Button>
                   <Button 
                     size="lg" 
-                    className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)] w-full sm:w-auto transition-all duration-200 active:scale-95"
                   >
                     Login
                   </Button>
@@ -48,7 +48,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
 
         {/* Features Section */}
         {/* <Features /> */}
