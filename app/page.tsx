@@ -6,6 +6,7 @@ import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
 import Features from '@/components/(app)/landing/Features';
 import Pricing from '@/components/(app)/landing/Pricing';
+import Footer from '@/components/(app)/landing/Footer';
 
 export default function Home() {
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      {/* <Footer /> */}
+      {<Footer /> }
     </div>
   );
 }

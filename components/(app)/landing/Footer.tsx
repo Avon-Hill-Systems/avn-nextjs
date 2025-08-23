@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
+            <h3 className="text-2xl font-normal text-foreground mb-4">
               Avon Hill Systems
             </h3>
             <p className="text-foreground/70 mb-6 max-w-md">
