@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const TopBar: React.FC = () => {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -62,14 +64,20 @@ const TopBar: React.FC = () => {
 
             {/* Desktop Login Button - Right Side */}
             <div className="hidden md:flex items-center">
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+              <button 
+                onClick={() => router.push('/login')}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              >
                 Login
               </button>
             </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-2">
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200">
+              <button 
+                onClick={() => router.push('/login')}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 "
+              >
                 Login
               </button>
               <button

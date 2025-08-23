@@ -1,10 +1,15 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
+import Features from '@/components/(app)/landing/Features';
+import Pricing from '@/components/(app)/landing/Pricing';
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
@@ -35,6 +40,7 @@ export default function Home() {
                   <Button 
                     size="lg" 
                     className="text-base sm:text-lg px-6 sm:px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)] w-full sm:w-auto"
+                    onClick={() => router.push('/login')}
                   >
                     Login
                   </Button>
@@ -46,13 +52,13 @@ export default function Home() {
 
 
         {/* Features Section */}
-        {/* <Features /> */}
+        {<Features />}
 
         {/* Technology Section */}
         {/* <Technology /> */}
 
         {/* Pricing Section */}
-        {/* <Pricing /> */}
+        {<Pricing /> }
       </main>
 
       {/* Footer */}
