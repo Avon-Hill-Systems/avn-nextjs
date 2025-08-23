@@ -28,7 +28,7 @@ const Features: React.FC = () => {
   return (
     <section id="features" className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="w-full h-[80vh] rounded-3xl relative overflow-hidden">
+        <div className="w-full h-[90vh] sm:h-[80vh] rounded-3xl relative overflow-hidden">
           {/* Complex random gradient flow background */}
           <div className="absolute inset-0">
             {/* Base gradient */}
@@ -77,10 +77,10 @@ const Features: React.FC = () => {
           </div> */}
           
                      {/* Title and Description */}
-           <div className="absolute top-8 left-8 z-10 max-w-2xl">
-             <h2 className="text-4xl font-normal text-white mb-6">Our Solution</h2>
-             <div className="space-y-4">
-               <p className="text-lg text-white/90 leading-relaxed">
+           <div className="absolute top-6 left-4 sm:top-8 sm:left-8 z-10 max-w-sm sm:max-w-2xl px-2 sm:px-0">
+             <h2 className="text-2xl sm:text-4xl font-normal text-white mb-4 sm:mb-6">Our Solution</h2>
+             <div className="space-y-4 sm:space-y-4">
+               <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                  A powerful simulation engine that gives you unprecedented access to a digital twin of the Harvard student population. 
                  Test any business scenario, product, or strategy in a risk-free environment and receive probabilistic predictions 
                  based on real behavioral patterns.
@@ -93,10 +93,10 @@ const Features: React.FC = () => {
            </div>
            
                       {/* Use Case Section */}
-           <div className="absolute top-8 left-8 z-10 max-w-2xl" style={{ top: '280px' }}>
-             <h3 className="text-4xl font-normal text-white mb-6">Use Case</h3>
-             <div className="space-y-4">
-               <p className="text-lg text-white/90 leading-relaxed">
+           <div className="absolute top-64 left-4 sm:top-8 sm:left-8 z-10 max-w-sm sm:max-w-2xl px-2 sm:px-0" style={{ top: '280px' }}>
+             <h3 className="text-2xl sm:text-4xl font-normal text-white mb-4 sm:mb-6">Use Case</h3>
+             <div className="space-y-4 sm:space-y-4">
+               <p className="text-base sm:text-lg text-white/90 leading-relaxed">
                  A client wanted to find the optimal pricing for his fall coffee drink. He provided his cost to make per drink, 
                  and ran our simulation himself across thousands of pricing scenarios in the Harvard student population. He also 
                  tested how different flavors would perform, and our AI models generated comprehensive pricing distributions, 
