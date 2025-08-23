@@ -22,7 +22,7 @@ export default function Home() {
             <div className="flex justify-center">
               {/* Centered Content */}
               <div className="text-center space-y-4 sm:space-y-6 md:space-y-8 max-w-4xl">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-foreground leading-tight tracking-tight px-2 sm:px-0">
+                <h1 className="text-5xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-foreground leading-tight tracking-tight px-2 sm:px-0">
                   See outcomes before <br className="hidden sm:block" />
                   <span className="sm:hidden"> </span>you decide.
                 </h1>

@@ -78,7 +78,7 @@ const Features: React.FC = () => {
           
                      {/* Title and Description */}
            <div className="absolute top-8 left-8 z-10 max-w-2xl">
-             <h2 className="text-4xl font-normal text-white mb-6">Our Product</h2>
+             <h2 className="text-4xl font-normal text-white mb-6">Our Solution</h2>
              <div className="space-y-4">
                <p className="text-lg text-white/90 leading-relaxed">
                  A powerful simulation engine that gives you unprecedented access to a digital twin of the Harvard student population. 
@@ -86,25 +86,21 @@ const Features: React.FC = () => {
                  based on real behavioral patterns.
                </p>
                
-               <div className="space-y-3">
-                 <div className="flex items-start space-x-3">
-                   <span className="text-white/80 text-sm mt-1">•</span>
-                   <p className="text-base text-white/90">Advanced AI behavioral modeling with machine learning algorithms</p>
-                 </div>
-                 
-                 <div className="flex items-start space-x-3">
-                   <span className="text-white/80 text-sm mt-1">•</span>
-                   <p className="text-base text-white/90">Risk-free testing of services, pricing, and marketing strategies</p>
-                 </div>
-                 
-                 <div className="flex items-start space-x-3">
-                   <span className="text-white/80 text-sm mt-1">•</span>
-                   <p className="text-base text-white/90">Statistical confidence with thousands of scenarios in minutes</p>
-                 </div>
-               </div>
-               
-               <p className="text-lg text-white/90 leading-relaxed font-medium">
-                 See the outcome before you decide.
+           
+                
+         
+             </div>
+           </div>
+           
+                      {/* Use Case Section */}
+           <div className="absolute top-8 left-8 z-10 max-w-2xl" style={{ top: '280px' }}>
+             <h3 className="text-4xl font-normal text-white mb-6">Use Case</h3>
+             <div className="space-y-4">
+               <p className="text-lg text-white/90 leading-relaxed">
+                 A client wanted to find the optimal pricing for his fall coffee drink. He provided his cost to make per drink, 
+                 and ran our simulation himself across thousands of pricing scenarios in the Harvard student population. He also 
+                 tested how different flavors would perform, and our AI models generated comprehensive pricing distributions, 
+                 revealing the exact price points that would maximize his revenue while maintaining student demand.
                </p>
              </div>
            </div>
