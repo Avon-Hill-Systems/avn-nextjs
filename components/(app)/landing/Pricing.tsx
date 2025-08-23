@@ -6,7 +6,7 @@ const Pricing: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-12 max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl text-foreground font-normal tracking-tight">
-            Simple pricing
+            Pricing
           </h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">

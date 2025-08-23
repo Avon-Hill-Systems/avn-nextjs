@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Features from '@/components/(app)/landing/Features';
 import Pricing from '@/components/(app)/landing/Pricing';
 import Footer from '@/components/(app)/landing/Footer';
+import Technology from '@/components/(app)/landing/Technology';
 
 export default function Home() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function Home() {
         {<Features />}
 
         {/* Technology Section */}
-        {/* <Technology /> */}
+        {<Technology />}
 
         {/* Pricing Section */}
         {<Pricing /> }

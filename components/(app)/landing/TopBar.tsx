@@ -43,10 +43,10 @@ const TopBar: React.FC = () => {
             {/* Navigation Items - Center of Page (Desktop) */}
             <nav className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
               <a 
-                href="#features" 
+                href="#Solution" 
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200"
               >
-                Features
+                Solution
               </a>
               <a 
                 href="#technology" 

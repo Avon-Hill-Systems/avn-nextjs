@@ -84,7 +84,7 @@ const Footer: React.FC = () => {
           {/* Footer Links */}
           {footerSections.map((section) => (
             <div key={section.title}>
-              <h4 className="font-semibold text-foreground mb-4">{section.title}</h4>
+              <h4 className="font-normal text-foreground mb-4">{section.title}</h4>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
@@ -104,7 +104,7 @@ const Footer: React.FC = () => {
         {/* Newsletter Signup */}
         <div className="border-t border-border pt-8 mb-8">
           <div className="max-w-md">
-            <h4 className="font-semibold text-foreground mb-3">Stay Updated</h4>
+            <h4 className="font-normal text-foreground mb-3">Stay Updated</h4>
             <p className="text-foreground/70 mb-4 text-sm">
               Get the latest insights on AI in retail and supermarket optimization.
             </p>
@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
                 placeholder="Enter your email"
                 className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
+              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-normal hover:bg-primary/90 transition-colors duration-200">
                 Subscribe
               </button>
             </div>
@@ -127,8 +127,6 @@ const Footer: React.FC = () => {
             © {currentYear} Avon Hill Systems. All rights reserved.
           </div>
           <div className="flex items-center space-x-6 text-sm text-foreground/60">
-            <span>Made with ❤️ for supermarkets</span>
-            <span>•</span>
             <span>Cambridge, MA</span>
           </div>
         </div>
