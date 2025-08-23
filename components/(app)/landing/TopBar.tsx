@@ -29,7 +29,7 @@ const TopBar: React.FC = () => {
           <div className={`flex items-center justify-between transition-all duration-700 ${
             isScrolled ? 'h-12 sm:h-14' : 'h-14 sm:h-16'
           }`}>
-            {/* Logo/Brand */}
+            {/* Logo/Brand - Left Side */}
             <div className="flex items-center">
               <h1 className={`font-normal text-foreground transition-all duration-700 ${
                 isScrolled ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
@@ -38,8 +38,8 @@ const TopBar: React.FC = () => {
               </h1>
             </div>
 
-            {/* Navigation Items - Middle (Desktop) */}
-            <nav className="hidden md:flex items-center space-x-8">
+            {/* Navigation Items - Center of Page (Desktop) */}
+            <nav className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
               <a 
                 href="#features" 
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200"
@@ -57,10 +57,10 @@ const TopBar: React.FC = () => {
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200"
               >
                 Pricing
-              </a>
+            </a>
             </nav>
 
-            {/* Desktop Login Button */}
+            {/* Desktop Login Button - Right Side */}
             <div className="hidden md:flex items-center">
               <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
                 Login
