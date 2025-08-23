@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
-      <main className="flex-1 pt-16 sm:pt-0">
+      <main className="flex-1 pt-4 sm:pt-0">
         {/* Hero Section */}
         <section className="flex items-center justify-center min-h-screen">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
