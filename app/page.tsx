@@ -17,18 +17,18 @@ export default function Home() {
         {/* Hero Section */}
         <section className="flex items-center justify-center min-h-screen">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Column - Current Content */}
-              <div className="text-left space-y-8 flex flex-col justify-center min-h-[60vh]">
+            <div className="flex justify-center">
+              {/* Centered Content */}
+              <div className="text-center space-y-8 max-w-4xl">
                 <h1 className="text-7xl text-foreground leading-tight tracking-tight">
-                  See the outcome<br />
-                  before you decide.
+                  See outcomes before <br />
+                  you decide.
                 </h1>
-                              <p className="text-xl font-normal text-muted-foreground tracking-tight">
-                We use AI to simulate the behaviors of Harvard students, 
-                giving businesses a way to validate products and services before launch.
-              </p>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <p className="text-xl font-normal text-muted-foreground tracking-tight max-w-xl mx-auto">
+                  We use AI to simulate the behaviors of Harvard students, 
+                  giving businesses a way to validate products and services before launch.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button 
                     size="lg" 
                     className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
@@ -40,18 +40,6 @@ export default function Home() {
                     Join Waitlist
                   </Button>
                 </div>
-              </div>
-              
-              {/* Right Column - Landing Image */}
-              <div className="flex items-center justify-center">
-                <Image 
-                  src="/landing/landing2.png" 
-                  alt="Network visualization showing connected nodes and data relationships" 
-                  className="w-full h-auto max-w-2xl object-contain"
-                  width={800}
-                  height={600}
-                  priority
-                />
               </div>
             </div>
           </div>
