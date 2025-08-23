@@ -31,13 +31,17 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button 
                     size="lg" 
-                    className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
+                    variant="outline"
+                    className="text-lg px-8 py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
                     onClick={() => window.open('mailto:vhenz@college.harvard.edu', '_blank')}
                   >
                     Contact Sales
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)]">
-                    Join Waitlist
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)]"
+                  >
+                    Login
                   </Button>
                 </div>
               </div>

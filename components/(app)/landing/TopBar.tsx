@@ -61,7 +61,7 @@ const TopBar: React.FC = () => {
           {/* Contact Sales Button - Right */}
           <div className="flex items-center">
             <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-              Contact Sales
+              Login
             </button>
           </div>
         </div>
