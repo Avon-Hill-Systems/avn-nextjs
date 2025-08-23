@@ -25,7 +25,7 @@ export default function Home() {
                   you decide.
                 </h1>
                 <p className="text-xl font-normal text-muted-foreground tracking-tight max-w-xl mx-auto">
-                  We use AI to simulate the behaviors of Harvard students, 
+                  We use AI to simulate the behavior of Harvard students, 
                   giving businesses a way to validate products before launch.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
