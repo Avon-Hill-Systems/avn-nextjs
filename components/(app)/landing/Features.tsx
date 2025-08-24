@@ -1,29 +1,5 @@
 import React from 'react';
 
-// Generate Gaussian bell curve points
-const generateBellCurve = (width: number, height: number, points: number = 100) => {
-  const path: string[] = [];
-  const centerX = width / 2;
-  const centerY = height * 0.15; // Peak higher up (15% from top) - bigger curve
-  const baseY = height * 0.85; // Base lower (85% from top) - bigger curve
-  const sigma = width / 8; // Slightly wider for bigger curve
-  const tailCutoff = width * 0.1; // Start curve at 10% width instead of 0
-  
-  for (let i = 0; i <= points; i++) {
-    const x = tailCutoff + (i / points) * (width - 2 * tailCutoff); // Reduce tail lengths
-    const normalizedX = (x - centerX) / sigma;
-    const y = baseY - (baseY - centerY) * Math.exp(-0.5 * normalizedX * normalizedX);
-    
-    if (i === 0) {
-      path.push(`M ${x} ${y}`);
-    } else {
-      path.push(`L ${x} ${y}`);
-    }
-  }
-  
-  return path.join(' ');
-};
-
 const Features: React.FC = () => {
   return (
     <section id="features" className="py-24 bg-background">
