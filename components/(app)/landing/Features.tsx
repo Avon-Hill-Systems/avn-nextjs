@@ -1,5 +1,4 @@
 import React from 'react';
-
 const Features: React.FC = () => {
   return (
     <section id="features" className="py-24 bg-background">
