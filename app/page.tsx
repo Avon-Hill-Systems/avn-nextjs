@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,11 @@ import Technology from '@/components/(app)/landing/Technology';
 
 export default function Home() {
   const router = useRouter();
+
+  // Pre-load the login page when the component mounts
+  useEffect(() => {
+    router.prefetch('/login');
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-background">

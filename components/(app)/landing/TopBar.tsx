@@ -16,6 +16,11 @@ const TopBar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Pre-load the login page when the component mounts
+  useEffect(() => {
+    router.prefetch('/login');
+  }, [router]);
+
   return (
     <>
       <header 
