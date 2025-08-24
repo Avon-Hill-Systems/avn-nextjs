@@ -12,9 +12,16 @@ import Technology from '@/components/(app)/landing/Technology';
 export default function Home() {
   const router = useRouter();
 
-  // Pre-load the login page when the component mounts
+  // Pre-load the login page and its image when the component mounts
   useEffect(() => {
     router.prefetch('/login');
+    
+    // Preload the login page image
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = '/landing/landing2.png';
+    link.as = 'image';
+    document.head.appendChild(link);
   }, [router]);
 
   return (
