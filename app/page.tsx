@@ -39,8 +39,12 @@ export default function Home() {
                   <span className="sm:hidden"> </span>you decide.
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl font-normal text-muted-foreground tracking-tight max-w-xl mx-auto px-4 sm:px-0">
-                  We use AI to simulate the behavior of Harvard students, 
-                  giving businesses a way to validate products before launch.
+                  We use AI to simulate how Harvard students behave, 
+                  so that businesses can predict the impact of product decisions.
+
+                 
+
+                
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
                   <Button 
