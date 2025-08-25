@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import TopBar from '../../components/(app)/landing/TopBar';
-import Footer from '../../components/(app)/landing/Footer';
-import TechnologyHero from '../../components/technology/TechnologyHero';
-import TechnologyHowItWorks from '../../components/technology/TechnologyHowItWorks';
-import TechnologyFeatures from '../../components/technology/TechnologyFeatures';
+import TopBar from '@/components/(app)/landing/TopBar';
+import Footer from '@/components/(app)/landing/Footer';
+import TechnologyHero from '@/components/technology/TechnologyHero';
+import TechnologyHowItWorks from '@/components/technology/TechnologyHowItWorks';
+
 
 export default function TechnologyPage() {
   return (
@@ -15,7 +15,6 @@ export default function TechnologyPage() {
       <div className="pt-24">
         <TechnologyHero />
         <TechnologyHowItWorks />
-        <TechnologyFeatures />
       </div>
       
       <Footer />

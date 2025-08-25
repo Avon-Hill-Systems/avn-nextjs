@@ -1,11 +1,11 @@
 "use client";
 
 import React from 'react';
-import TopBar from '../../components/(app)/landing/TopBar';
-import PricingHero from '../../components/pricing/PricingHero';
-import PricingPlans from '../../components/pricing/PricingPlans';
+import TopBar from '@/components/(app)/landing/TopBar';
+import PricingHero from '@/components/pricing/PricingHero';
+import PricingPlans from '@/components/pricing/PricingPlans';
 
-import Footer from '../../components/(app)/landing/Footer';
+import Footer from '@/components/(app)/landing/Footer';
 
 export default function PricingPage() {
   return (

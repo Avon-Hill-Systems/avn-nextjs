@@ -13,7 +13,7 @@ const SolutionDescription: React.FC = () => {
             <h3 className="text-xl font-normal text-foreground mb-4">Test Your Ideas First</h3>
             <p className="text-muted-foreground">
               Put your product ideas through our Harvard student simulation before you spend money on development. 
-              See exactly how students will react to what you&apos;re planning to build.
+              See exactly how students will react to what you&apos;re planning to build and how much they&apos;ll pay for it.
             </p>
           </div>
           
@@ -21,15 +21,14 @@ const SolutionDescription: React.FC = () => {
             <h3 className="text-xl font-normal text-foreground mb-4">Avoid Costly Mistakes</h3>
             <p className="text-muted-foreground">
               Our engine shows you exactly how students will respond to changes before you make them. 
-              You&apos;ll know what works and what doesn&apos;t before it costs you anything.
+              You&apos;ll know what doesn&apos;t work before it costs you anything.
             </p>
           </div>
           
           <div className="text-left">
             <h3 className="text-xl font-normal text-foreground mb-4">Make More Money</h3>
             <p className="text-muted-foreground">
-              Use the student behavior predictions to optimize your products and marketing. 
-              When you know what students want, you can give it to them and increase your revenue.
+              Our engine can be used to forecast student demand for your different product ideas, which helps you pick the one that will make you the most money!
             </p>
           </div>
         </div>

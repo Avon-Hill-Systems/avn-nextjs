@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Footer from '../../components/(app)/landing/Footer';
+import Footer from '@/components/(app)/landing/Footer';
 
 export default function PrivacyPolicy() {
   return (
