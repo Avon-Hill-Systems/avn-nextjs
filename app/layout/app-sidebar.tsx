@@ -1,10 +1,11 @@
 "use client";
 
 import {
-  LayoutDashboard,
   FlaskConical,
   Building2,
   Settings,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 
 import {
@@ -13,29 +14,48 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import React from "react";
 
 // Navigation items
 const items = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
     title: "Simulations",
     url: "/simulations",
     icon: FlaskConical,
+    subItems: [
+      {
+        title: "New Simulation",
+        url: "/simulations/new",
+      },
+      {
+        title: "Past Simulations", 
+        url: "/simulations",
+      },
+    ],
   },
   {
     title: "My Organisation",
     url: "/organisation",
     icon: Building2,
+    subItems: [
+      {
+        title: "About",
+        url: "/organisation/about",
+      },
+      {
+        title: "Products",
+        url: "/organisation/products",
+      },
+      {
+        title: "Customer Base",
+        url: "/organisation/customer-base",
+      },
+    ],
   },
 ];
 
@@ -46,6 +66,16 @@ const settingsItem = {
 };
 
 export function AppSidebar() {
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+
+  const toggleItem = (title: string) => {
+    setExpandedItems(prev => 
+      prev.includes(title) 
+        ? prev.filter(item => item !== title)
+        : [...prev, title]
+    );
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -62,12 +92,45 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
+                  {item.subItems ? (
+                    <>
+                      <SidebarMenuButton
+                        onClick={() => toggleItem(item.title)}
+                        className="w-full"
+                      >
+                        <item.icon />
+                        <span className="flex-1">{item.title}</span>
+                        {expandedItems.includes(item.title) ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </SidebarMenuButton>
+                      
+                      {expandedItems.includes(item.title) && (
+                        <div className="ml-6">
+                          <SidebarMenu>
+                            {item.subItems.map((subItem) => (
+                              <SidebarMenuItem key={subItem.title}>
+                                <SidebarMenuButton asChild>
+                                  <a href={subItem.url}>
+                                    <span>{subItem.title}</span>
+                                  </a>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            ))}
+                          </SidebarMenu>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
