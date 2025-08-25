@@ -1,71 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const TopBar: React.FC = () => {
   const router = useRouter();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Pre-load the login page when the component mounts
-  useEffect(() => {
-    router.prefetch('/login');
-  }, [router]);
 
   return (
     <>
-      <header 
-        className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${
-          isScrolled 
-            ? 'w-[min(95vw,1000px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50' 
-            : 'w-[min(calc(100%-1rem),min(calc(100%-2rem),1280px))] bg-background/80 backdrop-blur-sm rounded-lg'
-        }`}
-      >
-        <div className={`transition-all duration-300 ${
-          isScrolled ? 'px-4 sm:px-6' : 'px-3 sm:px-4 md:px-6 lg:px-8'
-        }`}>
-          <div className={`flex items-center justify-between transition-all duration-300 ${
-            isScrolled ? 'h-12 sm:h-14' : 'h-14 sm:h-16'
-          }`}>
+      <header className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 w-[min(calc(100%-1rem),min(calc(100%-2rem),1280px))] bg-background/80 backdrop-blur-sm rounded-lg">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo/Brand - Left Side */}
             <div className="flex items-center">
-              <h1 className={`font-normal text-foreground transition-all duration-300 ${
-                isScrolled ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
-              }`}>
-                Avon Hill Systems
-              </h1>
+              <button
+                onClick={() => router.push('/')}
+                className="hover:opacity-80 transition-opacity duration-200"
+              >
+                <h1 className="font-normal text-foreground text-lg sm:text-xl">
+                  Avon Hill Systems
+                </h1>
+              </button>
+              
+              {/* Navigation Items - Right after Avon Hill Systems */}
+              <nav className="hidden md:flex items-center space-x-8 ml-8">
+                <a 
+                  href="/features" 
+                  className="text-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Solution
+                </a>
+                <a 
+                  href="/technology" 
+                  className="text-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Technology
+                </a>
+                <a 
+                  href="/pricing" 
+                  className="text-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Pricing
+                </a>
+              </nav>
             </div>
-
-            {/* Navigation Items - Center of Page (Desktop) */}
-            <nav className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
-              <a 
-                href="#features" 
-                className="text-foreground/70 hover:text-foreground transition-colors duration-200"
-              >
-                Solution
-              </a>
-              <a 
-                href="#technology" 
-                className="text-foreground/70 hover:text-foreground transition-colors duration-200"
-              >
-                Technology
-              </a>
-              <a 
-                href="#pricing" 
-                className="text-foreground/70 hover:text-foreground transition-colors duration-200"
-              >
-                Pricing
-            </a>
-            </nav>
 
             {/* Desktop Login Button - Right Side */}
             <div className="hidden md:flex items-center">
@@ -118,21 +95,21 @@ const TopBar: React.FC = () => {
           <nav className="fixed top-20 left-1/2 transform -translate-x-1/2 w-[min(90vw,400px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 p-6">
             <div className="flex flex-col space-y-4">
               <a 
-                href="#features" 
+                href="/features" 
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
               </a>
               <a 
-                href="#technology" 
+                href="/technology" 
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Technology
               </a>
               <a 
-                href="#pricing" 
+                href="/pricing" 
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
