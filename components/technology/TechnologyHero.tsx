@@ -11,7 +11,7 @@ const TechnologyHero: React.FC = () => {
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
             Each Harvard student is a node in a graph with their actual spending data, plus context like location within Cambridge, hometown, demographics, and income. 
             We then use static Markov chain representations to map the complete probability structure of your decision—every possible outcome with exact probabilities. 
-            NLP analyzes the results and gives you clear recommendations backed by real data.
+            We then use foundation LLM models to simplify the data into a clear, actionable report.
           </p>
         </div>
       </div>

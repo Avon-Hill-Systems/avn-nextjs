@@ -48,6 +48,7 @@ const TopBar: React.FC = () => {
             <div className="hidden md:flex items-center">
               <button 
                 onClick={() => router.push('/login')}
+                onMouseEnter={() => router.prefetch('/login')}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               >
                 Login
@@ -58,6 +59,7 @@ const TopBar: React.FC = () => {
             <div className="md:hidden flex items-center space-x-2">
               <button 
                 onClick={() => router.push('/login')}
+                onMouseEnter={() => router.prefetch('/login')}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 "
               >
                 Login

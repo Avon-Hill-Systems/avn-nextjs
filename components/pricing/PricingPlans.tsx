@@ -2,7 +2,7 @@ import React from 'react';
 
 const PricingPlans: React.FC = () => {
   return (
-    <section className="py-20">
+    <section className="py-20 bg-muted/30">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-normal text-foreground mb-12 text-left">
           Choose Your Plan

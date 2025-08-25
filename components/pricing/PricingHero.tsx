@@ -10,7 +10,7 @@ const PricingHero: React.FC = () => {
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
             Simple, transparent pricing that scales with your business. 
-            Test your decisions on Harvard students before you commit to them.
+          
           </p>
         </div>
       </div>

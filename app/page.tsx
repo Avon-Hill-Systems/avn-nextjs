@@ -12,7 +12,13 @@ export default function Home() {
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
+    // Prefetch the login page
     router.prefetch('/login');
+    
+    // Also prefetch other important pages
+    router.prefetch('/features');
+    router.prefetch('/technology');
+    router.prefetch('/pricing');
     
     // Preload the login page image
     const link = document.createElement('link');
@@ -20,6 +26,29 @@ export default function Home() {
     link.href = '/landing/landing2.png';
     link.as = 'image';
     document.head.appendChild(link);
+
+    // Set up a more robust prefetching strategy
+    const prefetchLogin = () => {
+      router.prefetch('/login');
+    };
+
+    // Prefetch on various user interactions to ensure it stays cached
+    const handleUserInteraction = () => {
+      prefetchLogin();
+      // Remove the listener after first interaction to avoid excessive prefetching
+      document.removeEventListener('mousemove', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+
+    // Add listeners for user interactions that might indicate intent to navigate
+    document.addEventListener('mousemove', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousemove', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
   }, [router]);
 
   return (
@@ -53,6 +82,7 @@ export default function Home() {
                     size="lg" 
                     className="text-sm sm:text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[4px_4px_8px_rgba(0,0,0,0.25)] w-full sm:w-auto"
                     onClick={() => router.push('/login')}
+                    onMouseEnter={() => router.prefetch('/login')}
                   >
                     Login
                   </Button>
