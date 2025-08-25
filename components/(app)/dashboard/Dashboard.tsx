@@ -9,7 +9,7 @@ export default function Dashboard() {
       <div className="mb-8">
         <h1 className="text-3xl font-normal">Dashboard</h1>
         <p className="text-muted-foreground mt-2">
-          Welcome back! Here's an overview of your simulations and analytics.
+          Welcome back! Here&apos;s an overview of your simulations and analytics.
         </p>
       </div>
 
