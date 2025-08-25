@@ -1,8 +1,8 @@
 import { AppSidebar } from '@/app/layout/app-sidebar';
-import Dashboard from '@/components/(app)/dashboard/Dashboard';
+import Simulations from '@/components/(app)/simulations/Simulations';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
-export default function DashboardPage() {
+export default function SimulationsPage() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -10,7 +10,7 @@ export default function DashboardPage() {
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
         </header>
-        <Dashboard />
+        <Simulations />
       </SidebarInset>
     </SidebarProvider>
   );
