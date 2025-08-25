@@ -17,12 +17,11 @@ export default function LoginForm({
 }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(email, password);
-    }
+    setShowAccessDenied(true);
   };
 
   return (
@@ -77,6 +76,14 @@ export default function LoginForm({
           >
             {submitText}
           </Button>
+          
+          {showAccessDenied && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700 text-center">
+                Access denied. You do not have permission to access this system.
+              </p>
+            </div>
+          )}
           
           <div className="text-center">
             <a 
