@@ -9,7 +9,6 @@ const TechnologyHero: React.FC = () => {
             Our Technology
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-            We&apos;re physicists, and we can tell you modelling Harvard student behaviour is much closer to a physics problem than you think.
             We built our engine by modelling each student as a node inside a connected graph, and attached corresponding consumer and survey data to each node. 
             During simulations, we make use of foundational AI models and proprietary probability algorithms to map the complete probability structure of your input.
           </p>

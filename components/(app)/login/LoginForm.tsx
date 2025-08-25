@@ -87,7 +87,7 @@ export default function LoginForm({
           
           <div className="text-center">
             <a 
-              href="#" 
+              href="mailto:vhenz@college.harvard.edu" 
               className="text-sm text-primary hover:underline transition-colors duration-200"
             >
               Forgot your password?
