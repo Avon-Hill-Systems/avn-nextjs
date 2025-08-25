@@ -12,7 +12,7 @@ const PricingPlans: React.FC = () => {
           {/* Standard Plan */}
           <div className="bg-background border border-border rounded-lg p-8">
             <h3 className="text-2xl font-normal text-foreground mb-4">Standard</h3>
-            <div className="text-4xl font-normal text-foreground mb-6">$199<span className="text-lg text-muted-foreground">/month</span></div>
+            <div className="text-4xl font-normal text-foreground mb-6">$49<span className="text-lg text-muted-foreground">/month</span></div>
             
             <div className="space-y-4">
               <p className="text-muted-foreground">• Full platform access</p>

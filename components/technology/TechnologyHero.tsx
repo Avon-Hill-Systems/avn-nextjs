@@ -9,9 +9,9 @@ const TechnologyHero: React.FC = () => {
             Our Technology
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-            Each Harvard student is a node in a graph with their actual spending data, plus context like location within Cambridge, hometown, demographics, and income. 
-            We then use static Markov chain representations to map the complete probability structure of your decision—every possible outcome with exact probabilities. 
-            We then use foundation LLM models to simplify the data into a clear, actionable report.
+            We&apos;re physicists, and we can tell you modelling Harvard student behaviour is much closer to a physics problem than you think.
+            We built our engine by modelling each student as a node inside a connected graph, and attached corresponding consumer and survey data to each node. 
+            During simulations, we make use of foundational AI models and proprietary probability algorithms to map the complete probability structure of your input.
           </p>
         </div>
       </div>

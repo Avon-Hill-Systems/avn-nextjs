@@ -9,8 +9,8 @@ const SolutionHero: React.FC = () => {
             Our Solution
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-          We built a simulation engine that models the consumer behavior of Harvard students. Through this engine, you can test the different product decisions that you are considering taking, and see expected reactions and sales outcomes. Before you actually commit to them in real life. And yes, it&apos;s incredibly <a href="/technology" className="text-primary hover:underline">accurate</a>.
-          </p>
+          We built a simulation engine that models the consumer behavior of Harvard students. Through this engine, you can test the different product decisions that you are considering taking, and see expected reactions and sales outcomes. Before you actually commit to them in real life.
+           </p>
         </div>
       </div>
     </section>
