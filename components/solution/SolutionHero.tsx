@@ -9,8 +9,7 @@ const SolutionHero: React.FC = () => {
             Our Solution
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-            We use AI to simulate how Harvard students behave, so that businesses can predict 
-            the impact of product decisions before they make them.
+          We built a simulation engine that models the consumer behavior of Harvard students. Through this engine, you can test the different product decisions that you are considering taking, and see expected reactions and sales outcomes. Before you actually commit to them in real life.
           </p>
         </div>
       </div>

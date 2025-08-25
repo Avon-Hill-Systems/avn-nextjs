@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import React from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 // Navigation items
 const items = [
@@ -34,7 +35,7 @@ const items = [
       },
       {
         title: "Past Simulations", 
-        url: "/simulations",
+        url: "/simulations/past",
       },
     ],
   },
@@ -66,14 +67,35 @@ const settingsItem = {
 };
 
 export function AppSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
+  // Load expanded items from localStorage on mount
+  React.useEffect(() => {
+    const savedExpanded = localStorage.getItem('sidebar-expanded-items');
+    if (savedExpanded) {
+      try {
+        setExpandedItems(JSON.parse(savedExpanded));
+      } catch (error) {
+        console.warn('Failed to parse saved sidebar state:', error);
+      }
+    }
+  }, []);
+
   const toggleItem = (title: string) => {
-    setExpandedItems(prev => 
-      prev.includes(title) 
-        ? prev.filter(item => item !== title)
-        : [...prev, title]
-    );
+    const newExpandedItems = expandedItems.includes(title) 
+      ? expandedItems.filter(item => item !== title)
+      : [...expandedItems, title];
+    
+    setExpandedItems(newExpandedItems);
+    
+    // Save to localStorage
+    localStorage.setItem('sidebar-expanded-items', JSON.stringify(newExpandedItems));
+  };
+
+  const navigateToPage = (url: string) => {
+    router.push(url);
   };
 
   return (
@@ -112,10 +134,12 @@ export function AppSidebar() {
                           <SidebarMenu>
                             {item.subItems.map((subItem) => (
                               <SidebarMenuItem key={subItem.title}>
-                                <SidebarMenuButton asChild>
-                                  <a href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </a>
+                                <SidebarMenuButton
+                                  onClick={() => navigateToPage(subItem.url)}
+                                  isActive={pathname === subItem.url}
+                                  className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+                                >
+                                  <span>{subItem.title}</span>
                                 </SidebarMenuButton>
                               </SidebarMenuItem>
                             ))}
@@ -124,11 +148,13 @@ export function AppSidebar() {
                       )}
                     </>
                   ) : (
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
+                    <SidebarMenuButton
+                      onClick={() => navigateToPage(item.url)}
+                      isActive={pathname === item.url}
+                      className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
@@ -141,11 +167,13 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a href={settingsItem.url}>
-                <settingsItem.icon />
-                <span>{settingsItem.title}</span>
-              </a>
+            <SidebarMenuButton
+              onClick={() => navigateToPage(settingsItem.url)}
+              isActive={pathname === settingsItem.url}
+              className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+            >
+              <settingsItem.icon />
+              <span>{settingsItem.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

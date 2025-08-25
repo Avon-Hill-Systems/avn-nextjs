@@ -1,16 +1,4 @@
-import { AppSidebar } from '@/app/layout/app-sidebar';
-import Settings from '@/components/(app)/settings/Settings';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import { AppHeader } from '@/components/(app)/AppHeader';
-
+// This page is now handled by the app layout
 export default function SettingsPage() {
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <AppHeader />
-        <Settings />
-      </SidebarInset>
-    </SidebarProvider>
-  );
+  return null;
 }
