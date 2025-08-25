@@ -1,0 +1,53 @@
+import React from 'react';
+
+const PricingPlans: React.FC = () => {
+  return (
+    <section className="py-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-normal text-foreground mb-12 text-left">
+          Choose Your Plan
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Standard Plan */}
+          <div className="bg-background border border-border rounded-lg p-8">
+            <h3 className="text-2xl font-normal text-foreground mb-4">Standard</h3>
+            <div className="text-4xl font-normal text-foreground mb-6">$199<span className="text-lg text-muted-foreground">/month</span></div>
+            
+            <div className="space-y-4">
+              <p className="text-muted-foreground">• Full platform access</p>
+              <p className="text-muted-foreground">• Unlimited simulations</p>
+              <p className="text-muted-foreground">• Standard support</p>
+              <p className="text-muted-foreground">• Harvard student data access</p>
+            </div>
+          </div>
+
+          {/* Enterprise Plan */}
+          <div className="bg-background border border-border rounded-lg p-8">
+            <h3 className="text-2xl font-normal text-foreground mb-4">Enterprise</h3>
+            <div className="text-4xl font-normal text-foreground mb-6">Custom</div>
+            
+            <div className="space-y-4">
+              <p className="text-muted-foreground">• Everything in Standard</p>
+              <p className="text-muted-foreground">• Custom integrations</p>
+              <p className="text-muted-foreground">• Dedicated support</p>
+              <p className="text-muted-foreground">• Advanced analytics</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Single Contact Section */}
+        <div className="text-center mt-12">
+          <a 
+            href="mailto:vhenz@college.harvard.edu" 
+            className="inline-block bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg"
+          >
+            Contact Sales to Get Started
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default PricingPlans;

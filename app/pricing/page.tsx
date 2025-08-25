@@ -2,7 +2,9 @@
 
 import React from 'react';
 import TopBar from '../../components/(app)/landing/TopBar';
-import Pricing from '../../components/(app)/landing/Pricing';
+import PricingHero from '../../components/pricing/PricingHero';
+import PricingPlans from '../../components/pricing/PricingPlans';
+
 import Footer from '../../components/(app)/landing/Footer';
 
 export default function PricingPage() {
@@ -11,7 +13,8 @@ export default function PricingPage() {
       <TopBar />
       
       <div className="pt-24">
-        <Pricing />
+        <PricingHero />
+        <PricingPlans />
       </div>
       
       <Footer />
