@@ -25,18 +25,21 @@ const TopBar: React.FC = () => {
               <nav className="hidden md:flex items-center space-x-8 ml-8">
                 <a 
                   href="/features" 
+                  onMouseEnter={() => router.prefetch('/features')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Solution
                 </a>
                 <a 
                   href="/technology" 
+                  onMouseEnter={() => router.prefetch('/technology')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Technology
                 </a>
                 <a 
                   href="/pricing" 
+                  onMouseEnter={() => router.prefetch('/pricing')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Pricing
@@ -98,6 +101,7 @@ const TopBar: React.FC = () => {
             <div className="flex flex-col space-y-4">
               <a 
                 href="/features" 
+                onMouseEnter={() => router.prefetch('/features')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -105,6 +109,7 @@ const TopBar: React.FC = () => {
               </a>
               <a 
                 href="/technology" 
+                onMouseEnter={() => router.prefetch('/technology')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -112,6 +117,7 @@ const TopBar: React.FC = () => {
               </a>
               <a 
                 href="/pricing" 
+                onMouseEnter={() => router.prefetch('/pricing')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
