@@ -2,7 +2,9 @@
 
 import React from 'react';
 import TopBar from '../../components/(app)/landing/TopBar';
-import Features from '../../components/(app)/landing/Features';
+import SolutionHero from '../../components/solution/SolutionHero';
+import SolutionDescription from '../../components/solution/SolutionDescription';
+import UseCases from '../../components/solution/UseCases';
 import Footer from '../../components/(app)/landing/Footer';
 
 export default function FeaturesPage() {
@@ -11,7 +13,9 @@ export default function FeaturesPage() {
       <TopBar />
       
       <div className="pt-24">
-        <Features />
+        <SolutionHero />
+        <SolutionDescription />
+        <UseCases />
       </div>
       
       <Footer />

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
-import { TrendingUpDown } from 'lucide-react';
+
 
 export default function Home() {
   const router = useRouter();
