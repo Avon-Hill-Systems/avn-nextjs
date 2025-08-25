@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const TopBar: React.FC = () => {
   const router = useRouter();
@@ -23,27 +24,27 @@ const TopBar: React.FC = () => {
               
               {/* Navigation Items - Right after Avon Hill Systems */}
               <nav className="hidden md:flex items-center space-x-8 ml-8">
-                <a 
+                <Link 
                   href="/features" 
                   onMouseEnter={() => router.prefetch('/features')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Solution
-                </a>
-                <a 
+                </Link>
+                <Link 
                   href="/technology" 
                   onMouseEnter={() => router.prefetch('/technology')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Technology
-                </a>
-                <a 
+                </Link>
+                <Link 
                   href="/pricing" 
                   onMouseEnter={() => router.prefetch('/pricing')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Pricing
-                </a>
+                </Link>
               </nav>
             </div>
 
@@ -99,30 +100,30 @@ const TopBar: React.FC = () => {
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
           <nav className="fixed top-20 left-1/2 transform -translate-x-1/2 w-[min(90vw,400px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 p-6">
             <div className="flex flex-col space-y-4">
-              <a 
+              <Link 
                 href="/features" 
                 onMouseEnter={() => router.prefetch('/features')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/technology" 
                 onMouseEnter={() => router.prefetch('/technology')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Technology
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/pricing" 
                 onMouseEnter={() => router.prefetch('/pricing')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
-              </a>
+              </Link>
             </div>
           </nav>
         </div>
