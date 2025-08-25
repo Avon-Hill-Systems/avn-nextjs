@@ -57,7 +57,7 @@ const OrganisationAbout: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Welcome to your organization's profile. Here you can view and manage information about your company, 
+              Welcome to your organization&apos;s profile. Here you can view and manage information about your company, 
               including basic details, mission statement, and organizational structure. This information helps 
               personalize your simulation experience and provides context for AI-powered recommendations.
             </p>
