@@ -13,6 +13,7 @@ export default function Dashboard() {
         </p>
       </div>
 
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-2">Active Simulations</h3>
