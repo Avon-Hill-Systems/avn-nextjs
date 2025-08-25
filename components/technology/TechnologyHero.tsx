@@ -1,16 +1,16 @@
 import React from 'react';
 
-const SolutionHero: React.FC = () => {
+const TechnologyHero: React.FC = () => {
   return (
     <section className="py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-left">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal text-foreground mb-6">
-            Our Solution
+            Our Technology
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-            We use AI to simulate how Harvard students behave, so that businesses can predict 
-            the impact of product decisions before they make them.
+            Advanced AI and machine learning that creates realistic behavioral models 
+            of Harvard students to predict business outcomes.
           </p>
         </div>
       </div>
@@ -18,4 +18,4 @@ const SolutionHero: React.FC = () => {
   );
 };
 
-export default SolutionHero;
+export default TechnologyHero;

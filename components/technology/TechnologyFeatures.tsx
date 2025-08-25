@@ -23,13 +23,13 @@ const TechnologyFeatures: React.FC = () => {
   return (
     <section className="py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-normal text-foreground mb-12 text-center">
+        <h2 className="text-3xl font-normal text-foreground mb-12 text-left">
           Technical Features
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="text-center p-6 bg-muted/30 rounded-lg">
+            <div key={index} className="text-left p-6 bg-muted/30 rounded-lg">
               <h3 className="text-xl font-normal text-foreground mb-3">
                 {feature.title}
               </h3>

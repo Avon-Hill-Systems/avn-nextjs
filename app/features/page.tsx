@@ -2,10 +2,10 @@
 
 import React from 'react';
 import TopBar from '../../components/(app)/landing/TopBar';
+import Footer from '../../components/(app)/landing/Footer';
 import SolutionHero from '../../components/solution/SolutionHero';
 import SolutionDescription from '../../components/solution/SolutionDescription';
 import UseCases from '../../components/solution/UseCases';
-import Footer from '../../components/(app)/landing/Footer';
 
 export default function FeaturesPage() {
   return (
