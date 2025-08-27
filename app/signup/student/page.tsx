@@ -8,6 +8,8 @@ import { z } from 'zod';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { signUp } from '@/lib/auth-client';
+import { userApi } from '@/lib/api-service';
 import {
   Form,
   FormControl,
@@ -21,6 +23,12 @@ const studentSignupSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type StudentSignupData = z.infer<typeof studentSignupSchema>;
@@ -28,6 +36,7 @@ type StudentSignupData = z.infer<typeof studentSignupSchema>;
 export default function StudentSignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<StudentSignupData>({
     resolver: zodResolver(studentSignupSchema),
@@ -35,19 +44,91 @@ export default function StudentSignupPage() {
       firstName: '',
       lastName: '',
       email: '',
+      password: '',
+      confirmPassword: '',
+      acceptTerms: false,
     },
   });
 
   const handleSubmit = async (data: StudentSignupData) => {
+    console.log('🚀 Starting student signup process with data:', {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      acceptTerms: data.acceptTerms
+    });
+    
     setIsLoading(true);
-    console.log('Student signup data:', data);
+    setError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Redirect to next step or dashboard
-    router.push('/dashboard');
-    setIsLoading(false);
+    try {
+      // Step 1: Create user account with Better Auth
+      console.log('📧 Calling Better Auth signUp.email with:', {
+        email: data.email,
+        name: `${data.firstName} ${data.lastName}`,
+        callbackURL: '/dashboard'
+      });
+      
+      const result = await signUp.email({
+        email: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+        callbackURL: '/dashboard'
+      });
+      
+      console.log('✅ Better Auth signup result:', result);
+
+      if (result.data) {
+        console.log('✅ Better Auth signup successful! User data:', result.data.user);
+        
+        // Step 2: Update user with additional student-specific fields
+        try {
+          // Better Auth should return the user data including ID
+          const userId = result.data.user?.id;
+          console.log('👤 Extracted user ID:', userId);
+          
+          if (userId) {
+            const profileData = {
+              first_name: data.firstName,
+              last_name: data.lastName,
+              is_student: true,
+              company: null
+            };
+            
+            console.log('📝 Updating user profile with data:', profileData);
+            
+            const result = await userApi.update(userId, profileData);
+            
+            if (result.data) {
+              console.log('✅ Profile update successful:', result.data);
+            } else {
+              console.error('❌ Failed to update user profile data:', result.error);
+            }
+          } else {
+            console.warn('⚠️ No user ID found in Better Auth response');
+          }
+        } catch (profileError) {
+          console.error('❌ Error updating profile data:', profileError);
+          // Don't fail the entire signup for profile data
+        }
+
+        // Redirect to dashboard on success
+        console.log('🎯 Redirecting to dashboard...');
+        router.push('/dashboard');
+      } else if (result.error) {
+        console.error('❌ Better Auth signup error:', result.error);
+        setError(result.error.message || 'Failed to create account. Please try again.');
+      } else {
+        console.warn('⚠️ Unexpected Better Auth response - no data or error:', result);
+        setError('Unexpected response from authentication service. Please try again.');
+      }
+    } catch (error) {
+      console.error('❌ Unexpected error during signup:', error);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      console.log('🏁 Signup process finished, setting loading to false');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,6 +150,11 @@ export default function StudentSignupPage() {
             {/* Form */}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 sm:space-y-6">
+                {error && (
+                  <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                    {error}
+                  </div>
+                )}
                 <div className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
@@ -128,6 +214,85 @@ export default function StudentSignupPage() {
                           />
                         </FormControl>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-foreground">
+                          Password
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Create a password"
+                            className="w-full h-10 sm:h-11 text-base"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-foreground">
+                          Confirm Password
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Confirm your password"
+                            className="w-full h-10 sm:h-11 text-base"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="acceptTerms"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="mt-1"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-sm text-foreground">
+                            I agree to the{' '}
+                            <button
+                              type="button"
+                              onClick={() => router.push('/terms')}
+                              className="text-primary hover:underline"
+                            >
+                              Terms of Service
+                            </button>
+                            {' '}and{' '}
+                            <button
+                              type="button"
+                              onClick={() => router.push('/privacy')}
+                              className="text-primary hover:underline"
+                            >
+                              Privacy Policy
+                            </button>
+                          </FormLabel>
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
