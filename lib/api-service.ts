@@ -24,6 +24,7 @@ export interface StudentProfile {
   major: string;
   graduationYear: number;
   technical: boolean;
+  linkedinUrl?: string | null;
   industry: string[];
   location: string[];
   remoteWork: string;
@@ -51,6 +52,7 @@ export interface CreateStudentProfileRequest {
   major: string;
   graduationYear: number;
   technical: boolean;
+  linkedinUrl?: string | null;
   industry: string[];
   location: string[];
   remoteWork: string;
@@ -61,6 +63,7 @@ export interface UpdateStudentProfileRequest {
   major?: string;
   graduationYear?: number;
   technical?: boolean;
+  linkedinUrl?: string | null;
   industry?: string[];
   location?: string[];
   remoteWork?: string;

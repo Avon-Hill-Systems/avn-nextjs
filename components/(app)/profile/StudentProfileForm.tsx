@@ -22,6 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useUser } from "@/contexts/user-context";
 import { userApi, StudentProfile } from "@/lib/api-service";
 
@@ -29,6 +36,7 @@ const profileSchema = z.object({
   major: z.string().min(1, "Major is required"),
   graduationYear: z.string().min(1, "Graduation year is required"),
   technical: z.enum(["technical", "non-technical"]),
+  linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
   industry: z.array(z.string()).min(1, "At least one industry is required"),
   location: z.array(z.string()).min(1, "At least one location is required"),
   remoteWork: z.string().min(1, "Remote work preference is required"),
@@ -39,9 +47,10 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function StudentProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [existingProfile, setExistingProfile] = useState<StudentProfile | null>(null);
+  const [originalValues, setOriginalValues] = useState<ProfileFormData | null>(null);
   const { user } = useUser();
 
   const form = useForm<ProfileFormData>({
@@ -50,12 +59,30 @@ export function StudentProfileForm() {
       major: "",
       graduationYear: "",
       technical: undefined,
+      linkedinUrl: "",
       industry: [],
       location: [],
       remoteWork: "",
       role: [],
     },
   });
+
+  // Check if form has changes
+  const hasChanges = () => {
+    if (!originalValues) return false;
+    
+    const currentValues = form.getValues();
+    return (
+      currentValues.major !== originalValues.major ||
+      currentValues.graduationYear !== originalValues.graduationYear ||
+      currentValues.technical !== originalValues.technical ||
+      currentValues.linkedinUrl !== originalValues.linkedinUrl ||
+      JSON.stringify(currentValues.industry) !== JSON.stringify(originalValues.industry) ||
+      JSON.stringify(currentValues.location) !== JSON.stringify(originalValues.location) ||
+      currentValues.remoteWork !== originalValues.remoteWork ||
+      JSON.stringify(currentValues.role) !== JSON.stringify(originalValues.role)
+    );
+  };
 
   // Fetch existing profile on component mount
   useEffect(() => {
@@ -69,17 +96,21 @@ export function StudentProfileForm() {
       const response = await userApi.getStudentProfile(user!.id);
       if (response.data) {
         setExistingProfile(response.data);
-        // Pre-fill form with existing data
-        form.reset({
+        const formData: ProfileFormData = {
           major: response.data.major,
           graduationYear: response.data.graduationYear.toString(),
           technical: response.data.technical ? "technical" : "non-technical",
+          linkedinUrl: response.data.linkedinUrl || "",
           industry: response.data.industry,
           location: response.data.location,
           remoteWork: response.data.remoteWork,
           role: response.data.role,
-        });
-        console.log("Form reset with data:", response.data);
+        };
+        
+        // Set form values and store original values for change detection
+        form.reset(formData);
+        setOriginalValues(formData);
+        console.log("Form reset with data:", formData);
       } else if (response.error) {
         // Profile doesn't exist yet, which is fine
         console.log("No existing profile found:", response.error);
@@ -98,13 +129,13 @@ export function StudentProfileForm() {
 
     setIsLoading(true);
     setError(null);
-    setIsSuccess(false);
 
     try {
       const profileData = {
         major: data.major,
         graduationYear: parseInt(data.graduationYear),
         technical: data.technical === "technical",
+        linkedinUrl: data.linkedinUrl || null,
         industry: data.industry,
         location: data.location,
         remoteWork: data.remoteWork,
@@ -123,7 +154,7 @@ export function StudentProfileForm() {
       if (response.error) {
         setError(response.error);
       } else {
-        setIsSuccess(true);
+        setShowSuccessModal(true);
         setExistingProfile(response.data || existingProfile);
         // Refresh the profile data
         await fetchExistingProfile();
@@ -146,7 +177,7 @@ export function StudentProfileForm() {
             
             <div className="grid grid-cols-2 gap-4">
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel className="font-normal">First Name</FormLabel>
                 <FormControl>
                   <Input 
                     value={user?.first_name || ""} 
@@ -156,7 +187,7 @@ export function StudentProfileForm() {
                 </FormControl>
               </FormItem>
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className="font-normal">Last Name</FormLabel>
                 <FormControl>
                   <Input 
                     value={user?.last_name || ""} 
@@ -172,9 +203,9 @@ export function StudentProfileForm() {
               name="major"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Major</FormLabel>
+                  <FormLabel className="font-normal">Major *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your major" {...field} />
+                    <Input placeholder="Enter your major" {...field} className="bg-background" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,10 +217,10 @@ export function StudentProfileForm() {
               name="graduationYear"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Graduation Year</FormLabel>
+                  <FormLabel className="font-normal">Graduation Year *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your graduation year" />
                       </SelectTrigger>
                     </FormControl>
@@ -210,10 +241,10 @@ export function StudentProfileForm() {
               name="technical"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Are you technical?</FormLabel>
+                  <FormLabel className="font-normal">Are you technical? *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your background" />
                       </SelectTrigger>
                     </FormControl>
@@ -222,6 +253,24 @@ export function StudentProfileForm() {
                       <SelectItem value="non-technical">No</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="linkedinUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-normal">LinkedIn Profile URL</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="https://linkedin.com/in/yourprofile" 
+                      {...field} 
+                      className="bg-background"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -237,7 +286,7 @@ export function StudentProfileForm() {
               name="industry"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Preferred Industries</FormLabel>
+                  <FormLabel className="font-normal">Preferred Industries *</FormLabel>
                   <FormControl>
                     <Select 
                       onValueChange={(value) => {
@@ -248,7 +297,7 @@ export function StudentProfileForm() {
                       }} 
                       value=""
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Industries" />
                       </SelectTrigger>
                       <SelectContent>
@@ -271,7 +320,7 @@ export function StudentProfileForm() {
                       {field.value.map((industry, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm flex items-center gap-1"
+                          className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm font-normal flex items-center gap-1"
                         >
                           {industry}
                           <button
@@ -294,7 +343,7 @@ export function StudentProfileForm() {
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location Preferences</FormLabel>
+                  <FormLabel className="font-normal">Location Preferences *</FormLabel>
                   <FormControl>
                     <Select 
                       onValueChange={(value) => {
@@ -305,7 +354,7 @@ export function StudentProfileForm() {
                       }} 
                       value=""
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Locations" />
                       </SelectTrigger>
                       <SelectContent>
@@ -326,7 +375,7 @@ export function StudentProfileForm() {
                       {field.value.map((location, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm flex items-center gap-1"
+                          className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm font-normal flex items-center gap-1"
                         >
                           {location}
                           <button
@@ -349,10 +398,10 @@ export function StudentProfileForm() {
               name="remoteWork"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Remote Work Preference</FormLabel>
+                  <FormLabel className="font-normal">Remote Work Preference *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select preference" />
                       </SelectTrigger>
                       <SelectContent>
@@ -370,7 +419,7 @@ export function StudentProfileForm() {
 
           {/* Role Interests */}
           <div className="space-y-4">
-            <h3 className="text-lg font-normal text-foreground">Role Interests</h3>
+            <h3 className="text-lg font-normal text-foreground">Role Interests *</h3>
             
             <div className="grid grid-cols-2 gap-4">
               {[
@@ -407,19 +456,35 @@ export function StudentProfileForm() {
             </div>
           )}
 
-          {isSuccess && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-700">
-                Profile {existingProfile ? "updated" : "created"} successfully!
-              </p>
-            </div>
-          )}
-
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button 
+            type="submit" 
+            disabled={isLoading || Boolean(existingProfile && !hasChanges())} 
+            className="w-full"
+          >
             {isLoading ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
           </Button>
         </form>
       </Form>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Success!</DialogTitle>
+            <DialogDescription className="text-center">
+              Profile {existingProfile ? "updated" : "created"} successfully!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-6">
+            <Button 
+              onClick={() => setShowSuccessModal(false)}
+              className="px-8"
+            >
+              Continue
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
