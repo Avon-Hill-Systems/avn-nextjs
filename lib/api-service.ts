@@ -18,6 +18,27 @@ export interface User {
   updatedAt: string;
 }
 
+export interface StudentProfile {
+  id: string;
+  userId: string;
+  major: string;
+  graduationYear: number;
+  technical: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudentPreferences {
+  id: string;
+  userId: string;
+  industry: string[];
+  location: string[];
+  remoteWork: string;
+  role: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateUserRequest {
   email: string;
   first_name: string;
@@ -31,6 +52,32 @@ export interface UpdateUserRequest {
   last_name?: string;
   company?: string | null;
   is_student?: boolean;
+}
+
+export interface CreateStudentProfileRequest {
+  major: string;
+  graduationYear: number;
+  technical: boolean;
+}
+
+export interface CreateStudentPreferencesRequest {
+  industry: string[];
+  location: string[];
+  remoteWork: string;
+  role: string[];
+}
+
+export interface UpdateStudentPreferencesRequest {
+  industry?: string[];
+  location?: string[];
+  remoteWork?: string;
+  role?: string[];
+}
+
+export interface UpdateStudentProfileRequest {
+  major?: string;
+  graduationYear?: number;
+  technical?: boolean;
 }
 
 export interface ApiResponse<T> {
@@ -98,6 +145,15 @@ class ApiClient {
         };
       }
 
+      // Check if response has content before parsing JSON
+      const contentType = response.headers.get('content-type');
+      const contentLength = response.headers.get('content-length');
+      
+      if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
+        console.log('📡 Empty response or non-JSON content, returning success without data');
+        return { data: undefined };
+      }
+
       const data = await response.json();
       console.log('✅ API Response data:', data);
       
@@ -154,6 +210,56 @@ class ApiClient {
   async getAppStatus(): Promise<ApiResponse<{ status: string }>> {
     return this.request<{ status: string }>('/');
   }
+
+  // Student profile methods
+  async createStudentProfile(userId: string, profileData: CreateStudentProfileRequest): Promise<ApiResponse<StudentProfile>> {
+    return this.request<StudentProfile>(`/users/${userId}/student-profile`, {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async getStudentProfile(userId: string): Promise<ApiResponse<StudentProfile>> {
+    return this.request<StudentProfile>(`/users/${userId}/student-profile`);
+  }
+
+  async updateStudentProfile(userId: string, profileData: UpdateStudentProfileRequest): Promise<ApiResponse<StudentProfile>> {
+    return this.request<StudentProfile>(`/users/${userId}/student-profile`, {
+      method: 'PATCH',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async deleteStudentProfile(userId: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/users/${userId}/student-profile`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Student preferences methods
+  async createStudentPreferences(userId: string, preferencesData: CreateStudentPreferencesRequest): Promise<ApiResponse<StudentPreferences>> {
+    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`, {
+      method: 'POST',
+      body: JSON.stringify(preferencesData),
+    });
+  }
+
+  async getStudentPreferences(userId: string): Promise<ApiResponse<StudentPreferences>> {
+    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`);
+  }
+
+  async updateStudentPreferences(userId: string, preferencesData: UpdateStudentPreferencesRequest): Promise<ApiResponse<StudentPreferences>> {
+    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`, {
+      method: 'PATCH',
+      body: JSON.stringify(preferencesData),
+    });
+  }
+
+  async deleteStudentPreferences(userId: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/users/${userId}/student-preferences`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 // Create and export the API client instance
@@ -167,6 +273,16 @@ export const userApi = {
   delete: (id: string) => apiService.deleteUser(id),
   getAll: () => apiService.getAllUsers(),
   getCurrentUser: () => apiService.getCurrentUser(),
+  // Student profile methods
+  createStudentProfile: (userId: string, profileData: CreateStudentProfileRequest) => apiService.createStudentProfile(userId, profileData),
+  getStudentProfile: (userId: string) => apiService.getStudentProfile(userId),
+  updateStudentProfile: (userId: string, profileData: UpdateStudentProfileRequest) => apiService.updateStudentProfile(userId, profileData),
+  deleteStudentProfile: (userId: string) => apiService.deleteStudentProfile(userId),
+  // Student preferences methods
+  createStudentPreferences: (userId: string, preferencesData: CreateStudentPreferencesRequest) => apiService.createStudentPreferences(userId, preferencesData),
+  getStudentPreferences: (userId: string) => apiService.getStudentPreferences(userId),
+  updateStudentPreferences: (userId: string, preferencesData: UpdateStudentPreferencesRequest) => apiService.updateStudentPreferences(userId, preferencesData),
+  deleteStudentPreferences: (userId: string) => apiService.deleteStudentPreferences(userId),
 };
 
 export const systemApi = {

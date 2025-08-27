@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,9 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-
 import { useUser } from "@/contexts/user-context";
+import { userApi, StudentProfile } from "@/lib/api-service";
 
 const profileSchema = z.object({
   major: z.string().min(1, "Major is required"),
@@ -34,9 +33,11 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-
 export function StudentProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [existingProfile, setExistingProfile] = useState<StudentProfile | null>(null);
   const { user } = useUser();
 
   const form = useForm<ProfileFormData>({
@@ -48,13 +49,76 @@ export function StudentProfileForm() {
     },
   });
 
-  const onSubmit = async (data: ProfileFormData) => {
-    setIsLoading(true);
+  // Fetch existing profile on component mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchExistingProfile();
+    }
+  }, [user?.id]);
+
+  const fetchExistingProfile = async () => {
     try {
-      console.log("Profile data:", data);
-      // Add your API call here
+      const response = await userApi.getStudentProfile(user!.id);
+      if (response.data) {
+        setExistingProfile(response.data);
+        // Pre-fill form with existing data
+        form.reset({
+          major: response.data.major,
+          graduationYear: response.data.graduationYear.toString(),
+          technical: response.data.technical ? "technical" : "non-technical",
+        });
+        console.log("Form reset with data:", {
+          major: response.data.major,
+          graduationYear: response.data.graduationYear.toString(),
+          technical: response.data.technical ? "technical" : "non-technical",
+        });
+      } else if (response.error) {
+        // Profile doesn't exist yet, which is fine
+        console.log("No existing profile found:", response.error);
+      }
+    } catch (error) {
+      // Profile doesn't exist yet, which is fine
+      console.log("No existing profile found");
+    }
+  };
+
+  const onSubmit = async (data: ProfileFormData) => {
+    if (!user?.id) {
+      setError("User not authenticated");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setIsSuccess(false);
+
+    try {
+      const profileData = {
+        major: data.major,
+        graduationYear: parseInt(data.graduationYear),
+        technical: data.technical === "technical",
+      };
+
+      let response;
+      if (existingProfile) {
+        // Update existing profile
+        response = await userApi.updateStudentProfile(user.id, profileData);
+      } else {
+        // Create new profile
+        response = await userApi.createStudentProfile(user.id, profileData);
+      }
+
+      if (response.error) {
+        setError(response.error);
+      } else {
+        setIsSuccess(true);
+        setExistingProfile(response.data || existingProfile);
+        // Refresh the profile data
+        await fetchExistingProfile();
+      }
     } catch (error) {
       console.error("Error saving profile:", error);
+      setError("Failed to save profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +171,7 @@ export function StudentProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Graduation Year</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your graduation year" />
@@ -131,7 +195,7 @@ export function StudentProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Are you technical?</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your background" />
@@ -147,11 +211,25 @@ export function StudentProfileForm() {
             )}
           />
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? "Saving..." : "Save Profile"}
-            </Button>
-          </form>
-        </Form>
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          {isSuccess && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700">
+                Profile {existingProfile ? "updated" : "created"} successfully!
+              </p>
+            </div>
+          )}
+
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

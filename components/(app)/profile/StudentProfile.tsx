@@ -21,7 +21,7 @@ export function StudentProfile() {
     <div className="p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-normal text-foreground">Profile</h1>
-        <p className="text-muted-foreground">Fill out your profile to get started</p>
+        <p className="text-muted-foreground">General information about yourself</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -32,7 +32,7 @@ export function StudentProfile() {
 
         {/* Right Column - CV Upload */}
         <div className="h-full">
-          <Card className="bg-[var(--color-selected-tab)] border-0 h-full min-h-[calc(100vh-13rem)]">
+          <Card className="bg-transparent border-0 h-full min-h-[calc(100vh-13rem)]">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <FileText className="h-5 w-5" />
