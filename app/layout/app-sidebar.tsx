@@ -91,8 +91,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="px-2 py-1">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            AVN
+          <h2 className="text-xl font-normal">
+            Avon Hill Systems
           </h2>
         </div>
       </SidebarHeader>

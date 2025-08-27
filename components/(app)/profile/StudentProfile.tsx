@@ -18,7 +18,7 @@ export function StudentProfile() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-sidebar">
       <div className="mb-8">
         <h1 className="text-3xl font-normal text-foreground">Profile</h1>
         <p className="text-muted-foreground">General information about yourself and internship preferences</p>
@@ -32,7 +32,7 @@ export function StudentProfile() {
 
         {/* Right Column - CV Upload */}
         <div className="h-full">
-          <Card className="bg-transparent border-0 h-full min-h-[calc(100vh-13rem)]">
+          <Card className="bg-background border-0 h-full min-h-[calc(100vh-13rem)]">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <FileText className="h-5 w-5" />
