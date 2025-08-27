@@ -24,13 +24,6 @@ export interface StudentProfile {
   major: string;
   graduationYear: number;
   technical: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface StudentPreferences {
-  id: string;
-  userId: string;
   industry: string[];
   location: string[];
   remoteWork: string;
@@ -58,26 +51,20 @@ export interface CreateStudentProfileRequest {
   major: string;
   graduationYear: number;
   technical: boolean;
-}
-
-export interface CreateStudentPreferencesRequest {
   industry: string[];
   location: string[];
   remoteWork: string;
   role: string[];
 }
 
-export interface UpdateStudentPreferencesRequest {
-  industry?: string[];
-  location?: string[];
-  remoteWork?: string;
-  role?: string[];
-}
-
 export interface UpdateStudentProfileRequest {
   major?: string;
   graduationYear?: number;
   technical?: boolean;
+  industry?: string[];
+  location?: string[];
+  remoteWork?: string;
+  role?: string[];
 }
 
 export interface ApiResponse<T> {
@@ -211,7 +198,7 @@ class ApiClient {
     return this.request<{ status: string }>('/');
   }
 
-  // Student profile methods
+  // Student profile methods (now includes preferences)
   async createStudentProfile(userId: string, profileData: CreateStudentProfileRequest): Promise<ApiResponse<StudentProfile>> {
     return this.request<StudentProfile>(`/users/${userId}/student-profile`, {
       method: 'POST',
@@ -235,31 +222,6 @@ class ApiClient {
       method: 'DELETE',
     });
   }
-
-  // Student preferences methods
-  async createStudentPreferences(userId: string, preferencesData: CreateStudentPreferencesRequest): Promise<ApiResponse<StudentPreferences>> {
-    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`, {
-      method: 'POST',
-      body: JSON.stringify(preferencesData),
-    });
-  }
-
-  async getStudentPreferences(userId: string): Promise<ApiResponse<StudentPreferences>> {
-    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`);
-  }
-
-  async updateStudentPreferences(userId: string, preferencesData: UpdateStudentPreferencesRequest): Promise<ApiResponse<StudentPreferences>> {
-    return this.request<StudentPreferences>(`/users/${userId}/student-preferences`, {
-      method: 'PATCH',
-      body: JSON.stringify(preferencesData),
-    });
-  }
-
-  async deleteStudentPreferences(userId: string): Promise<ApiResponse<void>> {
-    return this.request<void>(`/users/${userId}/student-preferences`, {
-      method: 'DELETE',
-    });
-  }
 }
 
 // Create and export the API client instance
@@ -278,11 +240,6 @@ export const userApi = {
   getStudentProfile: (userId: string) => apiService.getStudentProfile(userId),
   updateStudentProfile: (userId: string, profileData: UpdateStudentProfileRequest) => apiService.updateStudentProfile(userId, profileData),
   deleteStudentProfile: (userId: string) => apiService.deleteStudentProfile(userId),
-  // Student preferences methods
-  createStudentPreferences: (userId: string, preferencesData: CreateStudentPreferencesRequest) => apiService.createStudentPreferences(userId, preferencesData),
-  getStudentPreferences: (userId: string) => apiService.getStudentPreferences(userId),
-  updateStudentPreferences: (userId: string, preferencesData: UpdateStudentPreferencesRequest) => apiService.updateStudentPreferences(userId, preferencesData),
-  deleteStudentPreferences: (userId: string) => apiService.deleteStudentPreferences(userId),
 };
 
 export const systemApi = {

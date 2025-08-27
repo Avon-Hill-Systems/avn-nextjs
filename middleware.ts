@@ -10,7 +10,6 @@ export function middleware(request: NextRequest) {
   const protectedRoutes = [
     '/dashboard',
     '/profile',
-    '/preferences',
     '/settings'
   ]
 

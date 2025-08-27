@@ -7,7 +7,7 @@ export function StartupDashboard() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl text-foreground">Startup Dashboard</h1>
+        <h1 className="text-3xl text-foreground">Welcome</h1>
         <p className="text-muted-foreground">Track your startup&apos;s growth and performance</p>
       </div>
 

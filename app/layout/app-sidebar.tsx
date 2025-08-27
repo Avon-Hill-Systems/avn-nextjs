@@ -46,11 +46,6 @@ const items: NavigationItem[] = [
     icon: LayoutDashboard,
   },
   {
-    title: "Preferences",
-    url: "/preferences",
-    icon: FlaskConical,
-  },
-  {
     title: "Profile",
     url: "/profile",
     icon: User,
