@@ -1,106 +1,83 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Mail, GraduationCap, Calendar, School } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Upload, FileText } from "lucide-react";
+import { StudentProfileForm } from "./StudentProfileForm";
 
 export function StudentProfile() {
+  const [cvFile, setCvFile] = useState<File | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setCvFile(file);
+    }
+  };
+
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl text-foreground">Student Profile</h1>
-        <p className="text-muted-foreground">Manage your academic profile and student information</p>
+    <div className="p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-normal text-foreground">Profile</h1>
+        <p className="text-muted-foreground">Fill out your profile to get started</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Academic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <User className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Jane Smith</p>
-                  <p className="text-sm text-muted-foreground">Full Name</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">jane.smith@university.edu</p>
-                  <p className="text-sm text-muted-foreground">Student Email</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <School className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Computer Science</p>
-                  <p className="text-sm text-muted-foreground">Major</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <GraduationCap className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Junior (3rd Year)</p>
-                  <p className="text-sm text-muted-foreground">Academic Level</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Expected Graduation: May 2025</p>
-                  <p className="text-sm text-muted-foreground">Academic Timeline</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Profile Form */}
+        <div className="space-y-6">
+          <StudentProfileForm />
         </div>
 
-        <div>
-          <Card>
+        {/* Right Column - CV Upload */}
+        <div className="h-full">
+          <Card className="bg-[var(--color-selected-tab)] border-0 h-full min-h-[calc(100vh-13rem)]">
             <CardHeader>
-              <CardTitle>Student Actions</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="h-5 w-5" />
+                <span>CV Upload</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <button className="w-full p-3 text-left rounded-lg border hover:bg-muted/50 transition-colors">
-                <div className="font-medium">Update Academic Info</div>
-                <div className="text-sm text-muted-foreground">Edit your major and year</div>
-              </button>
-              <button className="w-full p-3 text-left rounded-lg border hover:bg-muted/50 transition-colors">
-                <div className="font-medium">Verify Student Status</div>
-                <div className="text-sm text-muted-foreground">Upload student ID</div>
-              </button>
-              <button className="w-full p-3 text-left rounded-lg border hover:bg-muted/50 transition-colors">
-                <div className="font-medium">Academic Transcript</div>
-                <div className="text-sm text-muted-foreground">View your grades</div>
-              </button>
+            <CardContent className="space-y-4 h-full flex flex-col">
+              <div className="text-center p-8 border-2 border-dashed border-muted-foreground/20 rounded-lg flex-1 flex flex-col items-center justify-center">
+                <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground mb-2">
+                  {cvFile ? cvFile.name : "Upload your CV"}
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  PDF, DOC, or DOCX (max 5MB)
+                </p>
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="cv-upload"
+                />
+                <Button
+                  onClick={() => document.getElementById('cv-upload')?.click()}
+                  variant="outline"
+                  size="sm"
+                >
+                  Choose File
+                </Button>
+              </div>
+              
+              {cvFile && (
+                <div className="p-3 bg-background/50 rounded-lg">
+                  <p className="text-sm font-normal text-foreground">
+                    Current CV: {cvFile.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {(cvFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Academic Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">3.8</div>
-              <p className="text-sm text-muted-foreground">Current GPA</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">78</div>
-              <p className="text-sm text-muted-foreground">Credits Completed</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">42</div>
-              <p className="text-sm text-muted-foreground">Credits Remaining</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
