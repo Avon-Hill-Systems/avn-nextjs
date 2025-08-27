@@ -8,6 +8,7 @@ import {
   ChevronRight,
   LogOut,
   User,
+  LayoutDashboard,
 } from "lucide-react";
 
 import {
@@ -27,6 +28,11 @@ import { useAuth } from "@/hooks/use-auth";
 
 // Navigation items
 const items = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     title: "Simulations",
     url: "/simulations",
