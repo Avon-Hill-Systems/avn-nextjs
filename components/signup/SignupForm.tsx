@@ -69,7 +69,7 @@ export default function SignupForm({
         setError(result.error.message || 'Signup failed');
       } else {
         // Successful signup - redirect to dashboard or desired page
-        router.push('/simulations'); // Adjust this route as needed
+        router.push('/profile'); // Adjust this route as needed
         if (onSubmit) {
           onSubmit(data);
         }

@@ -9,6 +9,7 @@ import {
   LogOut,
   User,
   LayoutDashboard,
+  Mail,
 } from "lucide-react";
 
 import {
@@ -26,54 +27,39 @@ import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 
+// Type definitions
+type SubItem = {
+  title: string;
+  url: string;
+};
+
+type NavigationItem = {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  subItems?: SubItem[];
+};
+
 // Navigation items
-const items = [
+const items: NavigationItem[] = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Simulations",
-    url: "/simulations",
+    title: "Preferences",
+    url: "/preferences",
     icon: FlaskConical,
-    subItems: [
-      {
-        title: "New Simulation",
-        url: "/simulations/new",
-      },
-      {
-        title: "Past Simulations", 
-        url: "/simulations/past",
-      },
-    ],
   },
   {
-    title: "My Organisation",
-    url: "/organisation",
-    icon: Building2,
-    subItems: [
-      {
-        title: "About",
-        url: "/organisation/about",
-      },
-      {
-        title: "Products",
-        url: "/organisation/products",
-      },
-      {
-        title: "Customer Base",
-        url: "/organisation/customer-base",
-      },
-    ],
+    title: "Profile",
+    url: "/profile",
+    icon: User,
   },
 ];
 
-const settingsItem = {
-  title: "Settings",
-  url: "/settings",
-  icon: Settings,
-};
+
 
 export function AppSidebar() {
   const router = useRouter();
@@ -128,7 +114,7 @@ export function AppSidebar() {
                     <>
                       <SidebarMenuButton
                         onClick={() => toggleItem(item.title)}
-                        className="w-full"
+                        className="w-full hover:bg-muted/50 hover:text-foreground transition-colors"
                       >
                         <item.icon />
                         <span className="flex-1">{item.title}</span>
@@ -147,7 +133,7 @@ export function AppSidebar() {
                                 <SidebarMenuButton
                                   onClick={() => navigateToPage(subItem.url)}
                                   isActive={pathname === subItem.url}
-                                  className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+                                  className="hover:bg-muted/50 hover:text-foreground transition-colors data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
                                 >
                                   <span>{subItem.title}</span>
                                 </SidebarMenuButton>
@@ -161,7 +147,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       onClick={() => navigateToPage(item.url)}
                       isActive={pathname === item.url}
-                      className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+                      className="hover:bg-muted/50 hover:text-foreground transition-colors data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
                     >
                       <item.icon />
                       <span>{item.title}</span>
@@ -180,30 +166,20 @@ export function AppSidebar() {
           {isAuthenticated && session && (
             <SidebarMenuItem>
               <div className="flex items-center gap-2 px-2 py-1 text-sm text-muted-foreground">
-                <User className="h-4 w-4" />
+                <Mail className="h-4 w-4" />
                 <span className="truncate">{session.user.email}</span>
               </div>
             </SidebarMenuItem>
           )}
           
-          {/* Settings */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => navigateToPage(settingsItem.url)}
-              isActive={pathname === settingsItem.url}
-              className="hover:bg-muted/50 data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
-            >
-              <settingsItem.icon />
-              <span>{settingsItem.title}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+
 
           {/* Logout */}
           {isAuthenticated && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={logout}
-                className="hover:bg-red-50 hover:text-red-700 text-muted-foreground"
+                className="hover:bg-muted/50 hover:text-foreground transition-colors text-muted-foreground"
               >
                 <LogOut />
                 <span>Logout</span>

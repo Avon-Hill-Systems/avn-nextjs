@@ -62,7 +62,7 @@ export default function LoginForm({
         setError(result.error.message || 'Login failed');
       } else {
         // Successful login - redirect to original page or default
-        const redirectTo = searchParams.get('redirect') || '/simulations';
+        const redirectTo = searchParams.get('redirect') || '/profile';
         router.push(redirectTo);
         if (onSubmit) {
           onSubmit(data);

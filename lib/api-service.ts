@@ -54,16 +54,35 @@ class ApiClient {
     const url = `${this.baseURL}${endpoint}`;
     
     console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+    console.log('📍 API Request Stack Trace:', new Error().stack?.split('\n').slice(1, 5));
     if (options.body) {
       console.log('📦 Request body:', options.body);
     }
 
+    // Get session token from cookies
+    const sessionToken = typeof document !== 'undefined' 
+      ? document.cookie
+          .split('; ')
+          .find(row => row.startsWith('better-auth.session_token='))
+          ?.split('=')[1]
+      : null;
+
+    console.log('🔑 Session token for API request:', sessionToken ? `${sessionToken.substring(0, 20)}...` : 'Not found');
+
+    const headers = new Headers({
+      'Content-Type': 'application/json',
+      ...options.headers,
+    });
+
+    // Add Authorization header if we have a session token
+    if (sessionToken) {
+      headers.set('Authorization', `Bearer ${sessionToken}`);
+    }
+
     try {
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
+        headers,
+        credentials: 'include', // Include cookies in the request
         ...options,
       });
 
@@ -121,6 +140,11 @@ class ApiClient {
     return this.request<User[]>('/users');
   }
 
+  // Get current user profile
+  async getCurrentUser(): Promise<ApiResponse<User>> {
+    return this.request<User>('/auth/me');
+  }
+
   // Health check
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {
     return this.request<{ status: string }>('/health');
@@ -142,6 +166,7 @@ export const userApi = {
   update: (id: string, userData: UpdateUserRequest) => apiService.updateUser(id, userData),
   delete: (id: string) => apiService.deleteUser(id),
   getAll: () => apiService.getAllUsers(),
+  getCurrentUser: () => apiService.getCurrentUser(),
 };
 
 export const systemApi = {
