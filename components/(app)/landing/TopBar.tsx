@@ -25,18 +25,18 @@ const TopBar: React.FC = () => {
               {/* Navigation Items - Right after Avon Hill Systems */}
               <nav className="hidden md:flex items-center space-x-8 ml-8">
                 <Link 
-                  href="/features" 
-                  onMouseEnter={() => router.prefetch('/features')}
+                  href="/students" 
+                  onMouseEnter={() => router.prefetch('/students')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
-                  Solution
+                 Students
                 </Link>
                 <Link 
-                  href="/technology" 
-                  onMouseEnter={() => router.prefetch('/technology')}
+                  href="/startups" 
+                  onMouseEnter={() => router.prefetch('/startups')}
                   className="text-foreground hover:text-foreground transition-colors duration-200"
                 >
-                  Technology
+                  Startups
                 </Link>
                 <Link 
                   href="/pricing" 
@@ -49,7 +49,14 @@ const TopBar: React.FC = () => {
             </div>
 
             {/* Desktop Login Button - Right Side */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center space-x-3">
+              <button 
+                onClick={() => router.push('/signup')}
+                onMouseEnter={() => router.prefetch('/signup')}
+                className="border border-border px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-muted"
+              >
+                Sign Up
+              </button>
               <button 
                 onClick={() => router.push('/login')}
                 onMouseEnter={() => router.prefetch('/login')}
@@ -61,6 +68,13 @@ const TopBar: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-2">
+              <button 
+                onClick={() => router.push('/signup')}
+                onMouseEnter={() => router.prefetch('/signup')}
+                className="border border-border px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 hover:bg-muted"
+              >
+                Sign Up
+              </button>
               <button 
                 onClick={() => router.push('/login')}
                 onMouseEnter={() => router.prefetch('/login')}
@@ -101,20 +115,20 @@ const TopBar: React.FC = () => {
           <nav className="fixed top-20 left-1/2 transform -translate-x-1/2 w-[min(90vw,400px)] bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 p-6">
             <div className="flex flex-col space-y-4">
               <Link 
-                href="/features" 
-                onMouseEnter={() => router.prefetch('/features')}
+                href="/students" 
+                onMouseEnter={() => router.prefetch('/students')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Features
+                For Students
               </Link>
               <Link 
-                href="/technology" 
-                onMouseEnter={() => router.prefetch('/technology')}
+                href="/startups" 
+                onMouseEnter={() => router.prefetch('/startups')}
                 className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Technology
+                For Startups
               </Link>
               <Link 
                 href="/pricing" 

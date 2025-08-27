@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
-import LoginTopBar from '@/components/(app)/login/LoginTopBar';
-import LoginForm from '@/components/(app)/login/LoginForm';
+import LoginTopBar from '@/components/login/LoginTopBar';
+import LoginForm from '@/components/login/LoginForm';
 
 export default function LoginPage() {
   return (

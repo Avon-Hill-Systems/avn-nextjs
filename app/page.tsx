@@ -16,9 +16,10 @@ export default function Home() {
     router.prefetch('/login');
     
     // Also prefetch other important pages
-    router.prefetch('/features');
-    router.prefetch('/technology');
+    router.prefetch('/students');
+    router.prefetch('/startups');
     router.prefetch('/pricing');
+    router.prefetch('/signup');
     
     // Preload the login page image
     const link = document.createElement('link');
@@ -62,21 +63,21 @@ export default function Home() {
               {/* Left-Aligned Content */}
               <div className="text-left space-y-4 sm:space-y-6 md:space-y-8 max-w-6xl">
                 <h1 className="text-5xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-foreground leading-tight tracking-tight px-2 sm:px-0">
-                  See outcomes before <br className="hidden sm:block" />
-                  <span className="sm:hidden"> </span>you decide.
+                  Connect students <br className="hidden sm:block" />
+                  <span className="sm:hidden"> </span>with startup internships.
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-normal text-muted-foreground tracking-tight max-w-2xl px-4 sm:px-0">
-                  We use AI to simulate how Harvard students behave, 
-                  so that businesses can predict the impact of product decisions.
+                  AI-powered job matching platform for Harvard students and startups. Students find internships, startups find talent.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start px-4 sm:px-0">
                   <Button 
                     size="lg" 
                     variant="outline"
                     className="text-sm sm:text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 border-primary text-black hover:bg-primary/10 hover:text-black shadow-[4px_4px_8px_rgba(0,0,0,0.25)] w-full sm:w-auto"
-                    onClick={() => window.open('mailto:vhenz@college.harvard.edu', '_blank')}
+                    onClick={() => router.push('/signup')}
+                    onMouseEnter={() => router.prefetch('/signup')}
                   >
-                    Contact Sales
+                    Sign Up
                   </Button>
                   <Button 
                     size="lg" 
