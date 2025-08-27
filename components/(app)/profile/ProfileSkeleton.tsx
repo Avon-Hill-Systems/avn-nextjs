@@ -22,10 +22,10 @@ export function ProfileSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Info Card */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-40" />
-            </CardHeader>
+                  <Card>
+          <CardHeader>
+            <SidebarSkeleton className="h-6 w-40" />
+          </CardHeader>
             <CardContent className="space-y-4">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="flex items-center space-x-3">
@@ -44,7 +44,7 @@ export function ProfileSkeleton() {
         <div>
           <Card>
             <CardHeader>
-              <Skeleton className="h-6 w-32" />
+              <SidebarSkeleton className="h-6 w-32" />
             </CardHeader>
             <CardContent className="space-y-3">
               {Array.from({ length: 3 }).map((_, index) => (
@@ -61,7 +61,7 @@ export function ProfileSkeleton() {
       {/* Bottom Metrics Card */}
       <Card>
         <CardHeader>
-          <Skeleton className="h-6 w-36" />
+          <SidebarSkeleton className="h-6 w-36" />
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

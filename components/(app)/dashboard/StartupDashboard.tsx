@@ -1,14 +1,14 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Users, Target, DollarSign, Rocket, BarChart3 } from "lucide-react";
+import { Users, Target, DollarSign, Rocket } from "lucide-react";
 
 export function StartupDashboard() {
   return (
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl text-foreground">Startup Dashboard</h1>
-        <p className="text-muted-foreground">Track your startup's growth and performance</p>
+        <p className="text-muted-foreground">Track your startup&apos;s growth and performance</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

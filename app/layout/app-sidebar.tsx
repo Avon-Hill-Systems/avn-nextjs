@@ -2,8 +2,6 @@
 
 import {
   FlaskConical,
-  Building2,
-  Settings,
   ChevronDown,
   ChevronRight,
   LogOut,

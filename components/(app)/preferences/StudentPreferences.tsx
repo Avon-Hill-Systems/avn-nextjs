@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, Globe, Palette, Shield, Clock, BookOpen, GraduationCap } from "lucide-react";
+import { Bell, Palette, Shield, Clock, BookOpen, GraduationCap } from "lucide-react";
 
 export function StudentPreferences() {
   return (

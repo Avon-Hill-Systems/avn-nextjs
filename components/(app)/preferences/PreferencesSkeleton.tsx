@@ -24,7 +24,7 @@ export function PreferencesSkeleton() {
         {Array.from({ length: 4 }).map((_, cardIndex) => (
           <Card key={cardIndex}>
             <CardHeader>
-              <Skeleton className="h-6 w-40" />
+              <SidebarSkeleton className="h-6 w-40" />
             </CardHeader>
             <CardContent className="space-y-4">
               {Array.from({ length: 4 }).map((_, index) => (

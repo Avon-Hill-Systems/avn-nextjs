@@ -22,7 +22,8 @@ import {
 const studentSignupSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string().email('Please enter a valid email address')
+    .refine(email => email.endsWith('@college.harvard.edu'), 'Email must be a Harvard College email address (@college.harvard.edu)'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string().min(1, 'Please confirm your password'),
   acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
