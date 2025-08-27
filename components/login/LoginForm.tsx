@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -36,6 +36,7 @@ export default function LoginForm({
   submitText = "Sign In"
 }: LoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,13 +61,15 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
-        // Successful login - redirect to dashboard or desired page
-        router.push('/dashboard'); // Adjust this route as needed
+        // Successful login - redirect to original page or default
+        const redirectTo = searchParams.get('redirect') || '/simulations';
+        router.push(redirectTo);
         if (onSubmit) {
           onSubmit(data);
         }
       }
-    } catch (err) {
+    } catch (error) {
+      console.error('Login error:', error);
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);

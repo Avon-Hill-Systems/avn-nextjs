@@ -19,13 +19,19 @@ export function middleware(request: NextRequest) {
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
 
-  // TEMPORARILY DISABLED: Authentication redirects
-  // if (isProtectedRoute) {
-  //   // Redirect to login page before the protected page loads
-  //   return NextResponse.redirect(new URL('/login', request.url))
-  // }
+  if (isProtectedRoute) {
+    // Check for session token in cookies
+    const sessionToken = request.cookies.get('better-auth.session_token')?.value
 
-  // Allow the request to continue for non-protected routes
+    if (!sessionToken) {
+      // No session token found, redirect to login
+      const loginUrl = new URL('/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
+  // Allow the request to continue for non-protected routes or authenticated users
   return NextResponse.next()
 }
 

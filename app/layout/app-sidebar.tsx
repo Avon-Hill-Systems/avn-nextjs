@@ -6,6 +6,8 @@ import {
   Settings,
   ChevronDown,
   ChevronRight,
+  LogOut,
+  User,
 } from "lucide-react";
 
 import {
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 // Navigation items
 const items = [
@@ -69,6 +72,7 @@ const settingsItem = {
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { session, isAuthenticated, logout } = useAuth();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   // Load expanded items from localStorage on mount
@@ -166,6 +170,17 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <SidebarMenu>
+          {/* User Info */}
+          {isAuthenticated && session && (
+            <SidebarMenuItem>
+              <div className="flex items-center gap-2 px-2 py-1 text-sm text-muted-foreground">
+                <User className="h-4 w-4" />
+                <span className="truncate">{session.user.email}</span>
+              </div>
+            </SidebarMenuItem>
+          )}
+          
+          {/* Settings */}
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => navigateToPage(settingsItem.url)}
@@ -176,6 +191,19 @@ export function AppSidebar() {
               <span>{settingsItem.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          {/* Logout */}
+          {isAuthenticated && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={logout}
+                className="hover:bg-red-50 hover:text-red-700 text-muted-foreground"
+              >
+                <LogOut />
+                <span>Logout</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
