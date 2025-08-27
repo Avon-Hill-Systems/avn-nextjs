@@ -19,10 +19,11 @@ export function middleware(request: NextRequest) {
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
 
-  if (isProtectedRoute) {
-    // Redirect to login page before the protected page loads
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  // TEMPORARILY DISABLED: Authentication redirects
+  // if (isProtectedRoute) {
+  //   // Redirect to login page before the protected page loads
+  //   return NextResponse.redirect(new URL('/login', request.url))
+  // }
 
   // Allow the request to continue for non-protected routes
   return NextResponse.next()
