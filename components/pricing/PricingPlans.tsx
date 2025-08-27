@@ -25,7 +25,7 @@ const PricingPlans: React.FC = () => {
           {/* Startup Plan */}
           <div className="bg-background border border-border rounded-lg p-8">
             <h3 className="text-2xl font-normal text-foreground mb-4">For Startups</h3>
-            <div className="text-4xl font-normal text-foreground mb-6">$20<span className="text-lg text-muted-foreground">/month</span></div>
+            <div className="text-4xl font-normal text-foreground mb-6">Contact Sales<span className="text-lg text-muted-foreground"></span></div>
             
             <div className="space-y-4">
               <p className="text-muted-foreground">• Post unlimited job openings</p>
