@@ -34,7 +34,7 @@ export default function StudentHowItWorks() {
             </div>
             <div>
               <h3 className="text-xl font-normal text-foreground mb-3">Get Matched</h3>
-              <p className="text-muted-foreground">Our AI analyzes your profile and matches you with relevant startup internship opportunities.</p>
+              <p className="text-muted-foreground">Our team matches you with relevant startup internship opportunities based on your interview and profile.</p>
             </div>
           </div>
 
@@ -53,8 +53,8 @@ export default function StudentHowItWorks() {
               <span className="text-sm font-normal text-primary">5</span>
             </div>
             <div>
-              <h3 className="text-xl font-normal text-foreground mb-3">Apply & Connect</h3>
-              <p className="text-muted-foreground">Apply to internships that interest you and connect directly with startup founders and teams.</p>
+              <h3 className="text-xl font-normal text-foreground mb-3">Connect</h3>
+              <p className="text-muted-foreground">Connect directly with startup founders and teams to discuss opportunities.</p>
             </div>
           </div>
         </div>

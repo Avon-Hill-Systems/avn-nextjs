@@ -1,5 +1,7 @@
 "use client";
 
+import { StudentTimeline } from "./StudentTimeline";
+
 export function StudentDashboard() {
   return (
     <div className="p-6 bg-sidebar">
@@ -10,51 +12,7 @@ export function StudentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Timeline */}
-        <div className="space-y-6">
-          <div className="relative">
-            {/* Timeline items */}
-            <div className="space-y-8">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-muted-foreground/40 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-muted-foreground">1</span>
-                  </div>
-                </div>
-                <div className="flex-1 pt-2.5">
-                  <h3 className="text-lg font-normal text-foreground">
-                    Fill out your profile and upload your CV
-                  </h3>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-muted-foreground/40 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-muted-foreground">2</span>
-                  </div>
-                </div>
-                <div className="flex-1 pt-2">
-                  <h3 className="text-lg font-normal text-foreground">
-                    Receive your first round interview invitation
-                  </h3>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-muted-foreground/40 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-muted-foreground">3</span>
-                  </div>
-                </div>
-                <div className="flex-1 pt-2">
-                  <h3 className="text-lg font-normal text-foreground">
-                    Meet with your startup matches
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudentTimeline />
 
         {/* Right Column - Empty for now */}
         <div className="h-full">

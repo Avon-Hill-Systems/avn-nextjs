@@ -8,7 +8,7 @@ export default function StudentHero() {
           They want to hire you.
         </h1>
         <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl text-left">
-          Connect with innovative startups looking for Harvard talent. Our AI-powered platform matches you with opportunities that fit your skills and interests.
+          Connect with innovative startups looking for Harvard talent. Get an interview with our team and we&apos;ll match you with opportunities that fit your skills and interests.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-start">
           <button 

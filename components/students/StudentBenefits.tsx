@@ -10,23 +10,23 @@ export default function StudentBenefits() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
             <h3 className="text-xl font-normal text-foreground">Guaranteed Interview</h3>
-            <p className="text-muted-foreground">Every Harvard student gets a first round interview with our team to discuss their goals and get personalized advice.</p>
+            <p className="text-muted-foreground">Every Harvard student gets a first round interview with our team.</p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-xl font-normal text-foreground">Startup Recommendations</h3>
-            <p className="text-muted-foreground">We advise you on which startups to apply to based on your skills, interests, and career objectives.</p>
+            <h3 className="text-xl font-normal text-foreground">Startup Experience</h3>
+            <p className="text-muted-foreground">Working at a startup is awesome - you learn a lot, take on real responsibility, and gain hands-on experience that big companies can&apos;t offer.</p>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-normal text-foreground">Junior Year Prep</h3>
+            <p className="text-muted-foreground">Get prepared for your junior year summer internship by building real skills and experience that will make you stand out to top companies.</p>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-normal text-foreground">We Do All the Work</h3>
+            <p className="text-muted-foreground">No more endless applications or cold emails. We handle the matching, introductions, and coordination so you can focus on preparing for your interviews.</p>
           </div>
           <div className="space-y-4">
             <h3 className="text-xl font-normal text-foreground">Curated Opportunities</h3>
-            <p className="text-muted-foreground">We partner with vetted startups to ensure quality internship experiences and meaningful work.</p>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-xl font-normal text-foreground">AI-Powered Matching</h3>
-            <p className="text-muted-foreground">Advanced algorithms match you with internships based on your skills, interests, and career goals.</p>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-xl font-normal text-foreground">Harvard Network</h3>
-            <p className="text-muted-foreground">Connect with fellow Harvard students and alumni working at startups across various industries.</p>
+            <p className="text-muted-foreground">We partner with vetted startups to ensure quality internship experiences and meaningful work that actually matters.</p>
           </div>
           <div className="space-y-4">
             <h3 className="text-xl font-normal text-foreground">Career Growth</h3>
