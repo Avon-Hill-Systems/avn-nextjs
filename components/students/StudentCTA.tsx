@@ -10,7 +10,10 @@ export default function StudentCTA() {
         <p className="text-lg text-muted-foreground mb-8 text-left">
           Join hundreds of Harvard students who have found exciting opportunities through our platform. Get your guaranteed interview and personalized startup recommendations.
         </p>
-        <button className="bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg">
+        <button 
+          onClick={() => window.location.href = '/signup'}
+          className="bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg"
+        >
           Get Started Today
         </button>
       </div>

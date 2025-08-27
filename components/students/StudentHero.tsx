@@ -11,7 +11,10 @@ export default function StudentHero() {
           Connect with innovative startups looking for Harvard talent. Our AI-powered platform matches you with opportunities that fit your skills and interests.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-start">
-          <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+          <button 
+            onClick={() => window.location.href = '/signup'}
+            className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          >
             Get Started
           </button>
           <button className="border border-border px-8 py-3 rounded-lg hover:bg-muted transition-colors">

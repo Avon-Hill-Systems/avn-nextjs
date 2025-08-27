@@ -35,16 +35,6 @@ const PricingPlans: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Single Contact Section */}
-        <div className="text-center mt-12">
-          <a 
-            href="mailto:vhenz@college.harvard.edu" 
-            className="inline-block bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg"
-          >
-            Contact Sales to Get Started
-          </a>
-        </div>
       </div>
     </section>
   );

@@ -17,10 +17,13 @@ export default function StartupsPage() {
               Find Harvard&apos;s Top Talent
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl text-left">
-              Connect with motivated Harvard students ready to contribute to your startup&apos;s growth. Post internships and find the perfect candidates through our AI-powered matching platform.
+              Connect with motivated Harvard students ready to contribute to your startup&apos;s growth. Post internships and find the perfect candidates through our matching platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-start">
-              <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors">
+              <button 
+                onClick={() => window.location.href = '/signup'}
+                className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+              >
                 Get Started
               </button>
               <button 
@@ -30,6 +33,18 @@ export default function StartupsPage() {
                 View Pricing
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* The Interview Process */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-2xl font-normal text-foreground mb-6">
+              Here&apos;s the catch
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Every student goes through a real-life first round interview with us. We only send over the ones that are an excellent fit for your startup.
+            </p>
           </div>
         </section>
 
@@ -56,7 +71,7 @@ export default function StartupsPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-normal text-foreground mb-3">Get Matched Candidates</h3>
-                  <p className="text-muted-foreground">Our AI matches your internship with qualified Harvard students based on skills, interests, and fit.</p>
+                  <p className="text-muted-foreground">We match your internship with qualified Harvard students based on skills, interests, and fit.</p>
                 </div>
               </div>
               
@@ -111,7 +126,10 @@ export default function StartupsPage() {
             <p className="text-lg text-muted-foreground mb-8 text-left">
               Join hundreds of startups that have found talented Harvard students through our platform.
             </p>
-            <button className="bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg">
+            <button 
+              onClick={() => window.location.href = '/signup'}
+              className="bg-primary text-primary-foreground px-8 py-4 rounded-lg hover:bg-primary/90 transition-colors text-lg"
+            >
               Get Started
             </button>
           </div>
