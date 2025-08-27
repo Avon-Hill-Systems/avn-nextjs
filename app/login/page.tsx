@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Image from 'next/image';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import LoginForm from '@/components/login/LoginForm';
@@ -14,7 +14,9 @@ export default function LoginPage() {
           {/* Left Column - Login Form */}
           <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12">
             <div className="w-full max-w-sm sm:max-w-md px-4 sm:px-0">
-              <LoginForm />
+              <Suspense fallback={<div>Loading...</div>}>
+                <LoginForm />
+              </Suspense>
             </div>
           </div>
           

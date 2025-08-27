@@ -137,7 +137,7 @@ export default function StartupSignupPage() {
   return (
     <div className="min-h-screen bg-background">
       <LoginTopBar />
-      <main className="flex items-center justify-center min-h-[calc(100vh-5rem)]">
+      <main className="flex items-center justify-center min-h-[calc(100vh-5rem)] pt-16">
         <div className="w-full max-w-md px-6">
           <div className="w-full max-w-sm space-y-6 sm:space-y-8">
             {/* Header */}

@@ -63,11 +63,11 @@ export default function Home() {
               {/* Left-Aligned Content */}
               <div className="text-left space-y-4 sm:space-y-6 md:space-y-8 max-w-6xl">
                 <h1 className="text-5xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-foreground leading-tight tracking-tight px-2 sm:px-0">
-                  Talent deservers more <br className="hidden sm:block" />
+                  Talent deserves more <br className="hidden sm:block" />
                   <span className="sm:hidden"> </span>than a job board.
                 </h1>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-normal text-muted-foreground tracking-tight max-w-2xl px-4 sm:px-0">
-                  We are a matching platform for Harvard students and startups. Students find internships, startups find vetted talent.
+                  We match Harvard students and startups. Students find internships, startups find vetted talent.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start px-4 sm:px-0">
                   <Button 
