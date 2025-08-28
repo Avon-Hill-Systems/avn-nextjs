@@ -38,6 +38,19 @@ export const {
   sendVerificationEmail,
 } = authClient
 
+// Interface for extended signup payload with additional fields
+interface ExtendedSignupPayload {
+  email: string;
+  password: string;
+  name: string;
+  callbackURL: string;
+  first_name: string;
+  last_name: string;
+  company?: string;
+  is_student: boolean;
+  fetchOptions: { disableValidation: boolean };
+}
+
 // Helper to sign up with additional user metadata supported by our backend
 // Wraps the Better Auth client and disables client-side validation so extra
 // fields (first_name, last_name, company, is_student) pass through.
@@ -51,8 +64,8 @@ export async function signUpStartup(params: {
   callbackURL?: string;
 }) {
   const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
-  // Cast to any to satisfy TS while relying on disableValidation
-  const payload: any = {
+  // Use proper typing for extended payload
+  const payload: ExtendedSignupPayload = {
     email,
     password,
     name: `${first_name} ${last_name}`,
@@ -75,7 +88,7 @@ export async function signUpStudent(params: {
   callbackURL?: string;
 }) {
   const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
-  const payload: any = {
+  const payload: ExtendedSignupPayload = {
     email,
     password,
     name: `${first_name} ${last_name}`,
