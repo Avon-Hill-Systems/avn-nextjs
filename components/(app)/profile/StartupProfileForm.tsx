@@ -121,7 +121,7 @@ export function StartupProfileForm() {
       // and the form is still empty. This runs only once.
       if (!prefillDoneRef.current) {
         const currentCompanyName = form.getValues("companyName");
-        const signupCompany = (user as any)?.company as string | undefined;
+        const signupCompany = (user as { company?: string })?.company; // Prefill company name from signup
         if (!currentCompanyName && signupCompany) {
           form.setValue("companyName", signupCompany);
         }
