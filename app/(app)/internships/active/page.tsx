@@ -15,7 +15,7 @@ export default function ActiveInternshipsPage() {
             <h3 className="text-lg font-medium text-foreground mb-2">No Active Postings Yet</h3>
             <p className="text-muted-foreground">
               When you create internship postings, they will appear here for you to manage. 
-              You'll be able to view applications, update details, and track student interest.
+              You&apos;ll be able to view applications, update details, and track student interest.
             </p>
             <a 
               href="/internships/new" 

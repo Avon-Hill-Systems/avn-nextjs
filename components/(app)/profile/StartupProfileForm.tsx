@@ -32,6 +32,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { StartupProfile, useStartupProfileQuery, useUpsertStartupProfileMutation } from "@/lib/api-service";
 
 // Startup profile schema - adapted for company information
 const startupProfileSchema = z.object({
@@ -39,7 +40,7 @@ const startupProfileSchema = z.object({
   companySize: z.string().min(1, "Company size is required"),
   industry: z.array(z.string()).min(1, "At least one industry is required"),
   location: z.string().min(1, "Location is required"),
-  website: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
+  website: z.string().url("Please enter a valid website URL").min(1, "Website is required"),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
   description: z.string().min(10, "Company description must be at least 10 characters"),
   remoteWork: z.string().min(1, "Remote work policy is required"),
@@ -51,7 +52,7 @@ export function StartupProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [existingProfile, setExistingProfile] = useState<StartupProfileFormData | null>(null);
+  const [existingProfile, setExistingProfile] = useState<StartupProfile | null>(null);
   const [originalValues, setOriginalValues] = useState<StartupProfileFormData | null>(null);
   const [isFirstSave, setIsFirstSave] = useState(true);
   const { session } = useAuth();
@@ -106,12 +107,46 @@ export function StartupProfileForm() {
     }
   }, [watchedValues, originalValues]);
 
-  // Initialize form when profile loads (placeholder for now)
+  // Query existing startup profile (cached)
+  const { data: profileData, isFetched } = useStartupProfileQuery(user?.id);
+
+  // Initialize form when profile loads
   useEffect(() => {
-    // TODO: Replace with actual startup profile query when API is ready
-    setExistingProfile(null);
-    setOriginalValues(null);
-  }, []);
+    if (!isFetched) return;
+    if (!profileData) {
+      setExistingProfile(null);
+      setOriginalValues(null);
+      return;
+    }
+
+    setExistingProfile(profileData);
+
+    const normalizeRemote = (val?: string) => {
+      if (!val) return "";
+      const s = String(val).toLowerCase();
+      if (["remote"].includes(s)) return "Remote";
+      if (["office", "in-office", "office-based", "in office", "onsite", "on-site", "on site"].includes(s)) return "Office";
+      if (["both", "hybrid", "either", "any", "no preference", "no-preference", "flexible"].includes(s)) return "Both";
+      const allowed = ["Remote", "Office", "Both"] as const;
+      const match = allowed.find((v) => v.toLowerCase() === s);
+      return match ?? "";
+    };
+
+    const formData: StartupProfileFormData = {
+      companyName: profileData.companyName ?? "",
+      description: profileData.description ?? "",
+      companySize: profileData.companySize ?? "",
+      industry: profileData.industry ?? [],
+      location: profileData.location ?? "",
+      remoteWork: normalizeRemote(profileData.remoteWork),
+      website: profileData.website ?? "",
+      linkedinUrl: profileData.linkedinUrl ?? "",
+    };
+    form.reset(formData);
+    setOriginalValues(formData);
+  }, [isFetched, profileData]);
+
+  const upsertMutation = useUpsertStartupProfileMutation(user?.id);
 
   const onSubmit = async (data: StartupProfileFormData) => {
     if (!user?.id) {
@@ -123,13 +158,19 @@ export function StartupProfileForm() {
     setError(null);
 
     try {
-      // TODO: Replace with actual startup profile mutation when API is ready
-      console.log("Saving startup profile:", data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setIsFirstSave(false);
+      const payload = {
+        companyName: data.companyName,
+        description: data.description,
+        companySize: data.companySize,
+        industry: data.industry,
+        location: data.location,
+        remoteWork: data.remoteWork,
+        website: data.website,
+        linkedinUrl: data.linkedinUrl || null,
+      };
+
+      await upsertMutation.mutateAsync(payload);
+      setIsFirstSave(!existingProfile);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error saving startup profile:", error);
@@ -232,7 +273,7 @@ export function StartupProfileForm() {
               name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-normal">Company Website</FormLabel>
+                  <FormLabel className="font-normal">Company Website *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="https://yourcompany.com" 
@@ -331,23 +372,13 @@ export function StartupProfileForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-normal">Company Location *</FormLabel>
-                  <Select key={`location-${String(field.value ?? "")}`} onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="San Francisco">San Francisco</SelectItem>
-                      <SelectItem value="New York">New York</SelectItem>
-                      <SelectItem value="Boston">Boston</SelectItem>
-                      <SelectItem value="Austin">Austin</SelectItem>
-                      <SelectItem value="Seattle">Seattle</SelectItem>
-                      <SelectItem value="Los Angeles">Los Angeles</SelectItem>
-                      <SelectItem value="Remote">Remote</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Input 
+                      placeholder="Enter your company location (e.g., San Francisco, CA or Remote)" 
+                      {...field} 
+                      className="bg-background"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -389,10 +420,10 @@ export function StartupProfileForm() {
 
           <Button 
             type="submit" 
-            disabled={isLoading || Boolean(existingProfile && !hasChanges())} 
+            disabled={isLoading || upsertMutation.isPending || Boolean(existingProfile && !hasChanges())} 
             className="w-full"
           >
-            {isLoading ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
+            {isLoading || upsertMutation.isPending ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
           </Button>
         </form>
       </Form>

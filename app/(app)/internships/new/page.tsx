@@ -15,7 +15,7 @@ export default function NewInternshipPage() {
             <h3 className="text-lg font-medium text-foreground mb-2">Internship Form Coming Soon</h3>
             <p className="text-muted-foreground">
               The form to create new internship postings will be available here. 
-              You'll be able to specify role details, requirements, and application process.
+              You&apos;ll be able to specify role details, requirements, and application process.
             </p>
           </div>
         </div>

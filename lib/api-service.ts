@@ -34,6 +34,21 @@ export interface StudentProfile {
   updatedAt: string;
 }
 
+export interface StartupProfile {
+  id: string;
+  userId: string;
+  companyName: string;
+  description: string;
+  companySize: string;
+  industry: string[];
+  location: string;
+  remoteWork: string;
+  website: string;
+  linkedinUrl?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ResumeMetadata {
   id: string;
   userId: string;
@@ -78,6 +93,28 @@ export interface UpdateStudentProfileRequest {
   location?: string[];
   remoteWork?: string;
   role?: string[];
+}
+
+export interface CreateStartupProfileRequest {
+  companyName: string;
+  description: string;
+  companySize: string;
+  industry: string[];
+  location: string;
+  remoteWork: string;
+  website: string;
+  linkedinUrl?: string | null;
+}
+
+export interface UpdateStartupProfileRequest {
+  companyName?: string;
+  description?: string;
+  companySize?: string;
+  industry?: string[];
+  location?: string;
+  remoteWork?: string;
+  website?: string;
+  linkedinUrl?: string | null;
 }
 
 export interface ApiResponse<T> {
@@ -232,6 +269,31 @@ class ApiClient {
     });
   }
 
+  // Startup profile methods
+  async createStartupProfile(userId: string, profileData: CreateStartupProfileRequest): Promise<ApiResponse<StartupProfile>> {
+    return this.request<StartupProfile>(`/users/${userId}/startup-profile`, {
+      method: 'POST',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async getStartupProfile(userId: string): Promise<ApiResponse<StartupProfile>> {
+    return this.request<StartupProfile>(`/users/${userId}/startup-profile`);
+  }
+
+  async updateStartupProfile(userId: string, profileData: UpdateStartupProfileRequest): Promise<ApiResponse<StartupProfile>> {
+    return this.request<StartupProfile>(`/users/${userId}/startup-profile`, {
+      method: 'PATCH',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async deleteStartupProfile(userId: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/users/${userId}/startup-profile`, {
+      method: 'DELETE',
+    });
+  }
+
   // Resume management methods
   async uploadResume(userId: string, file: File, description?: string): Promise<ApiResponse<ResumeMetadata>> {
     const formData = new FormData();
@@ -368,6 +430,11 @@ export const userApi = {
   getStudentProfile: (userId: string) => apiService.getStudentProfile(userId),
   updateStudentProfile: (userId: string, profileData: UpdateStudentProfileRequest) => apiService.updateStudentProfile(userId, profileData),
   deleteStudentProfile: (userId: string) => apiService.deleteStudentProfile(userId),
+  // Startup profile methods
+  createStartupProfile: (userId: string, profileData: CreateStartupProfileRequest) => apiService.createStartupProfile(userId, profileData),
+  getStartupProfile: (userId: string) => apiService.getStartupProfile(userId),
+  updateStartupProfile: (userId: string, profileData: UpdateStartupProfileRequest) => apiService.updateStartupProfile(userId, profileData),
+  deleteStartupProfile: (userId: string) => apiService.deleteStartupProfile(userId),
   // Resume methods
   uploadResume: (userId: string, file: File, description?: string) => apiService.uploadResume(userId, file, description),
   getResume: (userId: string) => apiService.getResume(userId),
@@ -389,6 +456,7 @@ const qk = {
   user: (id: string) => ["user", id] as const,
   currentUser: () => ["currentUser"] as const,
   studentProfile: (userId: string) => ["studentProfile", userId] as const,
+  startupProfile: (userId: string) => ["startupProfile", userId] as const,
   resume: (userId: string) => ["resume", userId] as const,
   system: (key: string) => ["system", key] as const,
 };
@@ -500,6 +568,43 @@ export function useUpsertStudentProfileMutation(userId?: string) {
     onSuccess: (data, _vars, _ctx) => {
       if (!userId) return;
       queryClient.setQueryData(qk.studentProfile(userId), data);
+    },
+  });
+}
+
+// Startup profile
+export function useStartupProfileQuery(userId?: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.startupProfile(userId || ""),
+    enabled: Boolean(userId) && enabled,
+    queryFn: async () => {
+      const res = await userApi.getStartupProfile(userId!);
+      if (res.error) {
+        if (res.error.includes('HTTP 404') || (res.message && res.message.toLowerCase().includes('not found'))) {
+          return null;
+        }
+        throw new Error(res.message || res.error);
+      }
+      return res.data ?? null;
+    },
+  });
+}
+
+export function useUpsertStartupProfileMutation(userId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateStartupProfileRequest | UpdateStartupProfileRequest) => {
+      if (!userId) throw new Error("userId is required");
+      const existing = queryClient.getQueryData(qk.startupProfile(userId));
+      const res = existing
+        ? await userApi.updateStartupProfile(userId, data as UpdateStartupProfileRequest)
+        : await userApi.createStartupProfile(userId, data as CreateStartupProfileRequest);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: (data) => {
+      if (!userId) return;
+      queryClient.setQueryData(qk.startupProfile(userId), data);
     },
   });
 }
