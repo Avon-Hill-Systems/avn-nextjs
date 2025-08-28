@@ -34,6 +34,8 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState<string>("");
   const [kind, setKind] = useState<"info" | "error" | "success">("info");
   const [resending, setResending] = useState(false);
+  const [bc] = useState(() => (typeof window !== 'undefined' && 'BroadcastChannel' in window) ? new BroadcastChannel('avn-auth') : null);
+  const [verifiedExternally, setVerifiedExternally] = useState(false);
 
   // Auto-check session and redirect as soon as verification completes
   useEffect(() => {
@@ -47,8 +49,15 @@ export default function VerifyEmailPage() {
       if (!active) return;
       if (user) {
         setKind("success");
-        setMessage("Verification complete. Redirecting…");
-        router.replace(redirect);
+        if (verifiedExternally) {
+          setMessage("Email verified. You can close this tab.");
+        } else {
+          setMessage("Verification complete. Redirecting…");
+          try { bc?.postMessage({ type: 'verified' }); } catch {}
+          try { localStorage.setItem('avn-auth-verified', String(Date.now())); } catch {}
+          // Use full navigation to ensure cookies/session are re-read fresh
+          window.location.assign(redirect);
+        }
       }
     };
 
@@ -56,9 +65,36 @@ export default function VerifyEmailPage() {
     check();
     timer = setInterval(check, 2000);
 
+    // Refetch when tab becomes visible/focused
+    const onVisibility = () => { if (document.visibilityState === 'visible') { check(); } };
+    const onFocus = () => { check(); };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', onFocus);
+
+    // Cross-tab listeners
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'avn-auth-verified') {
+        setVerifiedExternally(true);
+        setKind('success');
+        setMessage('Email verified. You can close this tab.');
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    if (bc) bc.onmessage = (ev: MessageEvent) => {
+      if (ev?.data?.type === 'verified') {
+        setVerifiedExternally(true);
+        setKind('success');
+        setMessage('Email verified. You can close this tab.');
+      }
+    };
+
     return () => {
       active = false;
       if (timer) clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', onStorage);
+      try { bc?.close?.(); } catch {}
     };
   }, [redirect, router]);
 
