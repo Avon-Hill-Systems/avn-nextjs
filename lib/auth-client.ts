@@ -37,3 +37,53 @@ export const {
   verifyEmail,
   sendVerificationEmail,
 } = authClient
+
+// Helper to sign up with additional user metadata supported by our backend
+// Wraps the Better Auth client and disables client-side validation so extra
+// fields (first_name, last_name, company, is_student) pass through.
+export async function signUpStartup(params: {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  company: string;
+  is_student?: boolean; // default false
+  callbackURL?: string;
+}) {
+  const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
+  // Cast to any to satisfy TS while relying on disableValidation
+  const payload: any = {
+    email,
+    password,
+    name: `${first_name} ${last_name}`,
+    callbackURL,
+    first_name,
+    last_name,
+    company,
+    is_student,
+    fetchOptions: { disableValidation: true },
+  };
+  return signUp.email(payload);
+}
+
+// Helper to sign up a student with additional metadata
+export async function signUpStudent(params: {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  callbackURL?: string;
+}) {
+  const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
+  const payload: any = {
+    email,
+    password,
+    name: `${first_name} ${last_name}`,
+    callbackURL,
+    first_name,
+    last_name,
+    is_student: true,
+    fetchOptions: { disableValidation: true },
+  };
+  return signUp.email(payload);
+}

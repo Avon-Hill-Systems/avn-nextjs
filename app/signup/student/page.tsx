@@ -8,7 +8,7 @@ import { z } from 'zod';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { signUp } from '@/lib/auth-client';
+import { signUpStudent } from '@/lib/auth-client';
 import {
   Form,
   FormControl,
@@ -62,16 +62,13 @@ export default function StudentSignupPage() {
     setError(null);
     
     try {
-      // Step 1: Create user account with Better Auth client
-      await signUp.email({
+      // Step 1: Create user account with Better Auth client (with metadata)
+      await signUpStudent({
         email: data.email,
         password: data.password,
-        name: `${data.firstName} ${data.lastName}`,
-        callbackURL: '/verify-email',
-        // additional user fields configured in backend
         first_name: data.firstName,
         last_name: data.lastName,
-        is_student: true,
+        callbackURL: '/verify-email',
       });
 
       // Redirect to email verification page on success
