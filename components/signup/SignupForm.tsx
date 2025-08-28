@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signUp } from '@/lib/auth-client';
+import { signUpEmail } from '@/lib/auth-rest';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -59,21 +59,17 @@ export default function SignupForm({
     setError(null);
     
     try {
-      const result = await signUp.email({
+      await signUpEmail({
         name: data.name,
         email: data.email,
         password: data.password,
       });
-      
-      if (result.error) {
-        setError(result.error.message || 'Signup failed');
-      } else {
-        // Successful signup - redirect to dashboard or desired page
-        router.push('/profile'); // Adjust this route as needed
+
+        // Successful signup - redirect to email verification page
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         if (onSubmit) {
           onSubmit(data);
         }
-      }
     } catch (error) {
       console.error('Signup error:', error);
       setError('An unexpected error occurred');

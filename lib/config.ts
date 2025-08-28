@@ -3,7 +3,12 @@ export const config = {
   // API URLs
   api: {
     baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-    authUrl: process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:8000',
+    // Full Better Auth base, e.g. http://localhost:8000/api/auth
+    authBasePath: process.env.NEXT_PUBLIC_AUTH_BASE_PATH || '/auth',
+    authUrl:
+      (process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.length > 0)
+        ? process.env.NEXT_PUBLIC_AUTH_URL
+        : undefined,
   },
   
   // App settings

@@ -8,8 +8,7 @@ import { z } from 'zod';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { signUp } from '@/lib/auth-client';
-import { userApi } from '@/lib/api-service';
+import { signUpEmail } from '@/lib/auth-rest';
 import {
   Form,
   FormControl,
@@ -64,65 +63,24 @@ export default function StudentSignupPage() {
     
     try {
       // Step 1: Create user account with Better Auth
-      console.log('📧 Calling Better Auth signUp.email with:', {
+      console.log('📧 Calling Better Auth REST sign-up with:', {
         email: data.email,
         name: `${data.firstName} ${data.lastName}`,
-        callbackURL: '/dashboard'
+        callbackURL: '/verify-email'
       });
-      
-      const result = await signUp.email({
+      await signUpEmail({
         email: data.email,
         password: data.password,
         name: `${data.firstName} ${data.lastName}`,
-        callbackURL: '/dashboard'
+        first_name: data.firstName,
+        last_name: data.lastName,
+        company: null,
+        is_student: true,
       });
-      
-      console.log('✅ Better Auth signup result:', result);
 
-      if (result.data) {
-        console.log('✅ Better Auth signup successful! User data:', result.data.user);
-        
-        // Step 2: Update user with additional student-specific fields
-        try {
-          // Better Auth should return the user data including ID
-          const userId = result.data.user?.id;
-          console.log('👤 Extracted user ID:', userId);
-          
-          if (userId) {
-            const profileData = {
-              first_name: data.firstName,
-              last_name: data.lastName,
-              is_student: true,
-              company: null
-            };
-            
-            console.log('📝 Updating user profile with data:', profileData);
-            
-            const result = await userApi.update(userId, profileData);
-            
-            if (result.data) {
-              console.log('✅ Profile update successful:', result.data);
-            } else {
-              console.error('❌ Failed to update user profile data:', result.error);
-            }
-          } else {
-            console.warn('⚠️ No user ID found in Better Auth response');
-          }
-        } catch (profileError) {
-          console.error('❌ Error updating profile data:', profileError);
-          // Don't fail the entire signup for profile data
-        }
-
-        // Redirect to dashboard on success
-        console.log('🎯 Redirecting to dashboard...');
-        router.push('/dashboard');
-      } else if (result.error) {
-        console.error('❌ Better Auth signup error:', result.error);
-        setError(result.error.message || 'Failed to create account. Please try again.');
-      } else {
-        console.warn('⚠️ Unexpected Better Auth response - no data or error:', result);
-        setError('Unexpected response from authentication service. Please try again.');
-      }
+      // Redirect to email verification page on success
+      console.log('🎯 Redirecting to verify-email...');
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
       console.error('❌ Unexpected error during signup:', error);
       setError('An unexpected error occurred. Please try again.');
