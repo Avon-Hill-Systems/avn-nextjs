@@ -1,5 +1,6 @@
 // API Service for centralized API calls
 import { config } from './config';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_BASE_URL = config.api.baseUrl;
 
@@ -392,3 +393,200 @@ export const systemApi = {
   health: () => apiService.healthCheck(),
   status: () => apiService.getAppStatus(),
 };
+
+// -----------------------------
+// React Query Hooks (cached)
+// -----------------------------
+
+// Query keys
+const qk = {
+  users: () => ["users"] as const,
+  user: (id: string) => ["user", id] as const,
+  currentUser: () => ["currentUser"] as const,
+  studentProfile: (userId: string) => ["studentProfile", userId] as const,
+  resume: (userId: string) => ["resume", userId] as const,
+  system: (key: string) => ["system", key] as const,
+};
+
+// Users
+export function useUsersQuery() {
+  return useQuery({
+    queryKey: qk.users(),
+    queryFn: async () => {
+      const res = await userApi.getAll();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data ?? [];
+    },
+  });
+}
+
+export function useUserQuery(id: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.user(id),
+    enabled: Boolean(id) && enabled,
+    queryFn: async () => {
+      const res = await userApi.get(id);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}
+
+export function useCurrentUserQuery(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: qk.currentUser(),
+    enabled: options?.enabled ?? true,
+    queryFn: async () => {
+      const res = await userApi.getCurrentUser();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}
+
+export function useUpdateUserMutation(id?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: UpdateUserRequest) => {
+      if (!id) throw new Error("User id is required");
+      const res = await userApi.update(id, data);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: (data) => {
+      if (id) queryClient.setQueryData(qk.user(id), data);
+      queryClient.invalidateQueries({ queryKey: qk.users() });
+      queryClient.invalidateQueries({ queryKey: qk.currentUser() });
+    },
+  });
+}
+
+export function useCreateUserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateUserRequest) => {
+      const res = await userApi.create(data);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: qk.users() });
+    },
+  });
+}
+
+export function useDeleteUserMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await userApi.delete(id);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data;
+    },
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({ queryKey: qk.users() });
+      queryClient.removeQueries({ queryKey: qk.user(id) });
+    },
+  });
+}
+
+// Student profile
+export function useStudentProfileQuery(userId?: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.studentProfile(userId || ""),
+    enabled: Boolean(userId) && enabled,
+    queryFn: async () => {
+      const res = await userApi.getStudentProfile(userId!);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}
+
+export function useUpsertStudentProfileMutation(userId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateStudentProfileRequest | UpdateStudentProfileRequest) => {
+      if (!userId) throw new Error("userId is required");
+      // decide create vs update based on presence in cache
+      const existing = queryClient.getQueryData(qk.studentProfile(userId));
+      const res = existing
+        ? await userApi.updateStudentProfile(userId, data as UpdateStudentProfileRequest)
+        : await userApi.createStudentProfile(userId, data as CreateStudentProfileRequest);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: (data, _vars, _ctx) => {
+      if (!userId) return;
+      queryClient.setQueryData(qk.studentProfile(userId), data);
+    },
+  });
+}
+
+// Resume
+export function useResumeQuery(userId?: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.resume(userId || ""),
+    enabled: Boolean(userId) && enabled,
+    queryFn: async () => {
+      const res = await userApi.getResume(userId!);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data; // may be undefined if no resume
+    },
+  });
+}
+
+export function useUploadResumeMutation(userId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (params: { file: File; description?: string }) => {
+      if (!userId) throw new Error("userId is required");
+      const res = await userApi.uploadResume(userId, params.file, params.description);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: (_data) => {
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: qk.resume(userId) });
+    },
+  });
+}
+
+export function useDeleteResumeMutation(userId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      if (!userId) throw new Error("userId is required");
+      const res = await userApi.deleteResume(userId);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data;
+    },
+    onSuccess: () => {
+      if (!userId) return;
+      queryClient.invalidateQueries({ queryKey: qk.resume(userId) });
+    },
+  });
+}
+
+// System
+export function useHealthQuery() {
+  return useQuery({
+    queryKey: qk.system("health"),
+    queryFn: async () => {
+      const res = await systemApi.health();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}
+
+export function useStatusQuery() {
+  return useQuery({
+    queryKey: qk.system("status"),
+    queryFn: async () => {
+      const res = await systemApi.status();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}

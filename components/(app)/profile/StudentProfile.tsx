@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, FileText, Trash2, Loader2, CheckCircle, AlertCircle, Download } from "lucide-react";
 import { StudentProfileForm } from "./StudentProfileForm";
-import { userApi, ResumeMetadata } from "@/lib/api-service";
+import { useResumeQuery, useUploadResumeMutation, useDeleteResumeMutation } from "@/lib/api-service";
 import { useAuth } from "@/hooks/use-auth";
 import { config } from "@/lib/config";
 import {
@@ -32,9 +32,7 @@ export function StudentProfile() {
   const { session } = useAuth();
   const user = session?.user;
   const [cvFile, setCvFile] = useState<File | null>(null);
-  const [resumeMetadata, setResumeMetadata] = useState<ResumeMetadata | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -42,12 +40,10 @@ export function StudentProfile() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isFirstUpload, setIsFirstUpload] = useState(true);
 
-  // Load existing resume on component mount
-  useEffect(() => {
-    if (user?.id) {
-      loadResume();
-    }
-  }, [user?.id]);
+  // Cached resume via React Query
+  const { data: resumeMetadata, isLoading } = useResumeQuery(user?.id);
+  const uploadMutation = useUploadResumeMutation(user?.id);
+  const deleteMutation = useDeleteResumeMutation(user?.id);
 
   // Clear success message after 5 seconds
   useEffect(() => {
@@ -57,52 +53,9 @@ export function StudentProfile() {
     }
   }, [successMessage]);
 
-  const loadResume = async () => {
-    if (!user?.id) return;
-    
-    try {
-      setIsLoading(true);
-      
-      // First try to load from localStorage for immediate display
-      const storedResume = localStorage.getItem(`resume_${user.id}`);
-      if (storedResume) {
-        try {
-          const parsedResume = JSON.parse(storedResume);
-          setResumeMetadata(parsedResume);
-          setIsFirstUpload(false);
-        } catch (err) {
-          console.error('Failed to parse stored resume:', err);
-          localStorage.removeItem(`resume_${user.id}`);
-        }
-      }
-      
-      // Then fetch from API to get fresh data
-      const response = await userApi.getResume(user.id);
-      if (response.data) {
-        // Transform the API response to match expected format
-        const backendData = response.data;
-        
-        const transformedMetadata: ResumeMetadata = {
-          id: backendData.id,
-          userId: backendData.userId,
-          filename: backendData.filename || 'resume',
-          contentType: backendData.contentType || 'application/octet-stream',
-          size: backendData.size || 0,
-          uploadedAt: backendData.uploadedAt || new Date().toISOString()
-        };
-        
-        // Update localStorage with fresh data
-        localStorage.setItem(`resume_${user.id}`, JSON.stringify(transformedMetadata));
-        
-        setResumeMetadata(transformedMetadata);
-        setIsFirstUpload(false);
-      }
-    } catch (err) {
-      console.error('Failed to load resume:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (resumeMetadata) setIsFirstUpload(false);
+  }, [resumeMetadata]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -120,41 +73,11 @@ export function StudentProfile() {
       setIsUploading(true);
       setError(null);
       setSuccessMessage(null);
-      
-      const response = await userApi.uploadResume(user.id, cvFile);
-      
-      if (response.error) {
-        setError(response.error);
-        return;
-      }
-
-      if (response.data) {
-        // Transform backend response to match expected ResumeMetadata format
-        // Backend returns fileName, fileType, fileSize, createdAt
-        // Frontend expects filename, contentType, size, uploadedAt
-        const backendData = response.data as unknown as BackendResumeResponse;
-        
-        const transformedMetadata: ResumeMetadata = {
-          id: backendData.id,
-          userId: backendData.userId,
-          filename: backendData.fileName || cvFile.name,
-          contentType: backendData.fileType || cvFile.type,
-          size: backendData.fileSize || cvFile.size,
-          uploadedAt: backendData.createdAt || new Date().toISOString()
-        };
-        
-        // Store in localStorage for immediate access
-        localStorage.setItem(`resume_${user.id}`, JSON.stringify(transformedMetadata));
-        
-        // Update state immediately
-        setResumeMetadata(transformedMetadata);
-        setCvFile(null);
-        setShowSuccessModal(true);
-        
-        // Reset file input
-        const fileInput = document.getElementById('cv-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
-      }
+      await uploadMutation.mutateAsync({ file: cvFile });
+      setCvFile(null);
+      setShowSuccessModal(true);
+      const fileInput = document.getElementById('cv-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
     } catch (err) {
       setError('Failed to upload resume. Please try again.');
       console.error('Upload error:', err);
@@ -170,18 +93,7 @@ export function StudentProfile() {
       setIsDeleting(true);
       setError(null);
       setSuccessMessage(null);
-      
-      const response = await userApi.deleteResume(user.id);
-      
-      if (response.error) {
-        setError(response.error);
-        return;
-      }
-
-      // Remove from localStorage
-      localStorage.removeItem(`resume_${user.id}`);
-      
-      setResumeMetadata(null);
+      await deleteMutation.mutateAsync();
       setSuccessMessage('Resume deleted successfully!');
       setShowDeleteConfirm(false);
       setIsFirstUpload(true);
@@ -202,19 +114,8 @@ export function StudentProfile() {
     });
 
     try {
-      // Use the API service to get the resume metadata
-      console.log('📤 Calling userApi.getResume...');
-      const response = await userApi.getResume(user.id);
-      
-      console.log('📥 userApi.getResume response:', response);
-      
-      if (response.error) {
-        console.error('❌ API service error:', response.error);
-        setError(response.error);
-        return;
-      }
-
-      if (!response.data) {
+      // Ensure we have metadata from cache
+      if (!resumeMetadata) {
         setError('No resume found');
         return;
       }

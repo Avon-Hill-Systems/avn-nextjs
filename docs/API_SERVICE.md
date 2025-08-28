@@ -213,3 +213,55 @@ export function UserProfile({ userId }: { userId: string }) {
   // ... rest of component
 }
 ```
+
+## React Query Integration (Caching)
+
+The API service also exposes TanStack Query hooks for built-in caching and request deduplication. Wrap your app with the `QueryProvider` and use the hooks in client components.
+
+### 1) Provider
+
+```tsx
+// app/(app)/layout.tsx already wraps with QueryProvider
+import { QueryProvider } from '@/components/providers/QueryProvider';
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryProvider>
+      {children}
+    </QueryProvider>
+  );
+}
+```
+
+### 2) Queries
+
+```tsx
+import { useUsersQuery, useUserQuery, useCurrentUserQuery, useStudentProfileQuery, useResumeQuery } from '@/lib/api-service';
+
+const { data: users, isLoading } = useUsersQuery();
+const { data: user } = useUserQuery('user-id');
+const { data: me } = useCurrentUserQuery();
+const { data: profile } = useStudentProfileQuery(me?.id);
+const { data: resume } = useResumeQuery(me?.id);
+```
+
+### 3) Mutations
+
+```tsx
+import { useCreateUserMutation, useUpdateUserMutation, useDeleteUserMutation, useUpsertStudentProfileMutation, useUploadResumeMutation, useDeleteResumeMutation } from '@/lib/api-service';
+
+const createUser = useCreateUserMutation();
+const updateUser = useUpdateUserMutation('user-id');
+const deleteUser = useDeleteUserMutation();
+const upsertProfile = useUpsertStudentProfileMutation('user-id');
+const uploadResume = useUploadResumeMutation('user-id');
+const deleteResume = useDeleteResumeMutation('user-id');
+
+// Examples
+createUser.mutate({ email, first_name, last_name, is_student: true });
+updateUser.mutate({ first_name: 'Jane' });
+upsertProfile.mutate({ major: 'CS', graduationYear: 2026, technical: true, industry: [], location: [], remoteWork: 'remote', role: [] });
+uploadResume.mutate({ file, description: 'Latest CV' });
+```
+
+All queries are cached with a default `staleTime` of 5 minutes and do not refetch on window focus. Mutations automatically invalidate relevant caches.

@@ -1,41 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { userApi, User, ResumeMetadata } from "@/lib/api-service";
+import { useCurrentUserQuery, useResumeQuery, useStudentProfileQuery } from "@/lib/api-service";
 
 export function StudentTimeline() {
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-  const [hasResume, setHasResume] = useState<boolean | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { data: currentUser } = useCurrentUserQuery();
+  const userId = currentUser?.id;
+  const { data: profile } = useStudentProfileQuery(userId);
+  const { data: resume } = useResumeQuery(userId);
 
-  useEffect(() => {
-    const checkProfile = async () => {
-      try {
-        // Get current user first
-        const userResponse = await userApi.getCurrentUser();
-        if (userResponse.data) {
-          setCurrentUser(userResponse.data);
-          
-          // Check if user has a student profile
-          const profileResponse = await userApi.getStudentProfile(userResponse.data.id);
-          setHasProfile(!!profileResponse.data);
-          
-          // Check if user has a resume
-          const resumeResponse = await userApi.getResume(userResponse.data.id);
-          setHasResume(!!resumeResponse.data);
-        }
-      } catch (error) {
-        console.error('Error checking profile:', error);
-        setHasProfile(false);
-        setHasResume(false);
-      }
-    };
-
-    checkProfile();
-  }, []);
-
-  // First step is only completed if both profile and resume exist
+  const hasProfile = Boolean(profile);
+  const hasResume = Boolean(resume);
   const isFirstStepCompleted = hasProfile && hasResume;
 
   const timelineSteps = [

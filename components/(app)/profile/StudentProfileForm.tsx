@@ -30,12 +30,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useUser } from "@/contexts/user-context";
-import { userApi, StudentProfile } from "@/lib/api-service";
+import { StudentProfile, useStudentProfileQuery, useUpsertStudentProfileMutation } from "@/lib/api-service";
 
 const profileSchema = z.object({
   major: z.string().min(1, "Major is required"),
   graduationYear: z.string().min(1, "Graduation year is required"),
-  technical: z.enum(["technical", "non-technical"]),
+  technical: z.enum(["technical", "non-technical"]).optional(),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
   industry: z.array(z.string()).min(1, "At least one industry is required"),
   location: z.array(z.string()).min(1, "At least one location is required"),
@@ -56,16 +56,16 @@ export function StudentProfileForm() {
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      major: "",
-      graduationYear: "",
-      technical: undefined,
-      linkedinUrl: "",
-      industry: [],
-      location: [],
-      remoteWork: "",
-      role: [],
-    },
+          defaultValues: {
+        major: "",
+        graduationYear: "",
+        technical: undefined,
+        linkedinUrl: "",
+        industry: [],
+        location: [],
+        remoteWork: "",
+        role: [],
+      },
   });
 
   // Check if form has changes
@@ -103,42 +103,58 @@ export function StudentProfileForm() {
     }
   }, [watchedValues, originalValues]);
 
-  // Fetch existing profile on component mount
-  useEffect(() => {
-    if (user?.id) {
-      fetchExistingProfile();
-    }
-  }, [user?.id]);
+  // Query existing profile (cached)
+  const { data: profileData, isFetched } = useStudentProfileQuery(user?.id);
 
-  const fetchExistingProfile = async () => {
-    try {
-      const response = await userApi.getStudentProfile(user!.id);
-      if (response.data) {
-        setExistingProfile(response.data);
-        const formData: ProfileFormData = {
-          major: response.data.major,
-          graduationYear: response.data.graduationYear.toString(),
-          technical: response.data.technical ? "technical" : "non-technical",
-          linkedinUrl: response.data.linkedinUrl || "",
-          industry: response.data.industry,
-          location: response.data.location,
-          remoteWork: response.data.remoteWork,
-          role: response.data.role,
-        };
-        
-        // Set form values and store original values for change detection
-        form.reset(formData);
-        setOriginalValues(formData);
-        console.log("Form reset with data:", formData);
-      } else if (response.error) {
-        // Profile doesn't exist yet, which is fine
-        console.log("No existing profile found:", response.error);
-      }
-    } catch (error) {
-      // Profile doesn't exist yet, which is fine
-      console.log("No existing profile found");
+  // Build a dynamic list of graduation years and ensure the
+  // user's saved year is included even if it's out of range.
+  const currentYear = new Date().getFullYear();
+  const baseYears = Array.from({ length: 8 }, (_, i) => String(currentYear + i));
+  const graduationYears = profileData?.graduationYear
+    ? (baseYears.includes(String(profileData.graduationYear))
+        ? baseYears
+        : [String(profileData.graduationYear), ...baseYears])
+    : baseYears;
+
+  // Initialize form when profile loads
+  useEffect(() => {
+    if (!isFetched) return;
+    if (!profileData) {
+      // Do not reset to empty during intermediate states; keep current inputs.
+      setExistingProfile(null);
+      return;
     }
-  };
+    setExistingProfile(profileData);
+
+    // Normalize incoming values to match Select options exactly
+    const normalizeRemote = (val?: string) => {
+      if (!val) return "";
+      const s = String(val).toLowerCase();
+      // Handle common synonyms from backend
+      if (["remote"].includes(s)) return "Remote";
+      if (["office", "in-office", "office-based", "in office", "onsite", "on-site", "on site"].includes(s)) return "Office";
+      if (["both", "hybrid", "either", "any", "no preference", "no-preference", "flexible"].includes(s)) return "Both";
+      // Fallback to exact match against allowed values
+      const allowed = ["Remote", "Office", "Both"] as const;
+      const match = allowed.find((v) => v.toLowerCase() === s);
+      return match ?? "";
+    };
+
+    const formData: ProfileFormData = {
+      major: profileData.major ?? "",
+      graduationYear: String(profileData.graduationYear ?? ""),
+      technical: profileData.technical ? "technical" : "non-technical",
+      linkedinUrl: profileData.linkedinUrl || "",
+      industry: profileData.industry ?? [],
+      location: profileData.location ?? [],
+      remoteWork: normalizeRemote(profileData.remoteWork),
+      role: profileData.role ?? [],
+    };
+    form.reset(formData);
+    setOriginalValues(formData);
+  }, [isFetched, profileData]);
+
+  const upsertMutation = useUpsertStudentProfileMutation(user?.id);
 
   const onSubmit = async (data: ProfileFormData) => {
     if (!user?.id) {
@@ -150,7 +166,7 @@ export function StudentProfileForm() {
     setError(null);
 
     try {
-      const profileData = {
+      const profileDataToSave = {
         major: data.major,
         graduationYear: parseInt(data.graduationYear),
         technical: data.technical === "technical",
@@ -161,25 +177,9 @@ export function StudentProfileForm() {
         role: data.role,
       };
 
-      let response;
-      if (existingProfile) {
-        // Update existing profile
-        response = await userApi.updateStudentProfile(user.id, profileData);
-        setIsFirstSave(false);
-      } else {
-        // Create new profile
-        response = await userApi.createStudentProfile(user.id, profileData);
-        setIsFirstSave(false);
-      }
-
-      if (response.error) {
-        setError(response.error);
-      } else {
-        setShowSuccessModal(true);
-        setExistingProfile(response.data || existingProfile);
-        // Refresh the profile data
-        await fetchExistingProfile();
-      }
+      await upsertMutation.mutateAsync(profileDataToSave);
+      setIsFirstSave(false);
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Error saving profile:", error);
       setError("Failed to save profile. Please try again.");
@@ -239,17 +239,16 @@ export function StudentProfileForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-normal">Graduation Year *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select key={`grad-${String(field.value ?? "")}`} onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your graduation year" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="2026">2026</SelectItem>
-                      <SelectItem value="2027">2027</SelectItem>
-                      <SelectItem value="2028">2028</SelectItem>
-                      <SelectItem value="2029">2029</SelectItem>
+                      {graduationYears.map((y) => (
+                        <SelectItem key={y} value={y}>{y}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -263,7 +262,7 @@ export function StudentProfileForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-normal">Are you technical? *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select key={`tech-${String(field.value ?? "")}`} onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select your background" />
@@ -421,7 +420,7 @@ export function StudentProfileForm() {
                 <FormItem>
                   <FormLabel className="font-normal">Remote Work Preference *</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                  <Select key={`remote-${String(field.value ?? "")}`} onValueChange={field.onChange} value={field.value ?? ""}>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Select preference" />
                       </SelectTrigger>
@@ -485,10 +484,10 @@ export function StudentProfileForm() {
 
           <Button 
             type="submit" 
-            disabled={isLoading || Boolean(existingProfile && !hasChanges())} 
+            disabled={isLoading || Boolean(existingProfile && !hasChanges()) || upsertMutation.isPending} 
             className="w-full"
           >
-            {isLoading ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
+            {isLoading || upsertMutation.isPending ? "Saving..." : existingProfile ? "Update Profile" : "Save Profile"}
           </Button>
         </form>
       </Form>
