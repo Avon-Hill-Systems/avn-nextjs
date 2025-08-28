@@ -88,8 +88,8 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="group-data-[collapsible=icon]:hidden">
         <div className="px-2 py-1">
           <h2 className="text-xl font-normal">
             Avon Hill Systems
@@ -108,6 +108,7 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         onClick={() => toggleItem(item.title)}
                         className="w-full hover:bg-muted/50 hover:text-foreground transition-colors"
+                        tooltip={item.title}
                       >
                         <item.icon />
                         <span className="flex-1">{item.title}</span>
@@ -141,6 +142,7 @@ export function AppSidebar() {
                       onClick={() => navigateToPage(item.url)}
                       isActive={pathname === item.url}
                       className="hover:bg-muted/50 hover:text-foreground transition-colors data-[active=true]:bg-muted/70 data-[active=true]:text-foreground/90"
+                      tooltip={item.title}
                     >
                       <item.icon />
                       <span>{item.title}</span>
@@ -160,7 +162,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <div className="flex items-center gap-2 px-2 py-1 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span className="truncate">{session.user.email}</span>
+                <span className="truncate group-data-[collapsible=icon]:hidden">{session.user.email}</span>
               </div>
             </SidebarMenuItem>
           )}
