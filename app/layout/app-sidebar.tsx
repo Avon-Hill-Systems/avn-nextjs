@@ -8,6 +8,8 @@ import {
   User,
   LayoutDashboard,
   Mail,
+  Heart,
+  Briefcase,
 } from "lucide-react";
 
 import {
@@ -38,12 +40,46 @@ type NavigationItem = {
   subItems?: SubItem[];
 };
 
-// Navigation items
-const items: NavigationItem[] = [
+// Navigation items for students
+const studentItems: NavigationItem[] = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Matches",
+    url: "/matches",
+    icon: Heart,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: User,
+  },
+];
+
+// Navigation items for startups
+const startupItems: NavigationItem[] = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Internships",
+    url: "/internships",
+    icon: Briefcase,
+    subItems: [
+      {
+        title: "New Posting",
+        url: "/internships/new",
+      },
+      {
+        title: "Active Postings",
+        url: "/internships/active",
+      },
+    ],
   },
   {
     title: "Profile",
@@ -86,6 +122,10 @@ export function AppSidebar() {
   const navigateToPage = (url: string) => {
     router.push(url);
   };
+
+  // Determine which navigation items to show based on user type
+  const isStudent = session?.user?.is_student;
+  const items = isStudent ? studentItems : startupItems;
 
   return (
     <Sidebar collapsible="icon">

@@ -10,7 +10,9 @@ export function middleware(request: NextRequest) {
   const protectedRoutes = [
     '/dashboard',
     '/profile',
-    '/settings'
+    '/settings',
+    '/matches',
+    '/internships'
   ]
 
   // Check if the current path is a protected route

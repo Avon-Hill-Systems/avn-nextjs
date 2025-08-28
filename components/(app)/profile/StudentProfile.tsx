@@ -186,7 +186,7 @@ export function StudentProfile() {
   };
 
   return (
-    <div className="p-6 bg-sidebar">
+    <div className="p-6 bg-background">
       <div className="mb-8">
         <h1 className="text-3xl font-normal text-foreground">Profile</h1>
         <p className="text-muted-foreground">General information about yourself and internship preferences</p>

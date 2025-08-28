@@ -125,7 +125,7 @@ export default function VerifyEmailPage() {
         <div className="space-y-2 text-left">
           <h1 className="text-3xl font-normal">Check your email</h1>
           <p className="text-muted-foreground">
-            We&apos;ve sent a verification link to your email. After verifying, you&apos;ll be signed in automatically.
+            We&apos;ve sent a verification link to your email. After verifying, you&apos;ll be signed in automatically. Check your spam folder if you don&apos;t see it.
           </p>
         </div>
 
