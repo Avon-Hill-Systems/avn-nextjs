@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -57,6 +57,7 @@ export function StartupProfileForm() {
   const [isFirstSave, setIsFirstSave] = useState(true);
   const { session } = useAuth();
   const user = session?.user;
+  const prefillDoneRef = useRef(false);
 
   const form = useForm<StartupProfileFormData>({
     resolver: zodResolver(startupProfileSchema),
@@ -116,6 +117,16 @@ export function StartupProfileForm() {
     if (!profileData) {
       setExistingProfile(null);
       setOriginalValues(null);
+      // Prefill company name on first visit if user has company
+      // and the form is still empty. This runs only once.
+      if (!prefillDoneRef.current) {
+        const currentCompanyName = form.getValues("companyName");
+        const signupCompany = (user as any)?.company as string | undefined;
+        if (!currentCompanyName && signupCompany) {
+          form.setValue("companyName", signupCompany);
+        }
+        prefillDoneRef.current = true;
+      }
       return;
     }
 
