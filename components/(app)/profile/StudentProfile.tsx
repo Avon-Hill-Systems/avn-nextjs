@@ -7,8 +7,26 @@ import { Input } from "@/components/ui/input";
 import { Upload, FileText, Trash2, Loader2, CheckCircle, AlertCircle, Download } from "lucide-react";
 import { StudentProfileForm } from "./StudentProfileForm";
 import { userApi, ResumeMetadata } from "@/lib/api-service";
-import { config } from "@/lib/config";
 import { useAuth } from "@/hooks/use-auth";
+import { config } from "@/lib/config";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+// Backend response format for resume upload
+interface BackendResumeResponse {
+  id: string;
+  userId: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export function StudentProfile() {
   const { session } = useAuth();
@@ -21,6 +39,8 @@ export function StudentProfile() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isFirstUpload, setIsFirstUpload] = useState(true);
 
   // Load existing resume on component mount
   useEffect(() => {
@@ -42,9 +62,40 @@ export function StudentProfile() {
     
     try {
       setIsLoading(true);
+      
+      // First try to load from localStorage for immediate display
+      const storedResume = localStorage.getItem(`resume_${user.id}`);
+      if (storedResume) {
+        try {
+          const parsedResume = JSON.parse(storedResume);
+          setResumeMetadata(parsedResume);
+          setIsFirstUpload(false);
+        } catch (err) {
+          console.error('Failed to parse stored resume:', err);
+          localStorage.removeItem(`resume_${user.id}`);
+        }
+      }
+      
+      // Then fetch from API to get fresh data
       const response = await userApi.getResume(user.id);
       if (response.data) {
-        setResumeMetadata(response.data);
+        // Transform the API response to match expected format
+        const backendData = response.data;
+        
+        const transformedMetadata: ResumeMetadata = {
+          id: backendData.id,
+          userId: backendData.userId,
+          filename: backendData.filename || 'resume',
+          contentType: backendData.contentType || 'application/octet-stream',
+          size: backendData.size || 0,
+          uploadedAt: backendData.uploadedAt || new Date().toISOString()
+        };
+        
+        // Update localStorage with fresh data
+        localStorage.setItem(`resume_${user.id}`, JSON.stringify(transformedMetadata));
+        
+        setResumeMetadata(transformedMetadata);
+        setIsFirstUpload(false);
       }
     } catch (err) {
       console.error('Failed to load resume:', err);
@@ -78,9 +129,28 @@ export function StudentProfile() {
       }
 
       if (response.data) {
-        setResumeMetadata(response.data);
+        // Transform backend response to match expected ResumeMetadata format
+        // Backend returns fileName, fileType, fileSize, createdAt
+        // Frontend expects filename, contentType, size, uploadedAt
+        const backendData = response.data as unknown as BackendResumeResponse;
+        
+        const transformedMetadata: ResumeMetadata = {
+          id: backendData.id,
+          userId: backendData.userId,
+          filename: backendData.fileName || cvFile.name,
+          contentType: backendData.fileType || cvFile.type,
+          size: backendData.fileSize || cvFile.size,
+          uploadedAt: backendData.createdAt || new Date().toISOString()
+        };
+        
+        // Store in localStorage for immediate access
+        localStorage.setItem(`resume_${user.id}`, JSON.stringify(transformedMetadata));
+        
+        // Update state immediately
+        setResumeMetadata(transformedMetadata);
         setCvFile(null);
-        setSuccessMessage('Resume uploaded successfully!');
+        setShowSuccessModal(true);
+        
         // Reset file input
         const fileInput = document.getElementById('cv-upload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
@@ -108,9 +178,13 @@ export function StudentProfile() {
         return;
       }
 
+      // Remove from localStorage
+      localStorage.removeItem(`resume_${user.id}`);
+      
       setResumeMetadata(null);
       setSuccessMessage('Resume deleted successfully!');
       setShowDeleteConfirm(false);
+      setIsFirstUpload(true);
     } catch (err) {
       setError('Failed to delete resume. Please try again.');
       console.error('Delete error:', err);
@@ -360,30 +434,30 @@ export function StudentProfile() {
               ) : (
                 // Show upload area when no resume exists
                 <div className="text-center p-8 border-2 border-dashed border-muted-foreground/20 rounded-lg flex-1 flex flex-col items-center justify-center bg-muted/30">
-                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {cvFile ? cvFile.name : "Upload your CV"}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    PDF, DOC, or DOCX (max 5MB)
-                  </p>
-                  <Input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="cv-upload"
-                  />
-                  <Button
-                    onClick={() => document.getElementById('cv-upload')?.click()}
-                    variant="outline"
-                    size="sm"
+                <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground mb-2">
+                  {cvFile ? cvFile.name : "Upload your CV"}
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  PDF, DOC, or DOCX (max 5MB)
+                </p>
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="cv-upload"
+                />
+                <Button
+                  onClick={() => document.getElementById('cv-upload')?.click()}
+                  variant="outline"
+                  size="sm"
                     className="mb-3"
-                  >
-                    Choose File
-                  </Button>
-                  
-                  {cvFile && (
+                >
+                  Choose File
+                </Button>
+              
+              {cvFile && (
                     <div className="mt-3 p-3 bg-background rounded-lg border w-full">
                       <p className="text-sm text-foreground mb-2">
                         Selected: {cvFile.name}
@@ -453,6 +527,29 @@ export function StudentProfile() {
           </div>
         </div>
       )}
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Success!</DialogTitle>
+            <DialogDescription className="text-center">
+              {isFirstUpload ? 
+                "Resume uploaded successfully! You will receive an email from our team to schedule your first round interview." : 
+                "Resume updated successfully!"
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-6">
+            <Button 
+              onClick={() => setShowSuccessModal(false)}
+              className="px-8"
+            >
+              Continue
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

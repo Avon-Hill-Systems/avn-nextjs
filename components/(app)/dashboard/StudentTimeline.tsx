@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { userApi, User } from "@/lib/api-service";
+import { userApi, User, ResumeMetadata } from "@/lib/api-service";
 
 export function StudentTimeline() {
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const [hasResume, setHasResume] = useState<boolean | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -19,22 +20,30 @@ export function StudentTimeline() {
           // Check if user has a student profile
           const profileResponse = await userApi.getStudentProfile(userResponse.data.id);
           setHasProfile(!!profileResponse.data);
+          
+          // Check if user has a resume
+          const resumeResponse = await userApi.getResume(userResponse.data.id);
+          setHasResume(!!resumeResponse.data);
         }
       } catch (error) {
         console.error('Error checking profile:', error);
         setHasProfile(false);
+        setHasResume(false);
       }
     };
 
     checkProfile();
   }, []);
 
+  // First step is only completed if both profile and resume exist
+  const isFirstStepCompleted = hasProfile && hasResume;
+
   const timelineSteps = [
     {
       number: 1,
       title: "Fill out your profile and upload your CV",
-      description: hasProfile ? (
-        "Profile completed! You're now eligible for interviews."
+      description: isFirstStepCompleted ? (
+        "Profile and CV completed! You're now eligible for interviews."
       ) : (
         <>
           <strong>This step is crucial</strong> - you must complete your profile information and upload your resume to be eligible for interviews. Startups need to see your full profile before they can invite you.
@@ -44,7 +53,7 @@ export function StudentTimeline() {
           </Link>
         </>
       ),
-      completed: hasProfile
+      completed: isFirstStepCompleted
     },
     {
       number: 2,
