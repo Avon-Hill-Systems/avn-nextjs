@@ -57,7 +57,7 @@ export default function Home() {
       <TopBar />
       <main className="flex-1 sm:pt-0">
         {/* Hero Section */}
-        <section className="flex items-center justify-center min-h-[calc(80vh-5rem)] sm:min-h-[80vh] px-4 sm:px-0">
+        <section className="flex items-center justify-center min-h-[calc(80vh-5rem)] sm:min-h-[80vh] px-4 sm:px-0 pt-16 sm:pt-0">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-start">
               {/* Left-Aligned Content */}
