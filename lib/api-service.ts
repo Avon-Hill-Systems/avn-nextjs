@@ -33,6 +33,15 @@ export interface StudentProfile {
   updatedAt: string;
 }
 
+export interface ResumeMetadata {
+  id: string;
+  userId: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  uploadedAt: string;
+}
+
 export interface CreateUserRequest {
   email: string;
   first_name: string;
@@ -225,6 +234,136 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+
+  // Resume management methods
+  async uploadResume(userId: string, file: File, description?: string): Promise<ApiResponse<ResumeMetadata>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (description) {
+      formData.append('description', description);
+    }
+
+    return this.request<ResumeMetadata>(`/users/${userId}/resume`, {
+      method: 'POST',
+      body: formData,
+      headers: {}, // Let browser set Content-Type for FormData
+    });
+  }
+
+  async getResume(userId: string): Promise<ApiResponse<ResumeMetadata>> {
+    // For resume GET, we need to handle file responses, not JSON
+    const url = `${this.baseURL}/users/${userId}/resume`;
+    
+    // Get session token from cookies
+    const sessionToken = typeof document !== 'undefined' 
+      ? document.cookie
+          .split('; ')
+          .find(row => row.startsWith('better-auth.session_token='))
+          ?.split('=')[1]
+      : null;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': sessionToken ? `Bearer ${sessionToken}` : '',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return { data: undefined }; // No resume exists
+        }
+        const errorText = await response.text();
+        return {
+          error: `HTTP ${response.status}: ${response.statusText}`,
+          message: errorText
+        };
+      }
+
+      // For resume GET, we expect file content, not JSON
+      // We can extract metadata from response headers if available
+      const contentType = response.headers.get('content-type');
+      const contentDisposition = response.headers.get('content-disposition');
+      const contentLength = response.headers.get('content-length');
+      const xFileName = response.headers.get('x-file-name');
+      const xFileCreatedAt = response.headers.get('x-file-created-at');
+      const lastModified = response.headers.get('last-modified');
+      
+      // Extract filename from content-disposition header with better parsing
+      let filename = 'resume';
+      if (contentDisposition) {
+        // Try different patterns for filename extraction
+        let filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+        if (!filenameMatch) {
+          filenameMatch = contentDisposition.match(/filename=([^;]+)/);
+        }
+        if (!filenameMatch) {
+          filenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/);
+        }
+        
+        if (filenameMatch) {
+          filename = decodeURIComponent(filenameMatch[1]);
+        }
+      }
+      
+      // Fallback to X-File-Name header if Content-Disposition parsing failed
+      if (filename === 'resume' && xFileName) {
+        filename = xFileName;
+      }
+      
+      // If we still have a generic filename, try to infer from content type
+      if (filename === 'resume') {
+        if (contentType && contentType.includes('pdf')) {
+          filename = 'resume.pdf';
+        } else if (contentType && contentType.includes('doc')) {
+          filename = 'resume.doc';
+        } else if (contentType && contentType.includes('docx')) {
+          filename = 'resume.docx';
+        }
+      }
+
+      // Parse the creation date from headers
+      let uploadedAt = new Date().toISOString();
+      if (xFileCreatedAt) {
+        try {
+          uploadedAt = new Date(xFileCreatedAt).toISOString();
+        } catch (err) {
+          // Use current time if parsing fails
+        }
+      } else if (lastModified) {
+        try {
+          uploadedAt = new Date(lastModified).toISOString();
+        } catch (err) {
+          // Use current time if parsing fails
+        }
+      }
+
+      // Create metadata from response headers
+      const resumeMetadata: ResumeMetadata = {
+        id: `temp-${Date.now()}`, // Temporary ID since we don't have one
+        userId: userId,
+        filename: filename,
+        contentType: contentType || 'application/octet-stream',
+        size: parseInt(contentLength || '0'),
+        uploadedAt: uploadedAt
+      };
+      
+      return { data: resumeMetadata };
+      
+    } catch (error) {
+      return {
+        error: 'Network error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  async deleteResume(userId: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/users/${userId}/resume`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 // Create and export the API client instance
@@ -243,6 +382,10 @@ export const userApi = {
   getStudentProfile: (userId: string) => apiService.getStudentProfile(userId),
   updateStudentProfile: (userId: string, profileData: UpdateStudentProfileRequest) => apiService.updateStudentProfile(userId, profileData),
   deleteStudentProfile: (userId: string) => apiService.deleteStudentProfile(userId),
+  // Resume methods
+  uploadResume: (userId: string, file: File, description?: string) => apiService.uploadResume(userId, file, description),
+  getResume: (userId: string) => apiService.getResume(userId),
+  deleteResume: (userId: string) => apiService.deleteResume(userId),
 };
 
 export const systemApi = {
