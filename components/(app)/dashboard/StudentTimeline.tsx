@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCurrentUserQuery, useResumeQuery, useStudentProfileQuery } from "@/lib/api-service";
+import { useResumeQuery, useStudentProfileQuery } from "@/lib/api-service";
+import { useAuth } from "@/hooks/use-auth";
 
 export function StudentTimeline() {
-  const { data: currentUser } = useCurrentUserQuery();
-  const userId = currentUser?.id;
+  const { session } = useAuth();
+  const userId = session?.user?.id as string | undefined;
   const { data: profile } = useStudentProfileQuery(userId);
   const { data: resume } = useResumeQuery(userId);
 

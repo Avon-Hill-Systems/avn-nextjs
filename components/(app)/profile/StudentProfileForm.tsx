@@ -29,7 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useUser } from "@/contexts/user-context";
+import { useAuth } from "@/hooks/use-auth";
 import { StudentProfile, useStudentProfileQuery, useUpsertStudentProfileMutation } from "@/lib/api-service";
 
 const profileSchema = z.object({
@@ -52,7 +52,8 @@ export function StudentProfileForm() {
   const [existingProfile, setExistingProfile] = useState<StudentProfile | null>(null);
   const [originalValues, setOriginalValues] = useState<ProfileFormData | null>(null);
   const [isFirstSave, setIsFirstSave] = useState(true);
-  const { user } = useUser();
+  const { session } = useAuth();
+  const user = session?.user;
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),

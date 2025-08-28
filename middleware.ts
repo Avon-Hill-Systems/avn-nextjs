@@ -20,11 +20,7 @@ export function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     // Check for session token in cookies
     const sessionToken = request.cookies.get('better-auth.session_token')?.value
-    console.log(`🔵 Middleware: Session token found? ${!!sessionToken}`)
-    
-    if (sessionToken) {
-      console.log(`🔵 Middleware: Session token: ${sessionToken.substring(0, 20)}...`)
-    }
+    console.log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
 
     if (!sessionToken) {
       console.log(`🔴 Middleware: No session token found, redirecting to login`)
@@ -34,7 +30,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
     
-    console.log(`🟢 Middleware: Session token verified, allowing access to ${pathname}`)
+    console.log(`🟢 Middleware: Session cookie present, allowing access to ${pathname}`)
   }
 
   // Allow the request to continue for non-protected routes or authenticated users

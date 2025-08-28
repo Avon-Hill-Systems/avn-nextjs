@@ -8,6 +8,14 @@ interface User {
   email: string;
   name?: string;
   emailVerified?: boolean;
+  // Additional fields from Better Auth (backend configured)
+  first_name?: string;
+  last_name?: string;
+  company?: string | null;
+  is_student?: boolean;
+  image?: string | null;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 interface Session {
@@ -15,8 +23,8 @@ interface Session {
   session: {
     id: string;
     userId: string;
-    expiresAt: Date;
-    token: string;
+    expiresAt: Date | string;
+    token?: string; // never expose/log this
     ipAddress?: string | null;
     userAgent?: string | null;
   };

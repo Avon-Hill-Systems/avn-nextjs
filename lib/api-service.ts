@@ -100,21 +100,12 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
-    console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
-    console.log('📍 API Request Stack Trace:', new Error().stack?.split('\n').slice(1, 5));
-    if (options.body) {
-      console.log('📦 Request body:', options.body);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
     }
 
     // Get session token from cookies
-    const sessionToken = typeof document !== 'undefined' 
-      ? document.cookie
-          .split('; ')
-          .find(row => row.startsWith('better-auth.session_token='))
-          ?.split('=')[1]
-      : null;
-
-    console.log('🔑 Session token for API request:', sessionToken ? `${sessionToken.substring(0, 20)}...` : 'Not found');
+    // Do not attempt to read HttpOnly cookies client-side; rely on credentials: 'include'
 
     const headers = new Headers({
       'Content-Type': 'application/json',
@@ -122,9 +113,7 @@ class ApiClient {
     });
 
     // Add Authorization header if we have a session token
-    if (sessionToken) {
-      headers.set('Authorization', `Bearer ${sessionToken}`);
-    }
+    // Do not set Authorization from cookies; server validates session via cookies
 
     try {
       const response = await fetch(url, {
@@ -133,11 +122,15 @@ class ApiClient {
         ...options,
       });
 
-      console.log(`📡 API Response: ${response.status} ${response.statusText}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📡 API Response: ${response.status} ${response.statusText}`);
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`❌ API Error ${response.status}:`, errorText);
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`❌ API Error ${response.status}:`, errorText);
+        }
         
         return {
           error: `HTTP ${response.status}: ${response.statusText}`,
@@ -150,16 +143,22 @@ class ApiClient {
       const contentLength = response.headers.get('content-length');
       
       if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
-        console.log('📡 Empty response or non-JSON content, returning success without data');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📡 Empty response or non-JSON content, returning success without data');
+        }
         return { data: undefined };
       }
 
       const data = await response.json();
-      console.log('✅ API Response data:', data);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ API Response received');
+      }
       
       return { data };
     } catch (error) {
-      console.error('❌ API Request failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ API Request failed:', error);
+      }
       return {
         error: 'Network error',
         message: error instanceof Error ? error.message : 'Unknown error'
@@ -196,10 +195,7 @@ class ApiClient {
     return this.request<User[]>('/users');
   }
 
-  // Get current user profile
-  async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/auth/me');
-  }
+  // Removed: current user via REST. Use Better Auth useSession() on the client.
 
   // Health check
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {
@@ -255,19 +251,9 @@ class ApiClient {
     // For resume GET, we need to handle file responses, not JSON
     const url = `${this.baseURL}/users/${userId}/resume`;
     
-    // Get session token from cookies
-    const sessionToken = typeof document !== 'undefined' 
-      ? document.cookie
-          .split('; ')
-          .find(row => row.startsWith('better-auth.session_token='))
-          ?.split('=')[1]
-      : null;
-
     try {
       const response = await fetch(url, {
-        headers: {
-          'Authorization': sessionToken ? `Bearer ${sessionToken}` : '',
-        },
+        headers: {},
         credentials: 'include',
       });
 
@@ -377,7 +363,6 @@ export const userApi = {
   update: (id: string, userData: UpdateUserRequest) => apiService.updateUser(id, userData),
   delete: (id: string) => apiService.deleteUser(id),
   getAll: () => apiService.getAllUsers(),
-  getCurrentUser: () => apiService.getCurrentUser(),
   // Student profile methods
   createStudentProfile: (userId: string, profileData: CreateStudentProfileRequest) => apiService.createStudentProfile(userId, profileData),
   getStudentProfile: (userId: string) => apiService.getStudentProfile(userId),
@@ -432,17 +417,7 @@ export function useUserQuery(id: string, enabled = true) {
   });
 }
 
-export function useCurrentUserQuery(options?: { enabled?: boolean }) {
-  return useQuery({
-    queryKey: qk.currentUser(),
-    enabled: options?.enabled ?? true,
-    queryFn: async () => {
-      const res = await userApi.getCurrentUser();
-      if (res.error) throw new Error(res.message || res.error);
-      return res.data!;
-    },
-  });
-}
+// Removed: useCurrentUserQuery — use Better Auth useSession() instead
 
 export function useUpdateUserMutation(id?: string) {
   const queryClient = useQueryClient();

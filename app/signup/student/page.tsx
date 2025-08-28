@@ -8,7 +8,7 @@ import { z } from 'zod';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { signUpEmail } from '@/lib/auth-rest';
+import { signUp } from '@/lib/auth-client';
 import {
   Form,
   FormControl,
@@ -62,19 +62,15 @@ export default function StudentSignupPage() {
     setError(null);
     
     try {
-      // Step 1: Create user account with Better Auth
-      console.log('📧 Calling Better Auth REST sign-up with:', {
-        email: data.email,
-        name: `${data.firstName} ${data.lastName}`,
-        callbackURL: '/verify-email'
-      });
-      await signUpEmail({
+      // Step 1: Create user account with Better Auth client
+      await signUp.email({
         email: data.email,
         password: data.password,
         name: `${data.firstName} ${data.lastName}`,
+        callbackURL: '/verify-email',
+        // additional user fields configured in backend
         first_name: data.firstName,
         last_name: data.lastName,
-        company: null,
         is_student: true,
       });
 

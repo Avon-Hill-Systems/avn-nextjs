@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getSessionREST, sendVerificationEmailREST } from "@/lib/auth-rest";
+import { getSession, sendVerificationEmail } from "@/lib/auth-client";
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -25,10 +25,16 @@ export default function VerifyEmailPage() {
 
     const check = async () => {
       setChecking(true);
-      const sess = await getSessionREST();
+      const sess = await getSession();
+      // Better Auth client returns either { user, session } or { data: { user, session }, error }
+      const user = (sess as any)?.user ?? (sess as any)?.data?.user ?? null;
       if (!active) return;
       setChecking(false);
-      if (sess?.user) router.replace(redirect);
+      if (user) {
+        setKind("success");
+        setMessage("Verification complete. Redirecting…");
+        router.replace(redirect);
+      }
     };
 
     // Initial check, then poll for a short time window
@@ -50,7 +56,7 @@ export default function VerifyEmailPage() {
     setResending(true);
     setMessage("");
     try {
-      await sendVerificationEmailREST({ email, callbackURL: `${window.location.origin}/dashboard` });
+      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}/dashboard` });
       setKind("success");
       setMessage("Verification email resent. Check your inbox.");
     } catch (e: any) {
@@ -63,9 +69,14 @@ export default function VerifyEmailPage() {
 
   const handleIHaveVerified = async () => {
     setChecking(true);
-    const sess = await getSessionREST();
+    const sess = await getSession();
+    const user = (sess as any)?.user ?? (sess as any)?.data?.user ?? null;
     setChecking(false);
-    if (sess?.user) router.replace(redirect);
+    if (user) {
+      setKind("success");
+      setMessage("Verification complete. Redirecting…");
+      router.replace(redirect);
+    }
     else {
       setKind("info");
       setMessage("Not verified yet. Click the link in your email.");

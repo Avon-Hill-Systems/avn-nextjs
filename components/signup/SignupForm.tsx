@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signUpEmail } from '@/lib/auth-rest';
+import { signUp } from '@/lib/auth-client';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -59,10 +59,11 @@ export default function SignupForm({
     setError(null);
     
     try {
-      await signUpEmail({
+      await signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
+        callbackURL: '/verify-email'
       });
 
         // Successful signup - redirect to email verification page
