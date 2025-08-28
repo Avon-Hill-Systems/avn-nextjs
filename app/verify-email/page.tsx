@@ -6,6 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getSession, sendVerificationEmail } from "@/lib/auth-client";
 
+// Define proper types for the session object
+interface SessionUser {
+  id: string;
+  email: string;
+  [key: string]: unknown;
+}
+
+interface SessionData {
+  user: SessionUser;
+  [key: string]: unknown;
+}
+
+interface SessionResponse {
+  user?: SessionUser;
+  data?: SessionData;
+  error?: string;
+}
+
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -15,7 +33,6 @@ export default function VerifyEmailPage() {
   const [email, setEmail] = useState(initialEmail);
   const [message, setMessage] = useState<string>("");
   const [kind, setKind] = useState<"info" | "error" | "success">("info");
-  const [checking, setChecking] = useState(false);
   const [resending, setResending] = useState(false);
 
   // Auto-check session and redirect as soon as verification completes
@@ -24,12 +41,10 @@ export default function VerifyEmailPage() {
     let timer: ReturnType<typeof setInterval> | null = null;
 
     const check = async () => {
-      setChecking(true);
       const sess = await getSession();
       // Better Auth client returns either { user, session } or { data: { user, session }, error }
-      const user = (sess as any)?.user ?? (sess as any)?.data?.user ?? null;
+      const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user ?? null;
       if (!active) return;
-      setChecking(false);
       if (user) {
         setKind("success");
         setMessage("Verification complete. Redirecting…");
@@ -59,27 +74,12 @@ export default function VerifyEmailPage() {
       await sendVerificationEmail({ email, callbackURL: `${window.location.origin}/dashboard` });
       setKind("success");
       setMessage("Verification email resent. Check your inbox.");
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to resend verification email.";
       setKind("error");
-      setMessage(e?.message || "Failed to resend verification email.");
+      setMessage(errorMessage);
     } finally {
       setResending(false);
-    }
-  };
-
-  const handleIHaveVerified = async () => {
-    setChecking(true);
-    const sess = await getSession();
-    const user = (sess as any)?.user ?? (sess as any)?.data?.user ?? null;
-    setChecking(false);
-    if (user) {
-      setKind("success");
-      setMessage("Verification complete. Redirecting…");
-      router.replace(redirect);
-    }
-    else {
-      setKind("info");
-      setMessage("Not verified yet. Click the link in your email.");
     }
   };
 
@@ -89,7 +89,7 @@ export default function VerifyEmailPage() {
         <div className="space-y-2 text-left">
           <h1 className="text-3xl font-normal">Check your email</h1>
           <p className="text-muted-foreground">
-            We’ve sent a verification link to your email. After verifying, you’ll be signed in automatically.
+            We&apos;ve sent a verification link to your email. After verifying, you&apos;ll be signed in automatically.
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
         </div>
 
         <div className="text-sm text-muted-foreground">
-          We’ll redirect you automatically once verification completes.
+          We&apos;ll redirect you automatically once verification completes.
         </div>
       </div>
     </main>

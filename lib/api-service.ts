@@ -472,8 +472,14 @@ export function useStudentProfileQuery(userId?: string, enabled = true) {
     enabled: Boolean(userId) && enabled,
     queryFn: async () => {
       const res = await userApi.getStudentProfile(userId!);
-      if (res.error) throw new Error(res.message || res.error);
-      return res.data!;
+      if (res.error) {
+        // Treat 404 as "no profile yet"
+        if (res.error.includes('HTTP 404') || (res.message && res.message.toLowerCase().includes('not found'))) {
+          return null;
+        }
+        throw new Error(res.message || res.error);
+      }
+      return res.data ?? null;
     },
   });
 }
@@ -505,8 +511,13 @@ export function useResumeQuery(userId?: string, enabled = true) {
     enabled: Boolean(userId) && enabled,
     queryFn: async () => {
       const res = await userApi.getResume(userId!);
-      if (res.error) throw new Error(res.message || res.error);
-      return res.data; // may be undefined if no resume
+      if (res.error) {
+        if (res.error.includes('HTTP 404') || (res.message && res.message.toLowerCase().includes('not found'))) {
+          return null;
+        }
+        throw new Error(res.message || res.error);
+      }
+      return res.data ?? null; // allow null for "no resume"
     },
   });
 }
