@@ -1,4 +1,4 @@
-import AdminUserTable from "@/components/(app)/admin/UserTable";
+import AdminUsers from "@/components/(app)/admin/AdminUsers";
 
 export default function AdminPage() {
   return (
@@ -7,7 +7,7 @@ export default function AdminPage() {
         <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
         <p className="text-muted-foreground">Manage users, profiles, and resumes.</p>
       </div>
-      <AdminUserTable />
+      <AdminUsers />
     </div>
   );
 }

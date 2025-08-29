@@ -32,12 +32,24 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { StudentProfile, useStudentProfileQuery, useUpsertStudentProfileMutation } from "@/lib/api-service";
 
+const INDUSTRIES = [
+  'B2B Software',
+  'Fintech',
+  'Consumer',
+  'Education',
+  'Healthcare',
+  'Real Estate & Construction',
+  'Industrials',
+  'Government',
+  'Other',
+] as const;
+
 const profileSchema = z.object({
   major: z.string().min(1, "Major is required"),
   graduationYear: z.string().min(1, "Graduation year is required"),
   technical: z.enum(["technical", "non-technical"]).optional(),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
-  industry: z.array(z.string()).min(1, "At least one industry is required"),
+  industry: z.array(z.enum(INDUSTRIES)).min(1, "At least one industry is required"),
   location: z.array(z.string()).min(1, "At least one location is required"),
   remoteWork: z.string().min(1, "Remote work preference is required"),
   role: z.array(z.string()).min(1, "At least one role interest is required"),
@@ -322,16 +334,11 @@ export function StudentProfileForm() {
                         <SelectValue placeholder={field.value && field.value.length > 0 ? `${field.value.length} industry selected` : "Industries"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Technology" disabled={field.value?.includes("Technology")}>Technology</SelectItem>
-                        <SelectItem value="Healthcare" disabled={field.value?.includes("Healthcare")}>Healthcare</SelectItem>
-                        <SelectItem value="Finance" disabled={field.value?.includes("Finance")}>Finance</SelectItem>
-                        <SelectItem value="Education" disabled={field.value?.includes("Education")}>Education</SelectItem>
-                        <SelectItem value="E-commerce" disabled={field.value?.includes("E-commerce")}>E-commerce</SelectItem>
-                        <SelectItem value="AI/ML" disabled={field.value?.includes("AI/ML")}>AI/ML</SelectItem>
-                        <SelectItem value="Biotech" disabled={field.value?.includes("Biotech")}>Biotech</SelectItem>
-                        <SelectItem value="Clean Energy" disabled={field.value?.includes("Clean Energy")}>Clean Energy</SelectItem>
-                        <SelectItem value="Fintech" disabled={field.value?.includes("Fintech")}>Fintech</SelectItem>
-                        <SelectItem value="Other" disabled={field.value?.includes("Other")}>Other</SelectItem>
+                        {INDUSTRIES.map((opt) => (
+                          <SelectItem key={opt} value={opt} disabled={field.value?.includes(opt)}>
+                            {opt}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>

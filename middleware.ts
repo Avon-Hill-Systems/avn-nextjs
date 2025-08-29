@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   ]
 
   // Admin-only routes
-  const adminRoutes = ['/admin', '/analytics']
+  const adminRoutes = ['/admin', '/analytics', '/interviews', '/matching-system']
 
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))

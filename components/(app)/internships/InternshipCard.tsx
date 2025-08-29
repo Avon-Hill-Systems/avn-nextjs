@@ -8,6 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Internship } from "@/lib/api-service";
 
+const INDUSTRIES = [
+  'B2B Software',
+  'Fintech',
+  'Consumer',
+  'Education',
+  'Healthcare',
+  'Real Estate & Construction',
+  'Industrials',
+  'Government',
+  'Other',
+] as const;
+
 interface InternshipCardProps {
   internship: Internship;
   isEditing: boolean;
@@ -130,16 +142,9 @@ export function InternshipCard({
                 <SelectValue placeholder="Add industry" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Technology">Technology</SelectItem>
-                <SelectItem value="Healthcare">Healthcare</SelectItem>
-                <SelectItem value="Finance">Finance</SelectItem>
-                <SelectItem value="Education">Education</SelectItem>
-                <SelectItem value="E-commerce">E-commerce</SelectItem>
-                <SelectItem value="AI/ML">AI/ML</SelectItem>
-                <SelectItem value="Biotech">Biotech</SelectItem>
-                <SelectItem value="Clean Energy">Clean Energy</SelectItem>
-                <SelectItem value="Fintech">Fintech</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                {INDUSTRIES.map(opt => (
+                  <SelectItem key={opt} value={opt} disabled={localEditData.industry?.includes(opt)}>{opt}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {localEditData.industry && localEditData.industry.length > 0 && (

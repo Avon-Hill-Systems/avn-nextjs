@@ -34,16 +34,33 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { StartupProfile, useStartupProfileQuery, useUpsertStartupProfileMutation } from "@/lib/api-service";
 
+const INDUSTRIES = [
+  'B2B Software',
+  'Fintech',
+  'Consumer',
+  'Education',
+  'Healthcare',
+  'Real Estate & Construction',
+  'Industrials',
+  'Government',
+  'Other',
+] as const;
+
 // Startup profile schema - adapted for company information
 const startupProfileSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
   companySize: z.string().min(1, "Company size is required"),
-  industry: z.array(z.string()).min(1, "At least one industry is required"),
+  industry: z.array(z.enum(INDUSTRIES)).min(1, "At least one industry is required"),
   location: z.string().min(1, "Location is required"),
   website: z.string().url("Please enter a valid website URL").min(1, "Website is required"),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
   description: z.string().min(10, "Company description must be at least 10 characters"),
   remoteWork: z.string().min(1, "Remote work policy is required"),
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .regex(/^[+]?[-().\s\d]{7,20}$/,
+      "Enter a valid phone number"),
 });
 
 type StartupProfileFormData = z.infer<typeof startupProfileSchema>;
@@ -70,6 +87,7 @@ export function StartupProfileForm() {
       linkedinUrl: "",
       description: "",
       remoteWork: "",
+      phone: "",
     },
   });
 
@@ -86,6 +104,7 @@ export function StartupProfileForm() {
       currentValues.linkedinUrl !== originalValues.linkedinUrl ||
       currentValues.description !== originalValues.description ||
       currentValues.remoteWork !== originalValues.remoteWork ||
+      currentValues.phone !== originalValues.phone ||
       JSON.stringify(currentValues.industry) !== JSON.stringify(originalValues.industry)
     );
     
@@ -152,6 +171,7 @@ export function StartupProfileForm() {
       remoteWork: normalizeRemote(profileData.remoteWork),
       website: profileData.website ?? "",
       linkedinUrl: profileData.linkedinUrl ?? "",
+      phone: profileData.phone ?? "",
     };
     form.reset(formData);
     setOriginalValues(formData);
@@ -178,6 +198,7 @@ export function StartupProfileForm() {
         remoteWork: data.remoteWork,
         website: data.website,
         linkedinUrl: data.linkedinUrl || null,
+        phone: data.phone,
       };
 
       await upsertMutation.mutateAsync(payload);
@@ -314,6 +335,24 @@ export function StartupProfileForm() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-normal">Contact Phone *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g., +1 415 555 1234" 
+                      {...field} 
+                      className="bg-background"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Industry & Location */}
@@ -340,16 +379,11 @@ export function StartupProfileForm() {
                         <SelectValue placeholder={field.value && field.value.length > 0 ? `${field.value.length} industry selected` : "Select industries"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Technology" disabled={field.value?.includes("Technology")}>Technology</SelectItem>
-                        <SelectItem value="Healthcare" disabled={field.value?.includes("Healthcare")}>Healthcare</SelectItem>
-                        <SelectItem value="Finance" disabled={field.value?.includes("Finance")}>Finance</SelectItem>
-                        <SelectItem value="Education" disabled={field.value?.includes("Education")}>Education</SelectItem>
-                        <SelectItem value="E-commerce" disabled={field.value?.includes("E-commerce")}>E-commerce</SelectItem>
-                        <SelectItem value="AI/ML" disabled={field.value?.includes("AI/ML")}>AI/ML</SelectItem>
-                        <SelectItem value="Biotech" disabled={field.value?.includes("Biotech")}>Biotech</SelectItem>
-                        <SelectItem value="Clean Energy" disabled={field.value?.includes("Clean Energy")}>Clean Energy</SelectItem>
-                        <SelectItem value="Fintech" disabled={field.value?.includes("Fintech")}>Fintech</SelectItem>
-                        <SelectItem value="Other" disabled={field.value?.includes("Other")}>Other</SelectItem>
+                        {INDUSTRIES.map((opt) => (
+                          <SelectItem key={opt} value={opt} disabled={field.value?.includes(opt)}>
+                            {opt}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>

@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
               className="flex items-center hover:opacity-80 transition-opacity duration-200"
             >
               <h1 className="font-normal text-foreground text-lg sm:text-xl">
-                Avon Hill Systems
+                Avon Hill
               </h1>
             </button>
           </div>

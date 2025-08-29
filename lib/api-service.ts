@@ -19,6 +19,27 @@ export interface User {
   updatedAt: string;
 }
 
+// Admin API types
+export interface AdminUsersListResponse<T = User> {
+  items: (T & {
+    studentProfile?: any;
+    startupProfile?: any;
+    resume?: { id: string; fileName?: string | null; updatedAt?: string } | null;
+  })[];
+  nextCursor?: string;
+}
+
+export interface AdminStatsResponse {
+  studentCount: number;
+  startupCount: number;
+}
+
+export interface TimeseriesPoint { day: string; value: number }
+export interface AdminTimeseriesResponse {
+  students: TimeseriesPoint[];
+  startups: TimeseriesPoint[];
+}
+
 export interface StudentProfile {
   id: string;
   userId: string;
@@ -45,6 +66,7 @@ export interface StartupProfile {
   remoteWork: string;
   website: string;
   linkedinUrl?: string | null;
+  phone: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -137,6 +159,7 @@ export interface CreateStartupProfileRequest {
   remoteWork: string;
   website: string;
   linkedinUrl?: string | null;
+  phone: string;
 }
 
 export interface UpdateStartupProfileRequest {
@@ -148,6 +171,7 @@ export interface UpdateStartupProfileRequest {
   remoteWork?: string;
   website?: string;
   linkedinUrl?: string | null;
+  phone?: string;
 }
 
 export interface ApiResponse<T> {
@@ -266,6 +290,23 @@ class ApiClient {
   }
 
   // Removed: current user via REST. Use Better Auth useSession() on the client.
+
+  // Admin: paginated users list
+  async getAdminUsersList(params: { is_student?: boolean; limit?: number; cursor?: string }): Promise<ApiResponse<AdminUsersListResponse>> {
+    const qs = new URLSearchParams();
+    if (typeof params.is_student === 'boolean') qs.set('is_student', String(params.is_student));
+    if (params.limit) qs.set('limit', String(params.limit));
+    if (params.cursor) qs.set('cursor', params.cursor);
+    return this.request<AdminUsersListResponse>(`/users/admin/list?${qs.toString()}`);
+  }
+
+  async getAdminStats(): Promise<ApiResponse<AdminStatsResponse>> {
+    return this.request<AdminStatsResponse>('/users/admin/stats');
+  }
+
+  async getAdminTimeseries(days = 180): Promise<ApiResponse<AdminTimeseriesResponse>> {
+    return this.request<AdminTimeseriesResponse>(`/users/admin/timeseries?days=${days}`);
+  }
 
   // Health check
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {

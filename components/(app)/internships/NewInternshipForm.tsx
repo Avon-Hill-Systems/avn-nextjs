@@ -32,12 +32,24 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateInternshipMutation } from "@/lib/api-service";
 
+const INDUSTRIES = [
+  'B2B Software',
+  'Fintech',
+  'Consumer',
+  'Education',
+  'Healthcare',
+  'Real Estate & Construction',
+  'Industrials',
+  'Government',
+  'Other',
+] as const;
+
 // Internship posting schema
 const internshipSchema = z.object({
   title: z.string().min(1, "Internship title is required"),
   location: z.string().min(1, "Location is required"),
   remoteWork: z.enum(["Remote", "Office", "Both"]),
-  industry: z.array(z.string()).min(1, "Select at least one industry"),
+  industry: z.array(z.enum(INDUSTRIES)).min(1, "Select at least one industry"),
   description: z.string().min(50, "Description must be at least 50 characters"),
   requirements: z.string().min(20, "Requirements must be at least 20 characters"),
   responsibilities: z.string().min(20, "Responsibilities must be at least 20 characters"),
@@ -202,16 +214,11 @@ export function NewInternshipForm() {
                             <SelectValue placeholder={field.value && field.value.length > 0 ? `${field.value.length} selected` : "Select industries"} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Technology" disabled={field.value?.includes("Technology")}>Technology</SelectItem>
-                            <SelectItem value="Healthcare" disabled={field.value?.includes("Healthcare")}>Healthcare</SelectItem>
-                            <SelectItem value="Finance" disabled={field.value?.includes("Finance")}>Finance</SelectItem>
-                            <SelectItem value="Education" disabled={field.value?.includes("Education")}>Education</SelectItem>
-                            <SelectItem value="E-commerce" disabled={field.value?.includes("E-commerce")}>E-commerce</SelectItem>
-                            <SelectItem value="AI/ML" disabled={field.value?.includes("AI/ML")}>AI/ML</SelectItem>
-                            <SelectItem value="Biotech" disabled={field.value?.includes("Biotech")}>Biotech</SelectItem>
-                            <SelectItem value="Clean Energy" disabled={field.value?.includes("Clean Energy")}>Clean Energy</SelectItem>
-                            <SelectItem value="Fintech" disabled={field.value?.includes("Fintech")}>Fintech</SelectItem>
-                            <SelectItem value="Other" disabled={field.value?.includes("Other")}>Other</SelectItem>
+                            {INDUSTRIES.map(opt => (
+                              <SelectItem key={opt} value={opt} disabled={field.value?.includes(opt)}>
+                                {opt}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>

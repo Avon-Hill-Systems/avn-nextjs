@@ -10,6 +10,8 @@ import {
   Briefcase,
   Shield,
   BarChart3,
+  Calendar,
+  GitMerge,
 } from "lucide-react";
 
 import {
@@ -157,6 +159,8 @@ export function AppSidebar() {
     ? [
         { title: 'Admin', url: '/admin', icon: Shield },
         { title: 'Analytics', url: '/analytics', icon: BarChart3 },
+        { title: 'Interviews', url: '/interviews', icon: Calendar },
+        { title: 'Matching System', url: '/matching-system', icon: GitMerge },
       ]
     : baseItems;
 
@@ -165,7 +169,7 @@ export function AppSidebar() {
       <SidebarHeader className="group-data-[collapsible=icon]:hidden">
         <div className="px-2 py-1">
           <h2 className="text-xl font-normal">
-            Avon Hill Systems
+            Avon Hill
           </h2>
         </div>
       </SidebarHeader>

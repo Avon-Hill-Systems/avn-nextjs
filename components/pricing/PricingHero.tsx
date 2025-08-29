@@ -9,7 +9,7 @@ const PricingHero: React.FC = () => {
             Pricing
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-            Simple, transparent pricing for students and startups.
+            Pricing? What pricing?
           
           </p>
         </div>

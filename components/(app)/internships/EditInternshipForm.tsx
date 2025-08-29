@@ -11,11 +11,23 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUpdateInternshipMutation, type Internship } from "@/lib/api-service";
 
+const INDUSTRIES = [
+  'B2B Software',
+  'Fintech',
+  'Consumer',
+  'Education',
+  'Healthcare',
+  'Real Estate & Construction',
+  'Industrials',
+  'Government',
+  'Other',
+] as const;
+
 const schema = z.object({
   title: z.string().min(1),
   location: z.string().min(1),
   remoteWork: z.enum(["Remote", "Office", "Both"]),
-  industry: z.array(z.string()).min(1),
+  industry: z.array(z.enum(INDUSTRIES)).min(1),
   description: z.string().min(50),
   requirements: z.string().min(20),
   responsibilities: z.string().min(20),
@@ -121,7 +133,7 @@ export default function EditInternshipForm({ internship }: { internship: Interns
               }}>
                 <SelectTrigger className="bg-background"><SelectValue placeholder={field.value?.length ? `${field.value.length} selected` : 'Select industries'} /></SelectTrigger>
                 <SelectContent>
-                  {['Technology','Healthcare','Finance','Education','E-commerce','AI/ML','Biotech','Clean Energy','Fintech','Other'].map(opt => (
+                  {INDUSTRIES.map(opt => (
                     <SelectItem key={opt} value={opt} disabled={field.value?.includes(opt)}>{opt}</SelectItem>
                   ))}
                 </SelectContent>
@@ -195,4 +207,3 @@ export default function EditInternshipForm({ internship }: { internship: Interns
     </Form>
   );
 }
-
