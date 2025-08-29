@@ -80,6 +80,8 @@ export interface CreateInternshipRequest {
   compensation: string;
 }
 
+export interface UpdateInternshipRequest extends Partial<CreateInternshipRequest> {}
+
 export interface ResumeMetadata {
   id: string;
   userId: string;
@@ -333,12 +335,42 @@ class ApiClient {
     });
   }
 
+  async updateInternship(id: string, data: Partial<CreateInternshipRequest>): Promise<ApiResponse<Internship>> {
+    return this.request<Internship>(`/internships/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteInternship(id: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/internships/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   async listMyInternships(): Promise<ApiResponse<Internship[]>> {
     return this.request<Internship[]>('/internships/mine');
   }
 
   async listInternships(): Promise<ApiResponse<Internship[]>> {
     return this.request<Internship[]>('/internships');
+  }
+
+  async getInternship(id: string): Promise<ApiResponse<Internship>> {
+    return this.request<Internship>(`/internships/${id}`);
+  }
+
+  async updateInternship(id: string, data: UpdateInternshipRequest): Promise<ApiResponse<Internship>> {
+    return this.request<Internship>(`/internships/${id}` , {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteInternship(id: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/internships/${id}` , {
+      method: 'DELETE',
+    });
   }
 
   // Resume management methods
@@ -488,8 +520,13 @@ export const userApi = {
   deleteResume: (userId: string) => apiService.deleteResume(userId),
   // Internships
   createInternship: (data: CreateInternshipRequest) => apiService.createInternship(data),
+  updateInternship: (id: string, data: Partial<CreateInternshipRequest>) => apiService.updateInternship(id, data),
+  deleteInternship: (id: string) => apiService.deleteInternship(id),
   listMyInternships: () => apiService.listMyInternships(),
   listInternships: () => apiService.listInternships(),
+  getInternship: (id: string) => apiService.getInternship(id),
+  updateInternship: (id: string, data: UpdateInternshipRequest) => apiService.updateInternship(id, data),
+  deleteInternship: (id: string) => apiService.deleteInternship(id),
 };
 
 export const systemApi = {
@@ -512,6 +549,7 @@ const qk = {
   system: (key: string) => ["system", key] as const,
   internshipsMine: () => ["internships", "mine"] as const,
   internships: () => ["internships"] as const,
+  internship: (id: string) => ["internship", id] as const,
 };
 
 // Users
@@ -725,6 +763,20 @@ export function useHealthQuery() {
 }
 
 // Internships
+// (removed duplicate internship hooks; see definitions further below)
+
+export function useStatusQuery() {
+  return useQuery({
+    queryKey: qk.system("status"),
+    queryFn: async () => {
+      const res = await systemApi.status();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+  });
+}
+
+// Internships
 export function useMyInternshipsQuery(enabled = true) {
   return useQuery({
     queryKey: qk.internshipsMine(),
@@ -733,6 +785,18 @@ export function useMyInternshipsQuery(enabled = true) {
       const res = await userApi.listMyInternships();
       if (res.error) throw new Error(res.message || res.error);
       return res.data ?? [];
+    },
+  });
+}
+
+export function useInternshipQuery(id?: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.internship(id || ""),
+    enabled: Boolean(id) && enabled,
+    queryFn: async () => {
+      const res = await userApi.getInternship(id!);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
     },
   });
 }
@@ -752,13 +816,33 @@ export function useCreateInternshipMutation() {
   });
 }
 
-export function useStatusQuery() {
-  return useQuery({
-    queryKey: qk.system("status"),
-    queryFn: async () => {
-      const res = await systemApi.status();
+export function useUpdateInternshipMutation(id?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: UpdateInternshipRequest) => {
+      if (!id) throw new Error('id is required');
+      const res = await userApi.updateInternship(id, data);
       if (res.error) throw new Error(res.message || res.error);
       return res.data!;
+    },
+    onSuccess: (data) => {
+      if (!id) return;
+      queryClient.setQueryData(qk.internship(id), data);
+      queryClient.invalidateQueries({ queryKey: qk.internshipsMine() });
+    },
+  });
+}
+
+export function useDeleteInternshipMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await userApi.deleteInternship(id);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: qk.internshipsMine() });
     },
   });
 }
