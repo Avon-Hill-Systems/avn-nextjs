@@ -160,7 +160,7 @@ export function AppSidebar() {
                       </SidebarMenuButton>
                       
                       {expandedItems.includes(item.title) && (
-                        <div className="ml-6">
+                        <div className="ml-6 group-data-[collapsible=icon]:hidden">
                           <SidebarMenu>
                             {item.subItems.map((subItem) => (
                               <SidebarMenuItem key={subItem.title}>
