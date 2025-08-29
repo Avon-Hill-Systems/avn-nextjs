@@ -67,15 +67,23 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
-        // Successful login - redirect based on role
+        // Successful login - redirect based on admin status or role
         try {
-          const sess = await getSession();
-          const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
-          const isStudent = Boolean(user?.is_student);
-          const target = isStudent ? '/matches' : '/internships/active';
-          router.push(target);
+          // Prefer server-trusted admin check
+          const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+          const verifyRes = await fetch(`${apiBase}/users/admin/verify`, { credentials: 'include' });
+          if (verifyRes.ok) {
+            router.push('/admin');
+          } else {
+            // Otherwise, pick based on student/startup
+            const sess = await getSession();
+            const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
+            const isStudent = Boolean(user?.is_student);
+            const target = isStudent ? '/matches' : '/internships/active';
+            router.push(target);
+          }
         } catch {
-          // Fallback if session not yet available
+          // Fallback if anything goes wrong
           router.push('/matches');
         }
         if (onSubmit) {

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-
   ChevronDown,
   ChevronRight,
   LogOut,
@@ -9,6 +8,8 @@ import {
   Mail,
   Heart,
   Briefcase,
+  Shield,
+  BarChart3,
 } from "lucide-react";
 
 import {
@@ -84,6 +85,7 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { session, isAuthenticated, logout } = useAuth();
+  const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   // Load expanded items from localStorage on mount
@@ -101,6 +103,8 @@ export function AppSidebar() {
   // Ensure startups see the Internships section expanded on login
   React.useEffect(() => {
     if (!isAuthenticated) return;
+    // Do not auto-expand anything for admins
+    if (isAdmin) return;
     const isStudent = !!session?.user?.is_student;
     if (isStudent) return;
     setExpandedItems((prev) => {
@@ -111,7 +115,25 @@ export function AppSidebar() {
       } catch {}
       return next;
     });
-  }, [isAuthenticated, session?.user?.is_student]);
+  }, [isAuthenticated, isAdmin, session?.user?.is_student]);
+
+  // Fetch admin status once authenticated
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      setIsAdmin(false);
+      return;
+    }
+    const check = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase.replace(/\/$/, '')}/users/admin/verify`, { credentials: 'include' });
+        setIsAdmin(res.ok);
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    check();
+  }, [isAuthenticated]);
 
   const toggleItem = (title: string) => {
     const newExpandedItems = expandedItems.includes(title) 
@@ -130,7 +152,13 @@ export function AppSidebar() {
 
   // Determine which navigation items to show based on user type
   const isStudent = session?.user?.is_student;
-  const items = isStudent ? studentItems : startupItems;
+  const baseItems = isStudent ? studentItems : startupItems;
+  const items: NavigationItem[] = isAdmin
+    ? [
+        { title: 'Admin', url: '/admin', icon: Shield },
+        { title: 'Analytics', url: '/analytics', icon: BarChart3 },
+      ]
+    : baseItems;
 
   return (
     <Sidebar collapsible="icon">
