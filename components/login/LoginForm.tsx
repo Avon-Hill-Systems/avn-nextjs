@@ -13,7 +13,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signIn } from '@/lib/auth-client';
+import { signIn, getSession } from '@/lib/auth-client';
+
+interface SessionResponse {
+  user?: { is_student?: boolean; [key: string]: unknown };
+  data?: { user?: { is_student?: boolean; [key: string]: unknown } };
+  error?: string;
+}
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -61,9 +67,17 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
-        // Successful login - redirect to original page or default
-        const redirectTo = searchParams.get('redirect') || '/dashboard';
-        router.push(redirectTo);
+        // Successful login - redirect based on role
+        try {
+          const sess = await getSession();
+          const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
+          const isStudent = Boolean(user?.is_student);
+          const target = isStudent ? '/matches' : '/internships/active';
+          router.push(target);
+        } catch {
+          // Fallback if session not yet available
+          router.push('/matches');
+        }
         if (onSubmit) {
           onSubmit(data);
         }

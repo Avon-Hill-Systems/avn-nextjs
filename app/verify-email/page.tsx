@@ -28,7 +28,7 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialEmail = searchParams.get("email") || "";
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const redirectQuery = searchParams.get("redirect") || "";
 
   const [email, setEmail] = useState(initialEmail);
   const [message, setMessage] = useState<string>("");
@@ -55,8 +55,12 @@ function VerifyEmailContent() {
           setMessage("Verification complete. Redirecting…");
           try { bc?.postMessage({ type: 'verified' }); } catch {}
           try { localStorage.setItem('avn-auth-verified', String(Date.now())); } catch {}
+          // Decide target based on user role; fallback to query or dashboard
+          const isStudent = (user as SessionUser)?.is_student === true;
+          const target = isStudent ? '/matches' : '/internships/active';
+          const finalTarget = redirectQuery || target;
           // Use full navigation to ensure cookies/session are re-read fresh
-          window.location.assign(redirect);
+          window.location.assign(finalTarget);
         }
       }
     };
@@ -96,7 +100,7 @@ function VerifyEmailContent() {
       window.removeEventListener('storage', onStorage);
       try { bc?.close?.(); } catch {}
     };
-  }, [redirect, router]);
+  }, [redirectQuery, router]);
 
   const handleResend = async () => {
     if (!email) {

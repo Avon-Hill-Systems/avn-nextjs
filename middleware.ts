@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
   
   // List of protected routes that require authentication
   const protectedRoutes = [
-    '/dashboard',
     '/profile',
     '/settings',
     '/matches',

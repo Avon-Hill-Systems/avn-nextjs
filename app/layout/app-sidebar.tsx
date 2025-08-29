@@ -1,12 +1,11 @@
 "use client";
 
 import {
-  FlaskConical,
+
   ChevronDown,
   ChevronRight,
   LogOut,
   User,
-  LayoutDashboard,
   Mail,
   Heart,
   Briefcase,
@@ -42,11 +41,7 @@ type NavigationItem = {
 
 // Navigation items for students
 const studentItems: NavigationItem[] = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
+
   {
     title: "Matches",
     url: "/matches",
@@ -61,11 +56,6 @@ const studentItems: NavigationItem[] = [
 
 // Navigation items for startups
 const startupItems: NavigationItem[] = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
   {
     title: "Internships",
     url: "/internships",
@@ -107,6 +97,21 @@ export function AppSidebar() {
       }
     }
   }, []);
+
+  // Ensure startups see the Internships section expanded on login
+  React.useEffect(() => {
+    if (!isAuthenticated) return;
+    const isStudent = !!session?.user?.is_student;
+    if (isStudent) return;
+    setExpandedItems((prev) => {
+      if (prev.includes("Internships")) return prev;
+      const next = [...prev, "Internships"];
+      try {
+        localStorage.setItem('sidebar-expanded-items', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, [isAuthenticated, session?.user?.is_student]);
 
   const toggleItem = (title: string) => {
     const newExpandedItems = expandedItems.includes(title) 
