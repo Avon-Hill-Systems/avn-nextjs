@@ -22,8 +22,8 @@ export interface User {
 // Admin API types
 export interface AdminUsersListResponse<T = User> {
   items: (T & {
-    studentProfile?: any;
-    startupProfile?: any;
+    studentProfile?: StudentProfile | null;
+    startupProfile?: StartupProfile | null;
     resume?: { id: string; fileName?: string | null; updatedAt?: string } | null;
   })[];
   nextCursor?: string;
@@ -102,7 +102,7 @@ export interface CreateInternshipRequest {
   compensation: string;
 }
 
-export interface UpdateInternshipRequest extends Partial<CreateInternshipRequest> {}
+export type UpdateInternshipRequest = Partial<CreateInternshipRequest>;
 
 export interface ResumeMetadata {
   id: string;
@@ -376,19 +376,6 @@ class ApiClient {
     });
   }
 
-  async updateInternship(id: string, data: Partial<CreateInternshipRequest>): Promise<ApiResponse<Internship>> {
-    return this.request<Internship>(`/internships/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteInternship(id: string): Promise<ApiResponse<void>> {
-    return this.request<void>(`/internships/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
   async listMyInternships(): Promise<ApiResponse<Internship[]>> {
     return this.request<Internship[]>('/internships/mine');
   }
@@ -561,8 +548,6 @@ export const userApi = {
   deleteResume: (userId: string) => apiService.deleteResume(userId),
   // Internships
   createInternship: (data: CreateInternshipRequest) => apiService.createInternship(data),
-  updateInternship: (id: string, data: Partial<CreateInternshipRequest>) => apiService.updateInternship(id, data),
-  deleteInternship: (id: string) => apiService.deleteInternship(id),
   listMyInternships: () => apiService.listMyInternships(),
   listInternships: () => apiService.listInternships(),
   getInternship: (id: string) => apiService.getInternship(id),
