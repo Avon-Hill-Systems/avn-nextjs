@@ -63,11 +63,12 @@ export function InternshipCard({
   };
 
   const handleIndustryChange = (value: string) => {
-    const current = localEditData.industry || [];
-    if (!current.includes(value)) {
+    const val = value as typeof INDUSTRIES[number];
+    const current = (localEditData.industry || []) as typeof INDUSTRIES[number][];
+    if (!current.includes(val)) {
       setLocalEditData(prev => ({
         ...prev,
-        industry: [...current, value]
+        industry: [...current, val]
       }));
     }
   };

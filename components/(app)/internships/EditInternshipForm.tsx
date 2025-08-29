@@ -128,8 +128,9 @@ export default function EditInternshipForm({ internship }: { internship: Interns
             <FormLabel>Industries</FormLabel>
             <FormControl>
               <Select value="" onValueChange={(v) => {
+                const val = v as typeof INDUSTRIES[number];
                 const cur = field.value || [];
-                if (!cur.includes(v)) field.onChange([...cur, v]);
+                if (!cur.includes(val)) field.onChange([...cur, val]);
               }}>
                 <SelectTrigger className="bg-background"><SelectValue placeholder={field.value?.length ? `${field.value.length} selected` : 'Select industries'} /></SelectTrigger>
                 <SelectContent>

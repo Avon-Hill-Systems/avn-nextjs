@@ -323,9 +323,10 @@ export function StudentProfileForm() {
                   <FormControl>
                     <Select 
                       onValueChange={(value) => {
+                        const val = value as typeof INDUSTRIES[number];
                         const currentValues = field.value || [];
-                        if (!currentValues.includes(value)) {
-                          field.onChange([...currentValues, value]);
+                        if (!currentValues.includes(val)) {
+                          field.onChange([...currentValues, val]);
                         }
                       }} 
                       value=""

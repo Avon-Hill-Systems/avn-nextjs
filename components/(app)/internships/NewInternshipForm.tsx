@@ -203,9 +203,10 @@ export function NewInternshipForm() {
                       <FormControl>
                         <Select
                           onValueChange={(value) => {
+                            const val = value as typeof INDUSTRIES[number];
                             const current = field.value || [];
-                            if (!current.includes(value)) {
-                              field.onChange([...current, value]);
+                            if (!current.includes(val)) {
+                              field.onChange([...current, val]);
                             }
                           }}
                           value=""

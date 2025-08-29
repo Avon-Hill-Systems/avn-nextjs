@@ -5,6 +5,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 const API_BASE_URL = config.api.baseUrl;
 
 // Types for API responses
+export type Industry =
+  | 'B2B Software'
+  | 'Fintech'
+  | 'Consumer'
+  | 'Education'
+  | 'Healthcare'
+  | 'Real Estate & Construction'
+  | 'Industrials'
+  | 'Government'
+  | 'Other';
 export interface User {
   id: string;
   email: string;
@@ -47,7 +57,7 @@ export interface StudentProfile {
   graduationYear: number;
   technical: boolean;
   linkedinUrl?: string | null;
-  industry: string[];
+  industry: Industry[];
   location: string[];
   remoteWork: string;
   role: string[];
@@ -61,7 +71,7 @@ export interface StartupProfile {
   companyName: string;
   description: string;
   companySize: string;
-  industry: string[];
+  industry: Industry[];
   location: string;
   remoteWork: string;
   website: string;
@@ -78,7 +88,7 @@ export interface Internship {
   title: string;
   location: string;
   remoteWork: 'Remote' | 'Office' | 'Both';
-  industry: string[];
+  industry: Industry[];
   description: string;
   requirements: string;
   responsibilities: string;
@@ -93,7 +103,7 @@ export interface CreateInternshipRequest {
   title: string;
   location: string;
   remoteWork: 'Remote' | 'Office' | 'Both';
-  industry: string[];
+  industry: Industry[];
   description: string;
   requirements: string;
   responsibilities: string;
@@ -133,7 +143,7 @@ export interface CreateStudentProfileRequest {
   graduationYear: number;
   technical: boolean;
   linkedinUrl?: string | null;
-  industry: string[];
+  industry: Industry[];
   location: string[];
   remoteWork: string;
   role: string[];
@@ -144,7 +154,7 @@ export interface UpdateStudentProfileRequest {
   graduationYear?: number;
   technical?: boolean;
   linkedinUrl?: string | null;
-  industry?: string[];
+  industry?: Industry[];
   location?: string[];
   remoteWork?: string;
   role?: string[];
@@ -154,7 +164,7 @@ export interface CreateStartupProfileRequest {
   companyName: string;
   description: string;
   companySize: string;
-  industry: string[];
+  industry: Industry[];
   location: string;
   remoteWork: string;
   website: string;
@@ -166,7 +176,7 @@ export interface UpdateStartupProfileRequest {
   companyName?: string;
   description?: string;
   companySize?: string;
-  industry?: string[];
+  industry?: Industry[];
   location?: string;
   remoteWork?: string;
   website?: string;
