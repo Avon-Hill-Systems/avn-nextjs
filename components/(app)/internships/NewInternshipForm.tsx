@@ -30,13 +30,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useCreateInternshipMutation } from "@/lib/api-service";
 
 // Internship posting schema
 const internshipSchema = z.object({
   title: z.string().min(1, "Internship title is required"),
   location: z.string().min(1, "Location is required"),
-  remoteWork: z.string().min(1, "Remote work policy is required"),
-  industry: z.string().min(1, "Industry is required"),
+  remoteWork: z.enum(["Remote", "Office", "Both"]),
+  industry: z.array(z.string()).min(1, "Select at least one industry"),
   description: z.string().min(50, "Description must be at least 50 characters"),
   requirements: z.string().min(20, "Requirements must be at least 20 characters"),
   responsibilities: z.string().min(20, "Responsibilities must be at least 20 characters"),
@@ -59,14 +60,15 @@ export function NewInternshipForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const createInternship = useCreateInternshipMutation();
 
   const form = useForm<InternshipFormData>({
     resolver: zodResolver(internshipSchema),
     defaultValues: {
       title: "",
       location: "",
-      remoteWork: "",
-      industry: "",
+      remoteWork: undefined as unknown as "Remote" | "Office" | "Both",
+      industry: [],
       description: "",
       requirements: "",
       responsibilities: "",
@@ -81,12 +83,20 @@ export function NewInternshipForm() {
     setError(null);
 
     try {
-      // TODO: Replace with actual API call when backend is ready
-      console.log("Creating internship posting:", data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const payload = {
+        title: data.title,
+        location: data.location,
+        remoteWork: data.remoteWork,
+        industry: data.industry,
+        description: data.description,
+        requirements: data.requirements,
+        responsibilities: data.responsibilities,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        compensation: data.compensation,
+      };
+      await createInternship.mutateAsync(payload);
+
       setShowSuccessModal(true);
       form.reset();
     } catch (error) {
@@ -148,28 +158,28 @@ export function NewInternshipForm() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="remoteWork"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-normal">Remote Work Policy *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="bg-background">
-                              <SelectValue placeholder="Select policy" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Remote">Remote</SelectItem>
-                            <SelectItem value="Office">Office-Based</SelectItem>
-                            <SelectItem value="Hybrid">Hybrid</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <FormField
+                  control={form.control}
+                  name="remoteWork"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-normal">Remote Work Policy *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select policy" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Remote">Remote</SelectItem>
+                          <SelectItem value="Office">Office</SelectItem>
+                          <SelectItem value="Both">Both</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 </div>
 
                 <FormField
@@ -177,27 +187,52 @@ export function NewInternshipForm() {
                   name="industry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-normal">Industry *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
+                      <FormLabel className="font-normal">Industries *</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => {
+                            const current = field.value || [];
+                            if (!current.includes(value)) {
+                              field.onChange([...current, value]);
+                            }
+                          }}
+                          value=""
+                        >
                           <SelectTrigger className="bg-background">
-                            <SelectValue placeholder="Select industry" />
+                            <SelectValue placeholder={field.value && field.value.length > 0 ? `${field.value.length} selected` : "Select industries"} />
                           </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Technology">Technology</SelectItem>
-                          <SelectItem value="Healthcare">Healthcare</SelectItem>
-                          <SelectItem value="Finance">Finance</SelectItem>
-                          <SelectItem value="Education">Education</SelectItem>
-                          <SelectItem value="E-commerce">E-commerce</SelectItem>
-                          <SelectItem value="AI/ML">AI/ML</SelectItem>
-                          <SelectItem value="Biotech">Biotech</SelectItem>
-                          <SelectItem value="Clean Energy">Clean Energy</SelectItem>
-                          <SelectItem value="Fintech">Fintech</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
+                          <SelectContent>
+                            <SelectItem value="Technology" disabled={field.value?.includes("Technology")}>Technology</SelectItem>
+                            <SelectItem value="Healthcare" disabled={field.value?.includes("Healthcare")}>Healthcare</SelectItem>
+                            <SelectItem value="Finance" disabled={field.value?.includes("Finance")}>Finance</SelectItem>
+                            <SelectItem value="Education" disabled={field.value?.includes("Education")}>Education</SelectItem>
+                            <SelectItem value="E-commerce" disabled={field.value?.includes("E-commerce")}>E-commerce</SelectItem>
+                            <SelectItem value="AI/ML" disabled={field.value?.includes("AI/ML")}>AI/ML</SelectItem>
+                            <SelectItem value="Biotech" disabled={field.value?.includes("Biotech")}>Biotech</SelectItem>
+                            <SelectItem value="Clean Energy" disabled={field.value?.includes("Clean Energy")}>Clean Energy</SelectItem>
+                            <SelectItem value="Fintech" disabled={field.value?.includes("Fintech")}>Fintech</SelectItem>
+                            <SelectItem value="Other" disabled={field.value?.includes("Other")}>Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                       <FormMessage />
+                      {field.value && field.value.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {field.value.map((industry, idx) => (
+                            <span key={`${industry}-${idx}`} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm font-normal flex items-center gap-1">
+                              {industry}
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(field.value.filter((_, i) => i !== idx))}
+                                className="ml-1 text-primary/70 hover:text-primary"
+                                aria-label={`Remove ${industry}`}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </FormItem>
                   )}
                 />

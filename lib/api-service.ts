@@ -49,6 +49,37 @@ export interface StartupProfile {
   updatedAt: string;
 }
 
+// Internships
+export interface Internship {
+  id: string;
+  userId: string;
+  title: string;
+  location: string;
+  remoteWork: 'Remote' | 'Office' | 'Both';
+  industry: string[];
+  description: string;
+  requirements: string;
+  responsibilities: string;
+  startDate: string; // ISO string
+  endDate: string;   // ISO string
+  compensation: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateInternshipRequest {
+  title: string;
+  location: string;
+  remoteWork: 'Remote' | 'Office' | 'Both';
+  industry: string[];
+  description: string;
+  requirements: string;
+  responsibilities: string;
+  startDate: string; // yyyy-MM-dd or ISO
+  endDate: string;   // yyyy-MM-dd or ISO
+  compensation: string;
+}
+
 export interface ResumeMetadata {
   id: string;
   userId: string;
@@ -294,6 +325,22 @@ class ApiClient {
     });
   }
 
+  // Internships
+  async createInternship(data: CreateInternshipRequest): Promise<ApiResponse<Internship>> {
+    return this.request<Internship>('/internships', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async listMyInternships(): Promise<ApiResponse<Internship[]>> {
+    return this.request<Internship[]>('/internships/mine');
+  }
+
+  async listInternships(): Promise<ApiResponse<Internship[]>> {
+    return this.request<Internship[]>('/internships');
+  }
+
   // Resume management methods
   async uploadResume(userId: string, file: File, description?: string): Promise<ApiResponse<ResumeMetadata>> {
     const formData = new FormData();
@@ -439,6 +486,10 @@ export const userApi = {
   uploadResume: (userId: string, file: File, description?: string) => apiService.uploadResume(userId, file, description),
   getResume: (userId: string) => apiService.getResume(userId),
   deleteResume: (userId: string) => apiService.deleteResume(userId),
+  // Internships
+  createInternship: (data: CreateInternshipRequest) => apiService.createInternship(data),
+  listMyInternships: () => apiService.listMyInternships(),
+  listInternships: () => apiService.listInternships(),
 };
 
 export const systemApi = {
@@ -459,6 +510,8 @@ const qk = {
   startupProfile: (userId: string) => ["startupProfile", userId] as const,
   resume: (userId: string) => ["resume", userId] as const,
   system: (key: string) => ["system", key] as const,
+  internshipsMine: () => ["internships", "mine"] as const,
+  internships: () => ["internships"] as const,
 };
 
 // Users
@@ -667,6 +720,34 @@ export function useHealthQuery() {
       const res = await systemApi.health();
       if (res.error) throw new Error(res.message || res.error);
       return res.data!;
+    },
+  });
+}
+
+// Internships
+export function useMyInternshipsQuery(enabled = true) {
+  return useQuery({
+    queryKey: qk.internshipsMine(),
+    enabled,
+    queryFn: async () => {
+      const res = await userApi.listMyInternships();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data ?? [];
+    },
+  });
+}
+
+export function useCreateInternshipMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateInternshipRequest) => {
+      const res = await userApi.createInternship(data);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: qk.internshipsMine() });
+      queryClient.invalidateQueries({ queryKey: qk.internships() });
     },
   });
 }
