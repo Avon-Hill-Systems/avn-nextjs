@@ -43,16 +43,7 @@ type AdminUser = {
   resume?: ResumeLight;
 };
 
-function useAdminUsers() {
-  return useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async (): Promise<AdminUser[]> => {
-      const res = await apiService.getAllUsers();
-      if (res.error) throw new Error(res.message || res.error);
-      return (res.data || []) as unknown as AdminUser[];
-    },
-  });
-}
+// (removed unused useAdminUsers hook)
 
 async function downloadResume(userId: string) {
   const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
@@ -88,7 +79,7 @@ export default function AdminUsers() {
       return (await apiService.getAdminUsersList({ is_student: true, limit: 25, cursor: studentCursor })).data;
     },
   });
-  const { data: startupPage, isLoading: loadingStartups, error: startupError, refetch: refetchStartups } = useQuery({
+  const { data: startupPage, isLoading: loadingStartups, error: startupError } = useQuery({
     queryKey: ["admin-users", "startups", startupCursor],
     queryFn: async () => {
       return (await apiService.getAdminUsersList({ is_student: false, limit: 25, cursor: startupCursor })).data;
@@ -127,14 +118,15 @@ export default function AdminUsers() {
     });
   };
 
-  const STATUSES: StudentProfile['interviewStatus'][] = [
+  type InterviewStatus = 'No Invite Sent' | 'Invite Sent' | 'Interview Scheduled' | 'Interview Complete';
+  const STATUSES: InterviewStatus[] = [
     'No Invite Sent',
     'Invite Sent',
     'Interview Scheduled',
     'Interview Complete',
   ];
 
-  async function updateInterviewStatus(userId: string, status: NonNullable<StudentProfile['interviewStatus']>) {
+  async function updateInterviewStatus(userId: string, status: InterviewStatus) {
     try {
       await apiService.updateStudentProfile(userId, { interviewStatus: status });
       await refetchStudents();
@@ -226,7 +218,7 @@ export default function AdminUsers() {
                     <TableCell>
                       {/* Status dropdown */}
                       <div className="min-w-[180px]">
-                        <Select defaultValue={s?.interviewStatus || 'No Invite Sent'} onValueChange={(val) => updateInterviewStatus(u.id, val as any)}>
+                        <Select defaultValue={s?.interviewStatus || 'No Invite Sent'} onValueChange={(val) => updateInterviewStatus(u.id, val as InterviewStatus)}>
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
