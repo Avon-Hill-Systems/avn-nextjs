@@ -12,12 +12,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 type StudentProfile = {
   major: string;
   graduationYear: number;
   technical: boolean;
   linkedinUrl?: string | null;
+  interviewStatus?: 'No Invite Sent' | 'Invite Sent' | 'Interview Scheduled' | 'Interview Complete';
 };
 
 type StartupProfile = {
@@ -125,6 +127,23 @@ export default function AdminUsers() {
     });
   };
 
+  const STATUSES: StudentProfile['interviewStatus'][] = [
+    'No Invite Sent',
+    'Invite Sent',
+    'Interview Scheduled',
+    'Interview Complete',
+  ];
+
+  async function updateInterviewStatus(userId: string, status: NonNullable<StudentProfile['interviewStatus']>) {
+    try {
+      await apiService.updateStudentProfile(userId, { interviewStatus: status });
+      await refetchStudents();
+    } catch (err) {
+      console.error('Failed to update interview status', err);
+      // no toast system here; silent fail with console
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-3 flex-wrap">
@@ -165,6 +184,7 @@ export default function AdminUsers() {
                 <TableHead>LinkedIn</TableHead>
                 <TableHead>Resume</TableHead>
                 <TableHead>Profile + Resume</TableHead>
+                <TableHead>Interview Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -202,6 +222,21 @@ export default function AdminUsers() {
                       ) : (
                         <span className="text-red-600">Incomplete</span>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      {/* Status dropdown */}
+                      <div className="min-w-[180px]">
+                        <Select defaultValue={s?.interviewStatus || 'No Invite Sent'} onValueChange={(val) => updateInterviewStatus(u.id, val as any)}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {STATUSES.map((st) => (
+                              <SelectItem key={st} value={st}>{st}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

@@ -32,7 +32,7 @@ export default function TermsOfService() {
               <section>
                 <h2 className="text-xl font-normal text-foreground mb-3">Agreement to Terms</h2>
                 <p>
-                  By accessing and using the services provided by Avon Hill Systems (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), 
+                  By accessing and using the services provided by tostendout(&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), 
                   you agree to be bound by these Terms of Service. If you disagree with any part of these terms, 
                   you may not access our services.
                 </p>
@@ -41,7 +41,7 @@ export default function TermsOfService() {
               <section>
                 <h2 className="text-xl font-normal text-foreground mb-3">Description of Services</h2>
                 <p>
-                  Avon Hill Systems provides AI-powered supermarket simulation and predictive analytics services. 
+                  tostendout provides AI-powered supermarket simulation and predictive analytics services. 
                   Our platform helps businesses optimize their operations through advanced modeling and data analysis.
                 </p>
               </section>
@@ -72,7 +72,7 @@ export default function TermsOfService() {
               <section>
                 <h2 className="text-xl font-normal text-foreground mb-3">Intellectual Property</h2>
                 <p>
-                  Our services and their original content, features, and functionality are owned by Avon Hill Systems 
+                  Our services and their original content, features, and functionality are owned by tostendout 
                   and are protected by international copyright, trademark, patent, trade secret, and other intellectual 
                   property laws.
                 </p>
@@ -89,7 +89,7 @@ export default function TermsOfService() {
               <section>
                 <h2 className="text-xl font-normal text-foreground mb-3">Limitation of Liability</h2>
                 <p>
-                  In no event shall Avon Hill Systems be liable for any indirect, incidental, special, consequential, 
+                  In no event shall tostendout be liable for any indirect, incidental, special, consequential, 
                   or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other 
                   intangible losses.
                 </p>
@@ -125,7 +125,7 @@ export default function TermsOfService() {
                   If you have any questions about these Terms of Service, please contact us at:
                 </p>
                 <div className="mt-2 p-4 bg-muted rounded-lg">
-                  <p className="font-medium">Avon Hill Systems</p>
+                  <p className="font-medium">tostendout</p>
                   <p>Email: vhenz@college.harvard.edu</p>
                   <p>Address: 64 Linnaean Street, Cambridge, MA</p>
                 </div>

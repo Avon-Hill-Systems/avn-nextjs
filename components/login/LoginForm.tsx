@@ -38,7 +38,7 @@ interface LoginFormProps {
 export default function LoginForm({ 
   onSubmit, 
   title = "Welcome Back", 
-  description = "Sign in to your Avon Hill account",
+  description = "Sign in to your tostendout account",
   submitText = "Sign In"
 }: LoginFormProps) {
   const router = useRouter();

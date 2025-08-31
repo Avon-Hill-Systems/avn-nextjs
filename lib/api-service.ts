@@ -61,6 +61,7 @@ export interface StudentProfile {
   location: string[];
   remoteWork: string;
   role: string[];
+  interviewStatus?: 'No Invite Sent' | 'Invite Sent' | 'Interview Scheduled' | 'Interview Complete';
   createdAt: string;
   updatedAt: string;
 }
@@ -147,6 +148,7 @@ export interface CreateStudentProfileRequest {
   location: string[];
   remoteWork: string;
   role: string[];
+  interviewStatus?: 'No Invite Sent' | 'Invite Sent' | 'Interview Scheduled' | 'Interview Complete';
 }
 
 export interface UpdateStudentProfileRequest {
@@ -158,6 +160,7 @@ export interface UpdateStudentProfileRequest {
   location?: string[];
   remoteWork?: string;
   role?: string[];
+  interviewStatus?: 'No Invite Sent' | 'Invite Sent' | 'Interview Scheduled' | 'Interview Complete';
 }
 
 export interface CreateStartupProfileRequest {

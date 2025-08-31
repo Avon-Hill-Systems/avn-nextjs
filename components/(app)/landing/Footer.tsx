@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
     <footer className="py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="text-foreground/60 text-sm mb-4">
-          © {currentYear} Avon Hill Systems
+          © {currentYear} tostendout
         </div>
         <div className="flex justify-center space-x-6 text-xs text-foreground/60">
           <a href="/privacy" className="hover:text-foreground/80 transition-colors">

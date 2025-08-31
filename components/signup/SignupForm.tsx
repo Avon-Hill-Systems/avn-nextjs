@@ -37,7 +37,7 @@ interface SignupFormProps {
 export default function SignupForm({ 
   onSubmit, 
   title = "Create Your Account", 
-  description = "Join Avon Hill Systems today",
+  description = "Join tostendout today",
   submitText = "Sign Up"
 }: SignupFormProps) {
   const router = useRouter();

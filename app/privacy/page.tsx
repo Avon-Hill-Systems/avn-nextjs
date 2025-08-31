@@ -32,7 +32,7 @@ export default function PrivacyPolicy() {
               <section>
                 <h2 className="text-xl font-normal text-foreground mb-3">Introduction</h2>
                 <p>
-                  Avon Hill Systems (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. 
+                  Tostendout (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. 
                   This Privacy Policy explains how we collect, use, disclose, and safeguard your information 
                   when you use our AI-powered supermarket simulation and analytics services.
                 </p>
@@ -95,7 +95,7 @@ export default function PrivacyPolicy() {
                   If you have any questions about this Privacy Policy, please contact us at:
                 </p>
                 <div className="mt-2 p-4 bg-muted rounded-lg">
-                  <p className="font-medium">Avon Hill Systems</p>
+                  <p className="font-medium">tostendout</p>
                   <p>Email: vhenz@college.harvard.edu</p>
                   <p>Address: 64 Linnaean Street, Cambridge, MA</p>
                 </div>

@@ -13,7 +13,7 @@ export const config = {
   
   // App settings
   app: {
-    name: 'Avon Hill Systems',
+    name: 'tostendout',
     environment: process.env.NODE_ENV || 'development',
     isDevelopment: process.env.NODE_ENV === 'development',
     isProduction: process.env.NODE_ENV === 'production',

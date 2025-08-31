@@ -26,7 +26,7 @@ export default function LoginPage() {
               {/* Optimized image without any placeholder */}
               <Image
                 src="/landing/landing2.png"
-                alt="Avon Hill Systems"
+                alt="tostendout"
                 fill
                 className="object-contain"
                 priority

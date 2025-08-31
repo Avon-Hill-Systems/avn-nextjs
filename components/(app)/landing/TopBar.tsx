@@ -22,7 +22,7 @@ const TopBar: React.FC = () => {
                 </h1>
               </button>
               
-              {/* Navigation Items - Right after Avon Hill Systems */}
+              {/* Navigation Items - Right after tostendout */}
               <nav className="hidden md:flex items-center space-x-8 ml-8">
                 <Link 
                   href="/students" 
