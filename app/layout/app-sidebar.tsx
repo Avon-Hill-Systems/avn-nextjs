@@ -169,7 +169,7 @@ export function AppSidebar() {
       <SidebarHeader className="group-data-[collapsible=icon]:hidden">
         <div className="px-2 py-1">
           <h2 className="text-xl font-normal">
-            Avon Hill
+            tostendout
           </h2>
         </div>
       </SidebarHeader>

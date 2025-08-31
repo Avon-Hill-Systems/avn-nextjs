@@ -15,7 +15,7 @@ export default function TermsOfService() {
               className="flex items-center hover:opacity-80 transition-opacity duration-200"
             >
               <h1 className="font-normal text-foreground text-lg sm:text-xl">
-                Avon Hill
+                tostendout
               </h1>
             </button>
           </div>
