@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function InternshipsPage() {
   return (
     <div className="p-6 bg-background">
@@ -13,12 +15,12 @@ export default function InternshipsPage() {
             Post a new internship opportunity to attract talented students. 
             Describe your role, requirements, and what students will learn.
           </p>
-          <a 
+          <Link 
             href="/internships/new" 
             className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Create New Posting →
-          </a>
+          </Link>
         </div>
         
         <div className="bg-muted/30 rounded-lg p-6 border border-border/50">
@@ -27,12 +29,12 @@ export default function InternshipsPage() {
             View and manage your current internship postings. 
             See applications, update details, and track student interest.
           </p>
-          <a 
+          <Link 
             href="/internships/active" 
             className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             View Active Postings →
-          </a>
+          </Link>
         </div>
       </div>
     </div>
