@@ -55,10 +55,8 @@ function VerifyEmailContent() {
           setMessage("Verification complete. Redirecting…");
           try { bc?.postMessage({ type: 'verified' }); } catch {}
           try { localStorage.setItem('avn-auth-verified', String(Date.now())); } catch {}
-          // Decide target based on user role; fallback to query or dashboard
-          const isStudent = (user as SessionUser)?.is_student === true;
-          const target = isStudent ? '/matches' : '/internships/active';
-          const finalTarget = redirectQuery || target;
+          // After verification, send all users to profile unless a redirect is provided
+          const finalTarget = redirectQuery || '/profile';
           // Use full navigation to ensure cookies/session are re-read fresh
           window.location.assign(finalTarget);
         }
@@ -111,7 +109,7 @@ function VerifyEmailContent() {
     setResending(true);
     setMessage("");
     try {
-      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}/dashboard` });
+      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}/verify-email` });
       setKind("success");
       setMessage("Verification email resent. Check your inbox.");
     } catch (e: unknown) {

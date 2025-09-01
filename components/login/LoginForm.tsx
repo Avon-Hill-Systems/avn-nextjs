@@ -79,7 +79,7 @@ export default function LoginForm({
             const sess = await getSession();
             const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
             const isStudent = Boolean(user?.is_student);
-            const target = isStudent ? '/matches' : '/internships/active';
+            const target = isStudent ? '/matches' : '/internships/new';
             router.push(target);
           }
         } catch {
