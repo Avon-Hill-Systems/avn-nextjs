@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { signIn, getSession } from '@/lib/auth-client';
+import { config } from '@/lib/config';
 
 interface SessionResponse {
   user?: { is_student?: boolean; [key: string]: unknown };
@@ -70,7 +71,7 @@ export default function LoginForm({
         // Successful login - redirect based on admin status or role
         try {
           // Prefer server-trusted admin check
-          const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+          const apiBase = (config.api.baseUrl || '').replace(/\/$/, '');
           const verifyRes = await fetch(`${apiBase}/users/admin/verify`, { credentials: 'include' });
           if (verifyRes.ok) {
             router.push('/admin');

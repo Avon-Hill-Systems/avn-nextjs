@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { config as appConfig } from './lib/config'
 
 function resolveAuthBase() {
-  const base = process.env.NEXT_PUBLIC_AUTH_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-  const basePath = process.env.NEXT_PUBLIC_AUTH_BASE_PATH || '/auth'
+  const provided = process.env.NEXT_PUBLIC_AUTH_URL || appConfig.api.authUrl
+  const base = provided || appConfig.api.baseUrl
+  const basePath = process.env.NEXT_PUBLIC_AUTH_BASE_PATH || appConfig.api.authBasePath || '/auth'
   try {
     const u = new URL(base)
     if (u.pathname === '/' || u.pathname === '') {
@@ -17,7 +19,7 @@ function resolveAuthBase() {
 }
 
 function resolveApiBase() {
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+  const base = process.env.NEXT_PUBLIC_API_URL || appConfig.api.baseUrl
   return base.endsWith('/') ? base.slice(0, -1) : base
 }
 

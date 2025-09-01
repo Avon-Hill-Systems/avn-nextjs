@@ -3,6 +3,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiService } from "@/lib/api-service";
+import { config } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -46,7 +47,7 @@ type AdminUser = {
 // (removed unused useAdminUsers hook)
 
 async function downloadResume(userId: string) {
-  const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+  const apiBase = (config.api.baseUrl || "").replace(/\/$/, "");
   const url = `${apiBase}/users/${userId}/resume`;
   const res = await fetch(url, { credentials: "include" });
   if (!res.ok) throw new Error(`Failed to download resume (${res.status})`);

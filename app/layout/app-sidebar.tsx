@@ -28,6 +28,7 @@ import {
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { config } from "@/lib/config";
 
 // Type definitions
 type SubItem = {
@@ -127,7 +128,7 @@ export function AppSidebar() {
     }
     const check = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiBase = config.api.baseUrl;
         const res = await fetch(`${apiBase.replace(/\/$/, '')}/users/admin/verify`, { credentials: 'include' });
         setIsAdmin(res.ok);
       } catch {

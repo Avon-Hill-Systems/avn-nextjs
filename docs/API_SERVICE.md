@@ -95,12 +95,30 @@ try {
 
 ### Environment Variables
 
-Set these in your `.env.local`:
+Recommended environment files (already added):
+
+- `.env.development` → dev uses staging API
+- `.env.staging` → staging uses staging API
+- `.env.production` → production uses production API
+
+Each file sets at minimum:
 
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_AUTH_URL=http://localhost:8000
+# Example for development / staging
+NEXT_PUBLIC_DEPLOY_ENV=development   # or staging | production
+NEXT_PUBLIC_API_URL=https://api.staging.tostendout.com
+NEXT_PUBLIC_AUTH_BASE_PATH=/auth
 ```
+
+In production:
+
+```bash
+NEXT_PUBLIC_DEPLOY_ENV=production
+NEXT_PUBLIC_API_URL=https://api.tostendout.com
+NEXT_PUBLIC_AUTH_BASE_PATH=/auth
+```
+
+Note: You can override `NEXT_PUBLIC_API_URL` per deploy environment via your hosting platform’s env settings. If `NEXT_PUBLIC_API_URL` is not set, the app defaults to `https://api.tostendout.com` in production and `https://api.staging.tostendout.com` otherwise.
 
 ### Config File
 
@@ -109,8 +127,10 @@ The service uses `lib/config.ts` for centralized configuration:
 ```typescript
 export const config = {
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-    authUrl: process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:8000',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NEXT_PUBLIC_DEPLOY_ENV === 'production' ? 'https://api.tostendout.com' : 'https://api.staging.tostendout.com'),
+    // If NEXT_PUBLIC_AUTH_URL is provided, it will be used; otherwise baseUrl + /auth
+    authUrl: process.env.NEXT_PUBLIC_AUTH_URL,
   },
   // ... other config
 };
