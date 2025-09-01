@@ -209,7 +209,7 @@ export function StudentProfileForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-normal text-foreground">Basic Information</h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormItem>
                 <FormLabel className="font-normal">First Name</FormLabel>
                 <FormControl>
@@ -450,7 +450,7 @@ export function StudentProfileForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-normal text-foreground">Role Interests *</h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 "Engineering",
                 "Product", 

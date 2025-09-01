@@ -112,7 +112,7 @@ export default function StartupSignupPage() {
                   </div>
                 )}
                 <div className="space-y-3 sm:space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="firstName"
@@ -241,34 +241,23 @@ export default function StartupSignupPage() {
                     control={form.control}
                     name="acceptTerms"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex items-start gap-3">
                         <FormControl>
                           <input
+                            id="acceptTerms"
                             type="checkbox"
                             checked={field.value}
                             onChange={field.onChange}
-                            className="mt-1"
+                            className="mt-1 shrink-0"
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-sm text-foreground">
+                        <div className="flex-1 min-w-0">
+                          <label htmlFor="acceptTerms" className="text-sm text-foreground leading-snug break-words">
                             I agree to the{' '}
-                            <button
-                              type="button"
-                              onClick={() => router.push('/terms')}
-                              className="text-primary hover:underline"
-                            >
-                              Terms of Service
-                            </button>
+                            <a href="/terms" className="text-primary hover:underline">Terms of Service</a>
                             {' '}and{' '}
-                            <button
-                              type="button"
-                              onClick={() => router.push('/privacy')}
-                              className="text-primary hover:underline"
-                            >
-                              Privacy Policy
-                            </button>
-                          </FormLabel>
+                            <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
+                          </label>
                           <FormMessage />
                         </div>
                       </FormItem>

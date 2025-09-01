@@ -107,7 +107,7 @@ export function InternshipCard({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-foreground">Location</label>
               <Input
@@ -194,7 +194,7 @@ export function InternshipCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium text-foreground">Start Date</label>
               <Input
@@ -292,7 +292,7 @@ export function InternshipCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t">
           <div>
             <div className="text-sm">
               <p className="font-medium text-foreground">Start</p>

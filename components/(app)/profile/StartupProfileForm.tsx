@@ -220,7 +220,7 @@ export function StartupProfileForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-normal text-foreground">Company Information</h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormItem>
                 <FormLabel className="font-normal">Contact First Name</FormLabel>
                 <FormControl>
