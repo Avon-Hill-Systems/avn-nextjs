@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useInterviewQuery, useUpsertInterviewMutation, type User, apiService } from "@/lib/api-service";
 import { useQuery } from "@tanstack/react-query";
 
-type AdminUsersResponse = { items: (User & { studentProfile?: any; startupProfile?: any })[]; nextCursor?: string };
+type AdminUsersResponse = { items: (User & { studentProfile?: unknown; startupProfile?: unknown })[]; nextCursor?: string };
 
 const schema = z.object({ notes: z.string() });
 
