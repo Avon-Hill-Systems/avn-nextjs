@@ -74,7 +74,6 @@ export interface StartupProfile {
   companySize: string;
   industry: Industry[];
   location: string;
-  remoteWork: string;
   website: string;
   linkedinUrl?: string | null;
   phone: string;
@@ -89,7 +88,6 @@ export interface Internship {
   title: string;
   location: string;
   remoteWork: 'Remote' | 'Office' | 'Both';
-  industry: Industry[];
   description: string;
   requirements: string;
   responsibilities: string;
@@ -104,7 +102,6 @@ export interface CreateInternshipRequest {
   title: string;
   location: string;
   remoteWork: 'Remote' | 'Office' | 'Both';
-  industry: Industry[];
   description: string;
   requirements: string;
   responsibilities: string;
@@ -169,7 +166,6 @@ export interface CreateStartupProfileRequest {
   companySize: string;
   industry: Industry[];
   location: string;
-  remoteWork: string;
   website: string;
   linkedinUrl?: string | null;
   phone: string;
@@ -181,7 +177,6 @@ export interface UpdateStartupProfileRequest {
   companySize?: string;
   industry?: Industry[];
   location?: string;
-  remoteWork?: string;
   website?: string;
   linkedinUrl?: string | null;
   phone?: string;
@@ -191,6 +186,15 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
   message?: string;
+}
+
+// Interviews
+export interface InterviewRecord {
+  id: string;
+  userId: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Generic API client with error handling
@@ -414,6 +418,17 @@ class ApiClient {
     });
   }
 
+  // Interviews (admin)
+  async getInterview(userId: string): Promise<ApiResponse<InterviewRecord | null>> {
+    return this.request<InterviewRecord | null>(`/interviews/${userId}`);
+  }
+  async upsertInterview(userId: string, notes: string): Promise<ApiResponse<InterviewRecord>> {
+    return this.request<InterviewRecord>(`/interviews/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
   // Resume management methods
   async uploadResume(userId: string, file: File, description?: string): Promise<ApiResponse<ResumeMetadata>> {
     const formData = new FormData();
@@ -566,6 +581,9 @@ export const userApi = {
   getInternship: (id: string) => apiService.getInternship(id),
   updateInternship: (id: string, data: UpdateInternshipRequest) => apiService.updateInternship(id, data),
   deleteInternship: (id: string) => apiService.deleteInternship(id),
+  // Interviews
+  getInterview: (userId: string) => apiService.getInterview(userId),
+  upsertInterview: (userId: string, notes: string) => apiService.upsertInterview(userId, notes),
 };
 
 export const systemApi = {
@@ -828,6 +846,18 @@ export function useMyInternshipsQuery(enabled = true) {
   });
 }
 
+export function useAllInternshipsQuery(enabled = true) {
+  return useQuery({
+    queryKey: qk.internships(),
+    enabled,
+    queryFn: async () => {
+      const res = await userApi.listInternships();
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data ?? [];
+    },
+  });
+}
+
 export function useInternshipQuery(id?: string, enabled = true) {
   return useQuery({
     queryKey: qk.internship(id || ""),
@@ -882,6 +912,34 @@ export function useDeleteInternshipMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: qk.internshipsMine() });
+    },
+  });
+}
+
+// Interviews (admin)
+export function useInterviewQuery(userId?: string, enabled = true) {
+  return useQuery({
+    queryKey: ['interview', userId || ''],
+    enabled: Boolean(userId) && enabled,
+    queryFn: async () => {
+      const res = await userApi.getInterview(userId!);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data ?? null;
+    },
+  });
+}
+
+export function useUpsertInterviewMutation(userId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (notes: string) => {
+      if (!userId) throw new Error('userId is required');
+      const res = await userApi.upsertInterview(userId, notes);
+      if (res.error) throw new Error(res.message || res.error);
+      return res.data!;
+    },
+    onSuccess: (_data, _variables, _ctx) => {
+      if (userId) queryClient.invalidateQueries({ queryKey: ['interview', userId] });
     },
   });
 }

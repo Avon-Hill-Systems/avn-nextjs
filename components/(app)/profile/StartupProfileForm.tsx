@@ -55,7 +55,6 @@ const startupProfileSchema = z.object({
   website: z.string().url("Please enter a valid website URL").min(1, "Website is required"),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional().or(z.literal("")),
   description: z.string().min(10, "Company description must be at least 10 characters"),
-  remoteWork: z.string().min(1, "Remote work policy is required"),
   phone: z
     .string()
     .min(1, "Phone is required")
@@ -86,7 +85,6 @@ export function StartupProfileForm() {
       website: "",
       linkedinUrl: "",
       description: "",
-      remoteWork: "",
       phone: "",
     },
   });
@@ -103,7 +101,6 @@ export function StartupProfileForm() {
       currentValues.website !== originalValues.website ||
       currentValues.linkedinUrl !== originalValues.linkedinUrl ||
       currentValues.description !== originalValues.description ||
-      currentValues.remoteWork !== originalValues.remoteWork ||
       currentValues.phone !== originalValues.phone ||
       JSON.stringify(currentValues.industry) !== JSON.stringify(originalValues.industry)
     );
@@ -151,24 +148,12 @@ export function StartupProfileForm() {
 
     setExistingProfile(profileData);
 
-    const normalizeRemote = (val?: string) => {
-      if (!val) return "";
-      const s = String(val).toLowerCase();
-      if (["remote"].includes(s)) return "Remote";
-      if (["office", "in-office", "office-based", "in office", "onsite", "on-site", "on site"].includes(s)) return "Office";
-      if (["both", "hybrid", "either", "any", "no preference", "no-preference", "flexible"].includes(s)) return "Both";
-      const allowed = ["Remote", "Office", "Both"] as const;
-      const match = allowed.find((v) => v.toLowerCase() === s);
-      return match ?? "";
-    };
-
     const formData: StartupProfileFormData = {
       companyName: profileData.companyName ?? "",
       description: profileData.description ?? "",
       companySize: profileData.companySize ?? "",
       industry: profileData.industry ?? [],
       location: profileData.location ?? "",
-      remoteWork: normalizeRemote(profileData.remoteWork),
       website: profileData.website ?? "",
       linkedinUrl: profileData.linkedinUrl ?? "",
       phone: profileData.phone ?? "",
@@ -195,7 +180,6 @@ export function StartupProfileForm() {
         companySize: data.companySize,
         industry: data.industry,
         location: data.location,
-        remoteWork: data.remoteWork,
         website: data.website,
         linkedinUrl: data.linkedinUrl || null,
         phone: data.phone,
@@ -430,28 +414,7 @@ export function StartupProfileForm() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="remoteWork"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-normal">Remote Work Policy *</FormLabel>
-                  <FormControl>
-                    <Select key={`remote-${String(field.value ?? "")}`} onValueChange={field.onChange} value={field.value ?? ""}>
-                      <SelectTrigger className="bg-background">
-                        <SelectValue placeholder="Select policy" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Remote">Remote</SelectItem>
-                        <SelectItem value="Office">Office-Based</SelectItem>
-                        <SelectItem value="Both">No Preference</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Remote work policy removed from startup profile */}
           </div>
 
 

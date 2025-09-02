@@ -159,6 +159,7 @@ export function AppSidebar() {
   const items: NavigationItem[] = isAdmin
     ? [
         { title: 'Admin', url: '/admin', icon: Shield },
+        { title: 'Posted Internships', url: '/admin/internships', icon: Briefcase },
         { title: 'Analytics', url: '/analytics', icon: BarChart3 },
         { title: 'Interviews', url: '/interviews', icon: Calendar },
         { title: 'Matching System', url: '/matching-system', icon: GitMerge },

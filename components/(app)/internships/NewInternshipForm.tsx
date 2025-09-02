@@ -16,13 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -32,24 +26,12 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateInternshipMutation } from "@/lib/api-service";
 
-const INDUSTRIES = [
-  'B2B Software',
-  'Fintech',
-  'Consumer',
-  'Education',
-  'Healthcare',
-  'Real Estate & Construction',
-  'Industrials',
-  'Government',
-  'Other',
-] as const;
 
 // Internship posting schema
 const internshipSchema = z.object({
   title: z.string().min(1, "Internship title is required"),
   location: z.string().min(1, "Location is required"),
   remoteWork: z.enum(["Remote", "Office", "Both"]),
-  industry: z.array(z.enum(INDUSTRIES)).min(1, "Select at least one industry"),
   description: z.string().min(50, "Description must be at least 50 characters"),
   requirements: z.string().min(20, "Requirements must be at least 20 characters"),
   responsibilities: z.string().min(20, "Responsibilities must be at least 20 characters"),
@@ -80,7 +62,6 @@ export function NewInternshipForm() {
       title: "",
       location: "",
       remoteWork: undefined as unknown as "Remote" | "Office" | "Both",
-      industry: [],
       description: "",
       requirements: "",
       responsibilities: "",
@@ -99,7 +80,6 @@ export function NewInternshipForm() {
         title: data.title,
         location: data.location,
         remoteWork: data.remoteWork,
-        industry: data.industry,
         description: data.description,
         requirements: data.requirements,
         responsibilities: data.responsibilities,
@@ -194,56 +174,7 @@ export function NewInternshipForm() {
                 />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-normal">Industries *</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => {
-                            const val = value as typeof INDUSTRIES[number];
-                            const current = field.value || [];
-                            if (!current.includes(val)) {
-                              field.onChange([...current, val]);
-                            }
-                          }}
-                          value=""
-                        >
-                          <SelectTrigger className="bg-background">
-                            <SelectValue placeholder={field.value && field.value.length > 0 ? `${field.value.length} selected` : "Select industries"} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {INDUSTRIES.map(opt => (
-                              <SelectItem key={opt} value={opt} disabled={field.value?.includes(opt)}>
-                                {opt}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                      {field.value && field.value.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {field.value.map((industry, idx) => (
-                            <span key={`${industry}-${idx}`} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm font-normal flex items-center gap-1">
-                              {industry}
-                              <button
-                                type="button"
-                                onClick={() => field.onChange(field.value.filter((_, i) => i !== idx))}
-                                className="ml-1 text-primary/70 hover:text-primary"
-                                aria-label={`Remove ${industry}`}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </FormItem>
-                  )}
-                />
+                {/* Industry selection removed */}
               </div>
 
               {/* Role Details */}

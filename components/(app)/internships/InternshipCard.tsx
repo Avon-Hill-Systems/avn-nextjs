@@ -8,18 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Internship } from "@/lib/api-service";
 
-const INDUSTRIES = [
-  'B2B Software',
-  'Fintech',
-  'Consumer',
-  'Education',
-  'Healthcare',
-  'Real Estate & Construction',
-  'Industrials',
-  'Government',
-  'Other',
-] as const;
-
 interface InternshipCardProps {
   internship: Internship;
   isEditing: boolean;
@@ -62,23 +50,7 @@ export function InternshipCard({
     await onSave(internship.id, localEditData);
   };
 
-  const handleIndustryChange = (value: string) => {
-    const val = value as typeof INDUSTRIES[number];
-    const current = (localEditData.industry || []) as typeof INDUSTRIES[number][];
-    if (!current.includes(val)) {
-      setLocalEditData(prev => ({
-        ...prev,
-        industry: [...current, val]
-      }));
-    }
-  };
-
-  const removeIndustry = (industryToRemove: string) => {
-    setLocalEditData(prev => ({
-      ...prev,
-      industry: (prev.industry || []).filter(ind => ind !== industryToRemove)
-    }));
-  };
+  // Industry field removed
 
   if (isEditing && editData) {
     return (
@@ -136,35 +108,7 @@ export function InternshipCard({
             </div>
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-foreground">Industries</label>
-            <Select onValueChange={handleIndustryChange} value="">
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Add industry" />
-              </SelectTrigger>
-              <SelectContent>
-                {INDUSTRIES.map(opt => (
-                  <SelectItem key={opt} value={opt} disabled={localEditData.industry?.includes(opt)}>{opt}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {localEditData.industry && localEditData.industry.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {localEditData.industry.map((industry, idx) => (
-                  <span key={`${industry}-${idx}`} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm flex items-center gap-1">
-                    {industry}
-                    <button
-                      type="button"
-                      onClick={() => removeIndustry(industry)}
-                      className="ml-1 text-primary/70 hover:text-primary"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Industry field removed */}
 
           <div>
             <label className="text-sm font-medium text-foreground">Description</label>
@@ -251,18 +195,7 @@ export function InternshipCard({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div>
-          <div className="mb-2">
-            <span className="text-sm font-medium text-foreground">Industries</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {internship.industry.map((ind, index) => (
-              <span key={index} className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
-                {ind}
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* Industry display removed */}
 
         <div>
           <div className="mb-2">
