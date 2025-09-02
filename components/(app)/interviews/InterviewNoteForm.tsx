@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInterviewQuery, useUpsertInterviewMutation, type User, apiService } from "@/lib/api-service";
@@ -64,7 +65,7 @@ export default function InterviewNoteForm() {
             <Skeleton className="h-10 w-72" />
           ) : (
             <div>
-              <FormLabel className="mb-1 block">Select User</FormLabel>
+              <Label className="mb-1 block">Select User</Label>
               <Select value={selectedUserId || ""} onValueChange={setSelectedUserId}>
                 <SelectTrigger className="w-72">
                   <SelectValue placeholder="Choose a user" />
