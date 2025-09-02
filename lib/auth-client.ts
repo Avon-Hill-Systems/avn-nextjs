@@ -53,7 +53,7 @@ interface ExtendedSignupPayload {
 // Helper to sign up with additional user metadata supported by our backend
 // Wraps the Better Auth client and disables client-side validation so extra
 // fields (first_name, last_name, company, is_student) pass through.
-type PostSignupResult = {
+export type PostSignupResult = {
   ok: boolean;
   error?: string;
   status?: number;
@@ -61,7 +61,14 @@ type PostSignupResult = {
   bodyText?: string;
 };
 
-async function postSignUpEmail(payload: any): Promise<PostSignupResult> {
+type SignupPayload = Partial<ExtendedSignupPayload> & {
+  email: string;
+  password: string;
+  name?: string;
+  callbackURL?: string;
+};
+
+async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult> {
   try {
     const res = await fetch(`${AUTH_BASE}/sign-up/email`, {
       method: 'POST',
@@ -87,9 +94,10 @@ async function postSignUpEmail(payload: any): Promise<PostSignupResult> {
       };
     }
     return { ok: true };
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Network error';
     console.error('Better Auth signup network error', e);
-    return { ok: false, error: e?.message || 'Network error' };
+    return { ok: false, error: msg };
   }
 }
 
@@ -101,7 +109,7 @@ export async function signUpStartup(params: {
   company: string;
   is_student?: boolean; // default false
   callbackURL?: string;
-}) {
+}): Promise<PostSignupResult> {
   const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
   // Use proper typing for extended payload
   const payload: Partial<ExtendedSignupPayload> = {
@@ -124,7 +132,7 @@ export async function signUpStudent(params: {
   first_name: string;
   last_name: string;
   callbackURL?: string;
-}) {
+}): Promise<PostSignupResult> {
   const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
   const payload: Partial<ExtendedSignupPayload> = {
     email,
@@ -135,5 +143,17 @@ export async function signUpStudent(params: {
     last_name,
     is_student: true,
   };
+  return postSignUpEmail(payload);
+}
+
+// Basic signup helper for simple form (name + email + password)
+export async function signUpBasic(params: {
+  name: string;
+  email: string;
+  password: string;
+  callbackURL?: string;
+}): Promise<PostSignupResult> {
+  const { name, email, password, callbackURL = '/verify-email' } = params;
+  const payload: SignupPayload = { name, email, password, callbackURL };
   return postSignUpEmail(payload);
 }

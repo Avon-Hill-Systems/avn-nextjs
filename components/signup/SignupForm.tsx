@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signUp } from '@/lib/auth-client';
+import { signUpBasic, type PostSignupResult } from '@/lib/auth-client';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -59,17 +59,15 @@ export default function SignupForm({
     setError(null);
     
     try {
-      const result = await (signUp as any).email({
+      const result: PostSignupResult = await signUpBasic({
         name: data.name,
         email: data.email,
         password: data.password,
         callbackURL: '/verify-email'
       });
 
-      // Handle Better Auth client return shape either as { error } or { data: { error } }
-      const errorMessage = (result && (result.error || result?.data?.error)) as string | undefined;
-      if (errorMessage) {
-        setError(errorMessage || 'Signup failed');
+      if (!result.ok || result.error) {
+        setError(result.error || `Signup failed${result.status ? ` (HTTP ${result.status})` : ''}`);
         return;
       }
 

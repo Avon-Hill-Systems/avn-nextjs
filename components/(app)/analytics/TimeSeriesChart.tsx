@@ -22,7 +22,7 @@ export function TimeSeriesChart({ data, title, height = 260 }: Props) {
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const w = entry.contentRect.width;
-        if (w && w !== width) setWidth(w);
+        if (w) setWidth((prev) => (w !== prev ? w : prev));
       }
     });
     ro.observe(el);
@@ -58,10 +58,16 @@ export function TimeSeriesChart({ data, title, height = 260 }: Props) {
 
   const path = React.useMemo(() => {
     if (!sortedData.length) return "";
+    // Define local scales to avoid extra deps while using the latest values
+    const lx = (t: number) => {
+      if (maxX === minX) return padding.left + innerW / 2;
+      return padding.left + ((t - minX) / (maxX - minX)) * innerW;
+    };
+    const ly = (v: number) => padding.top + innerH - (v / (yUpper - minY)) * innerH;
     return sortedData
-      .map((d, i) => `${i === 0 ? "M" : "L"} ${xScale(d.date.getTime())} ${yScale(d.value)}`)
+      .map((d, i) => `${i === 0 ? "M" : "L"} ${lx(d.date.getTime())} ${ly(d.value)}`)
       .join(" ");
-  }, [sortedData]);
+  }, [sortedData, minX, maxX, innerW, innerH, padding.left, padding.top, yUpper, minY]);
 
   // Simple ticks: 4 x-ticks, 4 y-ticks
   const xTicks = 4;

@@ -497,13 +497,13 @@ class ApiClient {
       if (xFileCreatedAt) {
         try {
           uploadedAt = new Date(xFileCreatedAt).toISOString();
-        } catch (err) {
+        } catch (_err) {
           // Use current time if parsing fails
         }
       } else if (lastModified) {
         try {
           uploadedAt = new Date(lastModified).toISOString();
-        } catch (err) {
+        } catch (_err) {
           // Use current time if parsing fails
         }
       }
@@ -695,7 +695,7 @@ export function useUpsertStudentProfileMutation(userId?: string) {
       if (res.error) throw new Error(res.message || res.error);
       return res.data!;
     },
-    onSuccess: (data, _vars, _ctx) => {
+    onSuccess: (data) => {
       if (!userId) return;
       queryClient.setQueryData(qk.studentProfile(userId), data);
     },
@@ -766,7 +766,7 @@ export function useUploadResumeMutation(userId?: string) {
       if (res.error) throw new Error(res.message || res.error);
       return res.data!;
     },
-    onSuccess: (_data) => {
+    onSuccess: () => {
       if (!userId) return;
       queryClient.invalidateQueries({ queryKey: qk.resume(userId) });
     },

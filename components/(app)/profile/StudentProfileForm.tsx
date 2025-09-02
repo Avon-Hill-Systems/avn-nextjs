@@ -82,7 +82,7 @@ export function StudentProfileForm() {
   });
 
   // Check if form has changes
-  const hasChanges = () => {
+  const hasChanges = React.useCallback(() => {
     if (!originalValues) return false;
     
     const currentValues = form.getValues();
@@ -104,7 +104,7 @@ export function StudentProfileForm() {
     });
     
     return hasChangesResult;
-  };
+  }, [form, originalValues]);
 
   // Watch form changes to trigger re-renders
   const watchedValues = form.watch();
@@ -114,7 +114,7 @@ export function StudentProfileForm() {
     if (originalValues) {
       hasChanges();
     }
-  }, [watchedValues, originalValues]);
+  }, [watchedValues, originalValues, hasChanges]);
 
   // Query existing profile (cached)
   const { data: profileData, isFetched } = useStudentProfileQuery(user?.id);
@@ -165,7 +165,7 @@ export function StudentProfileForm() {
     };
     form.reset(formData);
     setOriginalValues(formData);
-  }, [isFetched, profileData]);
+  }, [isFetched, profileData, form]);
 
   const upsertMutation = useUpsertStudentProfileMutation(user?.id);
 

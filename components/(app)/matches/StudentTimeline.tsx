@@ -47,7 +47,7 @@ export function StudentTimeline() {
     <div className="space-y-6">
       <div className="relative">
         <div className="space-y-8">
-          {timelineSteps.map((step, index) => (
+          {timelineSteps.map((step) => (
             <div key={step.number} className="flex items-start space-x-4 relative">
               {/* Step circle */}
               <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center relative z-10">

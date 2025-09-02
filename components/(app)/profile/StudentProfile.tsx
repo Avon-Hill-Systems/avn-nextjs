@@ -17,16 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Backend response format for resume upload
-interface BackendResumeResponse {
-  id: string;
-  userId: string;
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// Removed unused BackendResumeResponse type
 
 export function StudentProfile() {
   const { session } = useAuth();

@@ -32,17 +32,7 @@ type StartupProfile = {
 
 type ResumeLight = { id: string; fileName?: string | null; updatedAt?: string } | null;
 
-type AdminUser = {
-  id: string;
-  email: string;
-  first_name?: string | null;
-  last_name?: string | null;
-  is_student: boolean;
-  createdAt?: string;
-  studentProfile?: StudentProfile | null;
-  startupProfile?: StartupProfile | null;
-  resume?: ResumeLight;
-};
+// Removed unused AdminUser type
 
 // (removed unused useAdminUsers hook)
 

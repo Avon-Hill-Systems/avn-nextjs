@@ -98,7 +98,7 @@ function VerifyEmailContent() {
       window.removeEventListener('storage', onStorage);
       try { bc?.close?.(); } catch {}
     };
-  }, [redirectQuery, router]);
+  }, [redirectQuery, router, bc, verifiedExternally]);
 
   const handleResend = async () => {
     if (!email) {

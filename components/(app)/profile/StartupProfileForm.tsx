@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -92,7 +92,7 @@ export function StartupProfileForm() {
   });
 
   // Check if form has changes
-  const hasChanges = () => {
+  const hasChanges = useCallback(() => {
     if (!originalValues) return false;
     
     const currentValues = form.getValues();
@@ -115,7 +115,7 @@ export function StartupProfileForm() {
     });
     
     return hasChangesResult;
-  };
+  }, [form, originalValues]);
 
   // Watch form changes to trigger re-renders
   const watchedValues = form.watch();
@@ -125,7 +125,7 @@ export function StartupProfileForm() {
     if (originalValues) {
       hasChanges();
     }
-  }, [watchedValues, originalValues]);
+  }, [watchedValues, originalValues, hasChanges]);
 
   // Query existing startup profile (cached)
   const { data: profileData, isFetched } = useStartupProfileQuery(user?.id);
@@ -175,7 +175,7 @@ export function StartupProfileForm() {
     };
     form.reset(formData);
     setOriginalValues(formData);
-  }, [isFetched, profileData]);
+  }, [isFetched, profileData, form, user]);
 
   const upsertMutation = useUpsertStartupProfileMutation(user?.id);
 

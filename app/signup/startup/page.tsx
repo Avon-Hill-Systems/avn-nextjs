@@ -8,7 +8,7 @@ import { z } from 'zod';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { signUpStartup } from '@/lib/auth-client';
+import { signUpStartup, type PostSignupResult } from '@/lib/auth-client';
 import {
   Form,
   FormControl,
@@ -65,7 +65,7 @@ export default function StartupSignupPage() {
     
     try {
       // Step 1: Create user account with Better Auth client (with metadata)
-      const result = await signUpStartup({
+      const result: PostSignupResult = await signUpStartup({
         email: data.email,
         password: data.password,
         first_name: data.firstName,
@@ -76,19 +76,19 @@ export default function StartupSignupPage() {
       });
 
       // Enhanced error diagnostics
-      const errorMessage = (result && (result as any).error) || (result as any)?.data?.error;
-      if (errorMessage || (result as any)?.ok === false) {
-        console.error('❌ Signup returned error:', errorMessage || (result as any));
-        if ((result as any)?.status) {
-          console.error('❌ Signup HTTP status:', (result as any).status, (result as any).statusText || '');
+      const errorMessage = result?.error;
+      if (errorMessage || result.ok === false) {
+        console.error('❌ Signup returned error:', errorMessage || result);
+        if (result.status) {
+          console.error('❌ Signup HTTP status:', result.status, result.statusText || '');
         }
-        if ((result as any)?.bodyText) {
-          console.error('❌ Signup response body:', (result as any).bodyText);
+        if (result.bodyText) {
+          console.error('❌ Signup response body:', result.bodyText);
         }
         setError(
           typeof errorMessage === 'string'
             ? errorMessage
-            : `Signup failed${(result as any)?.status ? ` (HTTP ${(result as any).status})` : ''}`
+            : `Signup failed${result.status ? ` (HTTP ${result.status})` : ''}`
         );
         return;
       }

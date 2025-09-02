@@ -76,13 +76,13 @@ export default function EditInternshipForm({ internship }: { internship: Interns
 
   // Build min end date
   const today = new Date().toISOString().split('T')[0];
+  const startDate = form.watch('startDate');
   const minEndDate = useMemo(() => {
-    const s = form.watch('startDate');
-    if (!s) return today;
-    const d = new Date(s);
+    if (!startDate) return today;
+    const d = new Date(startDate);
     d.setDate(d.getDate() + 1);
     return d.toISOString().split('T')[0];
-  }, [form.watch('startDate')]);
+  }, [startDate, today]);
 
   return (
     <Form {...form}>
