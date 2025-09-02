@@ -48,12 +48,51 @@ interface ExtendedSignupPayload {
   last_name: string;
   company?: string;
   is_student: boolean;
-  fetchOptions: { disableValidation: boolean };
 }
 
 // Helper to sign up with additional user metadata supported by our backend
 // Wraps the Better Auth client and disables client-side validation so extra
 // fields (first_name, last_name, company, is_student) pass through.
+type PostSignupResult = {
+  ok: boolean;
+  error?: string;
+  status?: number;
+  statusText?: string;
+  bodyText?: string;
+};
+
+async function postSignUpEmail(payload: any): Promise<PostSignupResult> {
+  try {
+    const res = await fetch(`${AUTH_BASE}/sign-up/email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      // Log full debug info to console to aid investigation
+      console.error('Better Auth signup failed', {
+        status: res.status,
+        statusText: res.statusText,
+        url: `${AUTH_BASE}/sign-up/email`,
+        bodyText: text,
+      });
+      return {
+        ok: false,
+        error: `HTTP ${res.status}`,
+        status: res.status,
+        statusText: res.statusText,
+        bodyText: text,
+      };
+    }
+    return { ok: true };
+  } catch (e: any) {
+    console.error('Better Auth signup network error', e);
+    return { ok: false, error: e?.message || 'Network error' };
+  }
+}
+
 export async function signUpStartup(params: {
   email: string;
   password: string;
@@ -65,7 +104,7 @@ export async function signUpStartup(params: {
 }) {
   const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
   // Use proper typing for extended payload
-  const payload: ExtendedSignupPayload = {
+  const payload: Partial<ExtendedSignupPayload> = {
     email,
     password,
     name: `${first_name} ${last_name}`,
@@ -74,9 +113,8 @@ export async function signUpStartup(params: {
     last_name,
     company,
     is_student,
-    fetchOptions: { disableValidation: true },
   };
-  return signUp.email(payload);
+  return postSignUpEmail(payload);
 }
 
 // Helper to sign up a student with additional metadata
@@ -88,7 +126,7 @@ export async function signUpStudent(params: {
   callbackURL?: string;
 }) {
   const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
-  const payload: ExtendedSignupPayload = {
+  const payload: Partial<ExtendedSignupPayload> = {
     email,
     password,
     name: `${first_name} ${last_name}`,
@@ -96,7 +134,6 @@ export async function signUpStudent(params: {
     first_name,
     last_name,
     is_student: true,
-    fetchOptions: { disableValidation: true },
   };
-  return signUp.email(payload);
+  return postSignUpEmail(payload);
 }

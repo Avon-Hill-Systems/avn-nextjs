@@ -59,18 +59,25 @@ export default function SignupForm({
     setError(null);
     
     try {
-      await signUp.email({
+      const result = await (signUp as any).email({
         name: data.name,
         email: data.email,
         password: data.password,
         callbackURL: '/verify-email'
       });
 
-        // Successful signup - redirect to email verification page
-        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
-        if (onSubmit) {
-          onSubmit(data);
-        }
+      // Handle Better Auth client return shape either as { error } or { data: { error } }
+      const errorMessage = (result && (result.error || result?.data?.error)) as string | undefined;
+      if (errorMessage) {
+        setError(errorMessage || 'Signup failed');
+        return;
+      }
+
+      // Successful signup - redirect to email verification page
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      if (onSubmit) {
+        onSubmit(data);
+      }
     } catch (error) {
       console.error('Signup error:', error);
       setError('An unexpected error occurred');

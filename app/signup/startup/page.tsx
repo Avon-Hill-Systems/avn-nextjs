@@ -65,7 +65,7 @@ export default function StartupSignupPage() {
     
     try {
       // Step 1: Create user account with Better Auth client (with metadata)
-      await signUpStartup({
+      const result = await signUpStartup({
         email: data.email,
         password: data.password,
         first_name: data.firstName,
@@ -74,6 +74,24 @@ export default function StartupSignupPage() {
         is_student: false,
         callbackURL: '/verify-email',
       });
+
+      // Enhanced error diagnostics
+      const errorMessage = (result && (result as any).error) || (result as any)?.data?.error;
+      if (errorMessage || (result as any)?.ok === false) {
+        console.error('❌ Signup returned error:', errorMessage || (result as any));
+        if ((result as any)?.status) {
+          console.error('❌ Signup HTTP status:', (result as any).status, (result as any).statusText || '');
+        }
+        if ((result as any)?.bodyText) {
+          console.error('❌ Signup response body:', (result as any).bodyText);
+        }
+        setError(
+          typeof errorMessage === 'string'
+            ? errorMessage
+            : `Signup failed${(result as any)?.status ? ` (HTTP ${(result as any).status})` : ''}`
+        );
+        return;
+      }
 
       // Redirect to email verification page on success
       console.log('🎯 Redirecting to verify-email...');

@@ -100,8 +100,8 @@ export default function StartupsPage() {
                 <p className="text-muted-foreground">Access to motivated, intelligent students from one of the world&apos;s top universities with diverse skills and backgrounds.</p>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-normal text-foreground">AI-Powered Matching</h3>
-                <p className="text-muted-foreground">Advanced algorithms ensure you get candidates who are the best fit for your specific internship requirements.</p>
+                <h3 className="text-xl font-normal text-foreground">NOT AI-Powered Matching</h3>
+                <p className="text-muted-foreground">No AI matching here. We actually read your internship posting and match you with candidates who are a good fit.</p>
               </div>
               <div className="space-y-4">
                 <h3 className="text-xl font-normal text-foreground">Cost-Effective Hiring</h3>
