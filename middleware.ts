@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
 
-    console.log(`🔵 Middleware: Processing request for ${pathname}`)
+    console.log(`🔵 Middleware: START - Processing request for ${pathname}`)
     console.log(`🔵 Middleware: Request URL: ${request.url}`)
     console.log(`🔵 Middleware: Request headers:`, {
       origin: request.headers.get('origin'),
