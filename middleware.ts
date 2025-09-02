@@ -2,21 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { config as appConfig } from './lib/config'
 
-function resolveAuthBase() {
-  const provided = process.env.NEXT_PUBLIC_AUTH_URL || appConfig.api.authUrl
-  const base = provided || appConfig.api.baseUrl
-  const basePath = process.env.NEXT_PUBLIC_AUTH_BASE_PATH || appConfig.api.authBasePath || '/auth'
-  try {
-    const u = new URL(base)
-    if (u.pathname === '/' || u.pathname === '') {
-      u.pathname = basePath
-    }
-    return u.toString().replace(/\/$/, '')
-  } catch {
-    const withPath = base.endsWith('/') ? base.slice(0, -1) : base
-    return `${withPath}${basePath}`.replace(/\/$/, '')
-  }
-}
+
 
 function resolveApiBase() {
   const base = process.env.NEXT_PUBLIC_API_URL || appConfig.api.baseUrl
@@ -46,9 +32,11 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
 
   if (isProtectedRoute || isAdminRoute) {
-    // Check for session token in cookies
-    const sessionToken = request.cookies.get('better-auth.session_token')?.value
+    // Check for session token in cookies (try both secure and non-secure variants)
+    const sessionToken = request.cookies.get('__Secure-better-auth.session_token')?.value || 
+                        request.cookies.get('better-auth.session_token')?.value
     console.log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
+    console.log(`🔵 Middleware: Available cookies:`, Object.keys(request.cookies.getAll()))
 
     if (!sessionToken) {
       console.log(`🔴 Middleware: No session token found, redirecting to login`)
@@ -72,7 +60,7 @@ export async function middleware(request: NextRequest) {
           console.log(`🔴 Middleware: Admin verify failed (${res.status}), redirecting home`)
           return NextResponse.redirect(new URL('/', request.url))
         }
-      } catch (e) {
+      } catch {
         console.log('🔴 Middleware: Admin verify request failed, redirecting home')
         return NextResponse.redirect(new URL('/', request.url))
       }
