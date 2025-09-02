@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "tostendout",
-  description: "Work at a startup this sumemr",
+  description: "Work at a startup this summer",
   icons: {
     icon: [
       { url: '/tempo-icon.svg', type: 'image/svg+xml' },
