@@ -112,7 +112,7 @@ export async function signUpStartup(params: {
 }): Promise<PostSignupResult> {
   const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
   // Use proper typing for extended payload
-  const payload: Partial<ExtendedSignupPayload> = {
+  const payload: SignupPayload = {
     email,
     password,
     name: `${first_name} ${last_name}`,
@@ -134,7 +134,7 @@ export async function signUpStudent(params: {
   callbackURL?: string;
 }): Promise<PostSignupResult> {
   const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
-  const payload: Partial<ExtendedSignupPayload> = {
+  const payload: SignupPayload = {
     email,
     password,
     name: `${first_name} ${last_name}`,
