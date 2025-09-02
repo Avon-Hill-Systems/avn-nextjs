@@ -10,15 +10,16 @@ function resolveApiBase() {
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  try {
+    const { pathname } = request.nextUrl
 
-  console.log(`🔵 Middleware: Processing request for ${pathname}`)
-  console.log(`🔵 Middleware: Request URL: ${request.url}`)
-  console.log(`🔵 Middleware: Request headers:`, {
-    origin: request.headers.get('origin'),
-    referer: request.headers.get('referer'),
-    userAgent: request.headers.get('user-agent')?.substring(0, 100) + '...',
-  })
+    console.log(`🔵 Middleware: Processing request for ${pathname}`)
+    console.log(`🔵 Middleware: Request URL: ${request.url}`)
+    console.log(`🔵 Middleware: Request headers:`, {
+      origin: request.headers.get('origin'),
+      referer: request.headers.get('referer'),
+      userAgent: request.headers.get('user-agent')?.substring(0, 100) + '...',
+    })
   
   // List of protected routes that require authentication
   const protectedRoutes = [
@@ -109,6 +110,11 @@ export async function middleware(request: NextRequest) {
   // Allow the request to continue for non-protected routes or authenticated users
   console.log(`🟢 Middleware: Request allowed to continue to ${pathname}`)
   return NextResponse.next()
+  } catch (error) {
+    console.error('🔴 Middleware: Error occurred:', error)
+    // Allow request to continue on error to avoid breaking the app
+    return NextResponse.next()
+  }
 }
 
 export const config = {
