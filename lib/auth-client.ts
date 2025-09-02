@@ -24,6 +24,8 @@ function resolveAuthBase() {
 
 const AUTH_BASE = resolveAuthBase();
 
+console.log('🔵 AuthClient: Initializing with base URL:', AUTH_BASE);
+
 export const authClient = createAuthClient({
   baseURL: AUTH_BASE,
 });

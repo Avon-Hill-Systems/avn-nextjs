@@ -42,9 +42,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, isPending: isLoading, error } = useSession();
   
+  // Add detailed logging
+  console.log('🔵 AuthProvider: Session state:', {
+    hasSession: !!session,
+    isLoading,
+    hasError: !!error,
+    errorMessage: error?.message,
+    sessionUser: session?.user ? {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      emailVerified: session.user.emailVerified
+    } : null,
+    sessionExpires: session?.session?.expiresAt
+  });
+  
   const refetchSession = async () => {
     // Better Auth handles session refetching automatically
-    console.log('Session refetch requested');
+    console.log('🔵 AuthProvider: Session refetch requested');
   };
 
   const value: AuthContextType = {
@@ -53,6 +68,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: !!session && !error,
     refetchSession,
   };
+
+  console.log('🔵 AuthProvider: Providing auth context:', {
+    isAuthenticated: value.isAuthenticated,
+    isLoading: value.isLoading,
+    hasSession: !!value.session
+  });
 
   return (
     <AuthContext.Provider value={value}>
