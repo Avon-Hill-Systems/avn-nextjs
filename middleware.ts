@@ -40,7 +40,10 @@ export async function middleware(request: NextRequest) {
   console.log(`🔵 Middleware: Is admin route? ${isAdminRoute}`)
 
   // Log all cookies in detail
+  console.log(`🔵 Middleware: About to get cookies...`)
   const allCookies = request.cookies.getAll()
+  console.log(`🔵 Middleware: Got ${allCookies.length} cookies`)
+  console.log(`🔵 Middleware: Cookie names:`, allCookies.map(c => c.name))
   console.log(`🔵 Middleware: All cookies (${allCookies.length}):`, allCookies.map(c => ({
     name: c.name,
     value: c.value?.substring(0, 50) + (c.value && c.value.length > 50 ? '...' : ''),
