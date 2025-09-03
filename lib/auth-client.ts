@@ -84,10 +84,16 @@ export async function debugFetchSession() {
 
 // Custom session hook that uses the correct endpoint
 export async function getCustomSession() {
-  const apiBase = config.api.baseUrl.replace(/\/$/, '');
+  // Hardcode the API base URL to ensure we're calling the correct domain
+  const apiBase = process.env.NODE_ENV === 'production' ? 'https://api.tostendout.com' : 'http://localhost:8000';
   const url = `${apiBase}/api/auth/session`;
   try {
-    console.log('🔵 getCustomSession: Request', { url, credentials: 'include' });
+    console.log('🔵 getCustomSession: Config debug', { 
+      configApiBaseUrl: config.api.baseUrl,
+      hardcodedApiBase: apiBase,
+      url,
+      credentials: 'include' 
+    });
     const res = await fetch(url, { credentials: 'include' });
     if (!res.ok) {
       console.log('🔵 getCustomSession: Response not ok', { status: res.status, statusText: res.statusText });
