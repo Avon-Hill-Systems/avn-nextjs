@@ -71,7 +71,8 @@ export async function middleware(request: NextRequest) {
   async function backendHasSession(): Promise<boolean> {
     try {
       const apiBase = resolveApiBase()
-      const res = await fetch(`${apiBase}/auth/get-session`, {
+      // Better Auth exposes GET /auth/session for the current session
+      const res = await fetch(`${apiBase}/auth/session`, {
         method: 'GET',
         headers: { cookie: request.headers.get('cookie') || '' },
         credentials: 'include',
