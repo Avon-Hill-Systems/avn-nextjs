@@ -4,6 +4,10 @@ import { config } from './config';
 // Resolve Better Auth base URL. Prefer explicit NEXT_PUBLIC_AUTH_URL if set.
 // If it lacks a path (e.g. http://localhost:8000), append authBasePath (default /auth).
 function resolveAuthBase() {
+  console.log('🔵 resolveAuthBase: config.api.authUrl:', config.api.authUrl);
+  console.log('🔵 resolveAuthBase: config.api.baseUrl:', config.api.baseUrl);
+  console.log('🔵 resolveAuthBase: config.api.authBasePath:', config.api.authBasePath);
+  
   const provided = config.api.authUrl;
   if (provided) {
     try {
@@ -11,15 +15,21 @@ function resolveAuthBase() {
       if (u.pathname === '/' || u.pathname === '') {
         u.pathname = config.api.authBasePath;
       }
-      return u.toString().replace(/\/$/, '');
+      const result = u.toString().replace(/\/$/, '');
+      console.log('🔵 resolveAuthBase: Using provided authUrl, result:', result);
+      return result;
     } catch {
       // Fallback to concatenation
       const withPath = provided.endsWith('/') ? provided.slice(0, -1) : provided;
-      return `${withPath}${config.api.authBasePath}`.replace(/\/$/, '');
+      const result = `${withPath}${config.api.authBasePath}`.replace(/\/$/, '');
+      console.log('🔵 resolveAuthBase: Using provided authUrl (fallback), result:', result);
+      return result;
     }
   }
   const base = config.api.baseUrl.endsWith('/') ? config.api.baseUrl.slice(0, -1) : config.api.baseUrl;
-  return `${base}${config.api.authBasePath}`.replace(/\/$/, '');
+  const result = `${base}${config.api.authBasePath}`.replace(/\/$/, '');
+  console.log('🔵 resolveAuthBase: Using baseUrl, result:', result);
+  return result;
 }
 
 const AUTH_BASE = resolveAuthBase();
@@ -71,20 +81,28 @@ type SignupPayload = Partial<ExtendedSignupPayload> & {
 };
 
 async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult> {
+  const url = `${AUTH_BASE}/sign-up/email`;
+  console.log('🔵 AuthClient: Making signup request to:', url);
+  console.log('🔵 AuthClient: Payload:', JSON.stringify(payload, null, 2));
+  
   try {
-    const res = await fetch(`${AUTH_BASE}/sign-up/email`, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(payload),
     });
+    
+    console.log('🔵 AuthClient: Response status:', res.status);
+    console.log('🔵 AuthClient: Response headers:', Object.fromEntries(res.headers.entries()));
+    
     if (!res.ok) {
       const text = await res.text().catch(() => '');
       // Log full debug info to console to aid investigation
       console.error('Better Auth signup failed', {
         status: res.status,
         statusText: res.statusText,
-        url: `${AUTH_BASE}/sign-up/email`,
+        url: url,
         bodyText: text,
       });
       return {
@@ -95,10 +113,19 @@ async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult
         bodyText: text,
       };
     }
+    
+    const responseText = await res.text();
+    console.log('🔵 AuthClient: Success response:', responseText);
     return { ok: true };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Network error';
     console.error('Better Auth signup network error', e);
+    console.error('🔵 AuthClient: Error details:', {
+      message: msg,
+      name: e instanceof Error ? e.name : 'Unknown',
+      stack: e instanceof Error ? e.stack : undefined,
+      url: url
+    });
     return { ok: false, error: msg };
   }
 }
@@ -145,6 +172,10 @@ export async function signUpStudent(params: {
     last_name,
     is_student: true,
   };
+  
+  console.log('🔵 signUpStudent: Starting signup for:', email);
+  console.log('🔵 signUpStudent: AUTH_BASE resolved to:', AUTH_BASE);
+  
   return postSignUpEmail(payload);
 }
 
