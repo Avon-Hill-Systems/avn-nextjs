@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -205,26 +206,22 @@ export function StartupProfileForm() {
             <h3 className="text-lg font-normal text-foreground">Company Information</h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormItem>
-                <FormLabel className="font-normal">Contact First Name</FormLabel>
-                <FormControl>
-                  <Input 
-                    value={user?.first_name || ""} 
-                    disabled 
-                    className="bg-muted"
-                  />
-                </FormControl>
-              </FormItem>
-              <FormItem>
-                <FormLabel className="font-normal">Contact Last Name</FormLabel>
-                <FormControl>
-                  <Input 
-                    value={user?.last_name || ""} 
-                    disabled 
-                    className="bg-muted"
-                  />
-                </FormControl>
-              </FormItem>
+              <div className="grid gap-2">
+                <Label className="font-normal">Contact First Name</Label>
+                <Input 
+                  value={user?.first_name || ""} 
+                  disabled 
+                  className="bg-muted"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="font-normal">Contact Last Name</Label>
+                <Input 
+                  value={user?.last_name || ""} 
+                  disabled 
+                  className="bg-muted"
+                />
+              </div>
             </div>
 
             <FormField
