@@ -38,6 +38,9 @@ console.log('🔵 AuthClient: Initializing with base URL:', AUTH_BASE);
 
 export const authClient = createAuthClient({
   baseURL: AUTH_BASE,
+  // Ensure cross-site requests send cookies (required for session on api.tostendout.com)
+  // The type may not expose this option; cast to any to avoid TS friction.
+  fetchOptions: { credentials: 'include' } as any,
 });
 
 export const {
