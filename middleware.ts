@@ -74,7 +74,13 @@ export async function middleware(request: NextRequest) {
         headers: { cookie: request.headers.get('cookie') || '' },
         credentials: 'include',
       })
-      return res.ok
+      if (!res.ok) return false
+      const ct = res.headers.get('content-type') || ''
+      if (!ct.includes('application/json')) return false
+      const data: any = await res.json().catch(() => null)
+      const user = data?.user ?? data?.data?.user
+      const session = data?.session ?? data?.data?.session
+      return Boolean(user || session)
     } catch (e) {
       console.log('🔴 Middleware: backendHasSession check failed:', e)
       return false
@@ -83,13 +89,9 @@ export async function middleware(request: NextRequest) {
 
   // If user hits /login but is already authenticated, send them to intended page
   if (pathname.startsWith('/login') || pathname.startsWith('/verify-email')) {
-    const apiBase = resolveApiBase()
     try {
-      const res = await fetch(`${apiBase}/auth/get-session`, {
-        headers: { cookie: request.headers.get('cookie') || '' },
-        credentials: 'include',
-      })
-      if (res.ok) {
+      const has = await backendHasSession()
+      if (has) {
         const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
         const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
         console.log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
