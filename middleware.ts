@@ -66,6 +66,33 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // If user hits /login but is already authenticated, send them to intended page
+  if (pathname.startsWith('/login')) {
+    const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
+    const regularToken = request.cookies.get('better-auth.session_token')?.value
+    const sessionToken = secureToken || regularToken
+    let alreadyAuthed = Boolean(sessionToken)
+    if (!alreadyAuthed) {
+      alreadyAuthed = await (async () => {
+        try {
+          const apiBase = resolveApiBase()
+          const res = await fetch(`${apiBase}/auth/get-session`, {
+            headers: { cookie: request.headers.get('cookie') || '' },
+            credentials: 'include',
+          })
+          return res.ok
+        } catch {
+          return false
+        }
+      })()
+    }
+    if (alreadyAuthed) {
+      const target = request.nextUrl.searchParams.get('redirect') || '/'
+      console.log(`🟢 Middleware: Authenticated user on /login, redirecting to ${target}`)
+      return NextResponse.redirect(new URL(target, request.url))
+    }
+  }
+
   if (isProtectedRoute || isAdminRoute) {
     // Check for session token in cookies (try both secure and non-secure variants)
     const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
