@@ -50,53 +50,23 @@ export async function middleware(request: NextRequest) {
     hasValue: Boolean(c.value)
   })))
 
-  // Check for session token in cookies (try both secure and non-secure variants)
-  const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
-  const regularToken = request.cookies.get('better-auth.session_token')?.value
-  const sessionToken = secureToken || regularToken
-  
-  console.log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
-  console.log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
-  console.log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
-  
-  if (secureToken) {
-    console.log(`🔵 Middleware: Secure token value: ${secureToken.substring(0, 50)}...`)
-  }
-  if (regularToken) {
-    console.log(`🔵 Middleware: Regular token value: ${regularToken.substring(0, 50)}...`)
-  }
-
-  // Handle authenticated users visiting root path
-  if (sessionToken && pathname === '/') {
-    console.log(`🔵 Middleware: Authenticated user visiting root path, checking admin status...`)
-    try {
-      const apiBase = resolveApiBase()
-      const verifyUrl = `${apiBase}/users/admin/verify`
-      console.log(`🔵 Middleware: Checking admin status at: ${verifyUrl}`)
-      
-      const res = await fetch(verifyUrl, {
-        method: 'GET',
-        headers: { cookie: request.headers.get('cookie') || '' },
-        credentials: 'include',
-      })
-      
-      console.log(`🔵 Middleware: Admin verify response status: ${res.status}`)
-      
-      if (res.ok) {
-        console.log(`🔵 Middleware: User is admin, redirecting to /admin`)
-        return NextResponse.redirect(new URL('/admin', request.url))
-      } else {
-        console.log(`🔵 Middleware: User is not admin, redirecting to /matches`)
-        return NextResponse.redirect(new URL('/matches', request.url))
-      }
-    } catch (error) {
-      console.log('🔴 Middleware: Admin check failed, redirecting to /matches')
-      console.error('🔴 Middleware: Error:', error)
-      return NextResponse.redirect(new URL('/matches', request.url))
-    }
-  }
-
   if (isProtectedRoute || isAdminRoute) {
+    // Check for session token in cookies (try both secure and non-secure variants)
+    const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
+    const regularToken = request.cookies.get('better-auth.session_token')?.value
+    const sessionToken = secureToken || regularToken
+    
+    console.log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
+    console.log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
+    console.log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
+    
+    if (secureToken) {
+      console.log(`🔵 Middleware: Secure token value: ${secureToken.substring(0, 50)}...`)
+    }
+    if (regularToken) {
+      console.log(`🔵 Middleware: Regular token value: ${regularToken.substring(0, 50)}...`)
+    }
+
     if (!sessionToken) {
       console.log(`🔴 Middleware: No session token found, redirecting to login`)
       console.log(`🔴 Middleware: Available cookie names:`, allCookies.map(c => c.name))
