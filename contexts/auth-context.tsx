@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext } from 'react';
 import { useSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
+import { config } from '@/lib/config';
 
 interface User {
   id: string;
@@ -41,6 +42,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, isPending: isLoading, error } = useSession();
+  // Ensure we attempt a one-time legacy cookie clear if session won't load
+  let attemptedCookieReset = (globalThis as any).__avnAttemptedCookieReset as boolean | undefined;
   
   // Add detailed logging
   console.log('🔵 AuthProvider: Session state:', {
@@ -71,6 +74,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   if (!session && !isLoading) {
     // Trigger a direct probe to /auth/session to capture status/body for debugging
     void debugFetchSession();
+    // Auto-attempt clearing legacy cookies once per page load to fix stuck sessions
+    if (!attemptedCookieReset) {
+      (globalThis as any).__avnAttemptedCookieReset = true;
+      const clearUrl = `${config.api.baseUrl.replace(/\/$/, '')}/auth/clear-legacy-cookies`;
+      console.log('🟡 AuthProvider Debug: attempting legacy cookie clear at', clearUrl);
+      fetch(clearUrl, { method: 'POST', credentials: 'include' })
+        .then(res => console.log('🟡 clear-legacy-cookies status:', res.status))
+        .catch(e => console.warn('🟡 clear-legacy-cookies failed:', e));
+    }
   }
   
   const refetchSession = async () => {
