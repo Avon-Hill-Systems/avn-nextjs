@@ -81,7 +81,17 @@ export default function LoginForm({
           const computedTarget = isStudent ? '/matches' : '/internships/new';
           const target = qpRedirect || computedTarget;
 
-          window.location.assign(target);
+          // Use API bounce in production to ensure cookie persistence across navigations
+          const isProdHost = /tostendout\.com$/i.test(window.location.host);
+          const baseApi = config.api.baseUrl.replace(/\/$/, '');
+          const absoluteTarget = new URL(target, window.location.origin).toString();
+          if (isProdHost) {
+            const bounce = `${baseApi}/auth/bounce?redirect=${encodeURIComponent(absoluteTarget)}`;
+            console.log('🔵 LoginForm: Redirecting via bounce:', bounce);
+            window.location.assign(bounce);
+          } else {
+            window.location.assign(absoluteTarget);
+          }
         } catch {
           // Fallback if anything goes wrong
           window.location.assign('/matches');
