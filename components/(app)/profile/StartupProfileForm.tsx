@@ -396,24 +396,6 @@ export function StartupProfileForm() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-normal">Company Location *</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter your company location (e.g., San Francisco, CA or Remote)" 
-                      {...field} 
-                      className="bg-background"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Remote work policy removed from startup profile */}
           </div>
 

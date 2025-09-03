@@ -16,6 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 
 const studentSignupSchema = z.object({
@@ -183,6 +184,9 @@ export default function StudentSignupPage() {
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>
+                          Use your Harvard College email only (e.g. name@college.harvard.edu).
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
