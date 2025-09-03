@@ -82,6 +82,18 @@ export async function debugFetchSession() {
   }
 }
 
+// Helper to clear legacy cookies that might interfere with new sessions
+export async function clearLegacyCookies() {
+  const url = `${AUTH_BASE}/clear-legacy-cookies`;
+  try {
+    console.log('🔵 clearLegacyCookies: Request', { url });
+    const res = await fetch(url, { method: 'POST', credentials: 'include' });
+    console.log('🔵 clearLegacyCookies: Response status', res.status);
+  } catch (e) {
+    console.warn('🟡 clearLegacyCookies failed', e);
+  }
+}
+
 // Interface for extended signup payload with additional fields
 interface ExtendedSignupPayload {
   email: string;

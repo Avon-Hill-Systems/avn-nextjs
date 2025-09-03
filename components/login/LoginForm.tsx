@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signIn, getSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
+import { signIn, getSession, debugFetchSession, AUTH_BASE_URL, clearLegacyCookies } from '@/lib/auth-client';
 import { config } from '@/lib/config';
 
 interface SessionResponse {
@@ -42,7 +41,6 @@ export default function LoginForm({
   description = "Sign in to your tostendout account",
   submitText = "Sign In"
 }: LoginFormProps) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +57,7 @@ export default function LoginForm({
     setError(null);
     
     try {
+      await clearLegacyCookies();
       const result = await signIn.email({
         email: data.email,
         password: data.password,
