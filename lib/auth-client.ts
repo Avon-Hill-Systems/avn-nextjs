@@ -58,7 +58,7 @@ export const {
 
 // Debug helper: probe the session endpoint directly and log details
 export async function debugFetchSession() {
-  const url = `${AUTH_BASE}/session`;
+  const url = `${AUTH_BASE}/get-session`; // Fixed: use correct Better Auth endpoint
   try {
     console.log('🔵 debugFetchSession: Request', { url, credentials: 'include' });
     const res = await fetch(url, { credentials: 'include' });

@@ -52,18 +52,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchSession = async () => {
       try {
+        console.log('🔵 AuthProvider: Starting fetchSession');
         setIsLoading(true);
         setError(null);
+        console.log('🔵 AuthProvider: Calling getCustomSession');
         const sessionData = await getCustomSession();
+        console.log('🔵 AuthProvider: getCustomSession result:', sessionData);
         setSession(sessionData);
       } catch (err) {
+        console.error('🔴 AuthProvider: fetchSession error:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch session'));
         setSession(null);
       } finally {
+        console.log('🔵 AuthProvider: fetchSession complete, setting isLoading to false');
         setIsLoading(false);
       }
     };
     
+    console.log('🔵 AuthProvider: useEffect triggered, calling fetchSession');
     fetchSession();
   }, []);
   
@@ -112,9 +118,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
+      console.log('🔵 AuthProvider: Refetch calling getCustomSession');
       const sessionData = await getCustomSession();
+      console.log('🔵 AuthProvider: Refetch getCustomSession result:', sessionData);
       setSession(sessionData);
     } catch (err) {
+      console.error('🔴 AuthProvider: Refetch error:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch session'));
       setSession(null);
     } finally {
