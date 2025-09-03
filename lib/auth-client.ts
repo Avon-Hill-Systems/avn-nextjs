@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+import type { BetterFetchOption } from "@better-fetch/fetch";
 import { config } from './config';
 
 // Resolve Better Auth base URL. Prefer explicit NEXT_PUBLIC_AUTH_URL if set.
@@ -39,8 +40,7 @@ console.log('🔵 AuthClient: Initializing with base URL:', AUTH_BASE);
 export const authClient = createAuthClient({
   baseURL: AUTH_BASE,
   // Ensure cross-site requests send cookies (required for session on api.tostendout.com)
-  // The type may not expose this option; cast to any to avoid TS friction.
-  fetchOptions: { credentials: 'include' } as any,
+  fetchOptions: { credentials: 'include' } satisfies BetterFetchOption,
 });
 
 export const {
