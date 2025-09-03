@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -42,7 +41,6 @@ export default function LoginForm({
   description = "Sign in to your tostendout account",
   submitText = "Sign In"
 }: LoginFormProps) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,24 +65,33 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
+        console.log('🔵 LoginForm: Login successful, checking admin status...');
         // Successful login - redirect based on admin status or role
         try {
           // Prefer server-trusted admin check
           const apiBase = (config.api.baseUrl || '').replace(/\/$/, '');
+          console.log('🔵 LoginForm: Checking admin status at:', `${apiBase}/users/admin/verify`);
           const verifyRes = await fetch(`${apiBase}/users/admin/verify`, { credentials: 'include' });
+          console.log('🔵 LoginForm: Admin verify response status:', verifyRes.status);
+          
           if (verifyRes.ok) {
-            router.push('/admin');
+            console.log('🔵 LoginForm: User is admin, redirecting to /admin');
+            window.location.href = '/admin';
           } else {
+            console.log('🔵 LoginForm: User is not admin, checking user type...');
             // Otherwise, pick based on student/startup
             const sess = await getSession();
             const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
             const isStudent = Boolean(user?.is_student);
             const target = isStudent ? '/matches' : '/internships/new';
-            router.push(target);
+            console.log(`🔵 LoginForm: User is ${isStudent ? 'student' : 'startup'}, redirecting to ${target}`);
+            window.location.href = target;
           }
-        } catch {
+        } catch (error) {
+          console.log('🔵 LoginForm: Admin check failed, using fallback redirect to /matches');
+          console.error('🔵 LoginForm: Error:', error);
           // Fallback if anything goes wrong
-          router.push('/matches');
+          window.location.href = '/matches';
         }
         if (onSubmit) {
           onSubmit(data);
