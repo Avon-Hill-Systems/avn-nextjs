@@ -50,6 +50,22 @@ export async function middleware(request: NextRequest) {
     hasValue: Boolean(c.value)
   })))
 
+  // Helper to check session via backend if cookies are present but token name differs
+  async function backendHasSession(): Promise<boolean> {
+    try {
+      const apiBase = resolveApiBase()
+      const res = await fetch(`${apiBase}/auth/get-session`, {
+        method: 'GET',
+        headers: { cookie: request.headers.get('cookie') || '' },
+        credentials: 'include',
+      })
+      return res.ok
+    } catch (e) {
+      console.log('🔴 Middleware: backendHasSession check failed:', e)
+      return false
+    }
+  }
+
   if (isProtectedRoute || isAdminRoute) {
     // Check for session token in cookies (try both secure and non-secure variants)
     const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
@@ -70,40 +86,18 @@ export async function middleware(request: NextRequest) {
     if (!sessionToken) {
       console.log(`🔴 Middleware: No session token found, redirecting to login`)
       console.log(`🔴 Middleware: Available cookie names:`, allCookies.map(c => c.name))
-      // No session token found, redirect to login
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
-      console.log(`🔴 Middleware: Redirecting to: ${loginUrl.toString()}`)
-      return NextResponse.redirect(loginUrl)
+      // Double-check with backend session endpoint before redirecting
+      const hasSession = await backendHasSession()
+      if (!hasSession) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.searchParams.set('redirect', pathname)
+        console.log(`🔴 Middleware: Redirecting to: ${loginUrl.toString()}`)
+        return NextResponse.redirect(loginUrl)
+      }
+      console.log('🟢 Middleware: Backend reported active session; allowing access')
     }
     
-    // If admin route, verify admin with backend
-    if (isAdminRoute) {
-      try {
-        const apiBase = resolveApiBase()
-        const verifyUrl = `${apiBase}/users/admin/verify`
-        console.log(`🔵 Middleware: Admin route detected, verifying with: ${verifyUrl}`)
-        console.log(`🔵 Middleware: Sending cookies: ${request.headers.get('cookie')?.substring(0, 100)}...`)
-        
-        const res = await fetch(verifyUrl, {
-          method: 'GET',
-          headers: { cookie: request.headers.get('cookie') || '' },
-          credentials: 'include',
-        })
-        
-        console.log(`🔵 Middleware: Admin verify response status: ${res.status}`)
-        
-        if (!res.ok) {
-          console.log(`🔴 Middleware: Admin verify failed (${res.status}), redirecting home`)
-          return NextResponse.redirect(new URL('/', request.url))
-        }
-        
-        console.log(`🟢 Middleware: Admin verification successful`)
-      } catch (error) {
-        console.log('🔴 Middleware: Admin verify request failed:', error)
-        return NextResponse.redirect(new URL('/', request.url))
-      }
-    }
+    // Note: Removed admin pre-verification to avoid 403 loops; backend guards still protect admin APIs
 
     console.log(`🟢 Middleware: Session cookie present, allowing access to ${pathname}`)
   } else {

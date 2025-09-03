@@ -120,22 +120,9 @@ export function AppSidebar() {
     });
   }, [isAuthenticated, isAdmin, session?.user?.is_student]);
 
-  // Fetch admin status once authenticated
+  // Removed admin verification fetch to avoid unnecessary 403s and loops.
   React.useEffect(() => {
-    if (!isAuthenticated) {
-      setIsAdmin(false);
-      return;
-    }
-    const check = async () => {
-      try {
-        const apiBase = config.api.baseUrl;
-        const res = await fetch(`${apiBase.replace(/\/$/, '')}/users/admin/verify`, { credentials: 'include' });
-        setIsAdmin(res.ok);
-      } catch {
-        setIsAdmin(false);
-      }
-    };
-    check();
+    if (!isAuthenticated) setIsAdmin(false);
   }, [isAuthenticated]);
 
   const toggleItem = (title: string) => {

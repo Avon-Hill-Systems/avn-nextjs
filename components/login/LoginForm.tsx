@@ -68,20 +68,13 @@ export default function LoginForm({
         setError(result.error.message || 'Login failed');
       } else {
         // Successful login - redirect based on admin status or role
+        // Route based on role stored in session (student vs startup)
         try {
-          // Prefer server-trusted admin check
-          const apiBase = (config.api.baseUrl || '').replace(/\/$/, '');
-          const verifyRes = await fetch(`${apiBase}/users/admin/verify`, { credentials: 'include' });
-          if (verifyRes.ok) {
-            router.push('/admin');
-          } else {
-            // Otherwise, pick based on student/startup
-            const sess = await getSession();
-            const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
-            const isStudent = Boolean(user?.is_student);
-            const target = isStudent ? '/matches' : '/internships/new';
-            router.push(target);
-          }
+          const sess = await getSession();
+          const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
+          const isStudent = Boolean(user?.is_student);
+          const target = isStudent ? '/matches' : '/internships/new';
+          router.push(target);
         } catch {
           // Fallback if anything goes wrong
           router.push('/matches');
