@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signIn, getSession } from '@/lib/auth-client';
+import { signIn, getSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
 import { config } from '@/lib/config';
 
 interface SessionResponse {
@@ -69,6 +69,9 @@ export default function LoginForm({
       } else {
         // Successful login - redirect based on role (force full reload to refresh cookies/session)
         try {
+          console.log('🔵 LoginForm: Sign-in succeeded. AUTH_BASE_URL:', AUTH_BASE_URL);
+          // Probe session endpoint once before redirect to capture status/cookies info
+          await debugFetchSession();
           const url = new URL(window.location.href);
           const qpRedirect = url.searchParams.get('redirect');
 

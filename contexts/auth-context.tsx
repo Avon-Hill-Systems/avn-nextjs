@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { useSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
 
 interface User {
   id: string;
@@ -56,6 +56,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } : null,
     sessionExpires: session?.session?.expiresAt
   });
+  
+  // Extra debug: environment, cookies and manual probe when no session is present
+  if (typeof window !== 'undefined') {
+    console.log('🔵 AuthProvider Debug: location', {
+      href: window.location.href,
+      origin: window.location.origin,
+      host: window.location.host,
+    });
+    console.log('🔵 AuthProvider Debug: AUTH_BASE_URL', AUTH_BASE_URL);
+    // Note: HttpOnly cookies are not visible via document.cookie
+    console.log('🔵 AuthProvider Debug: document.cookie (non-HttpOnly only):', document.cookie);
+  }
+  if (!session && !isLoading) {
+    // Trigger a direct probe to /auth/session to capture status/body for debugging
+    void debugFetchSession();
+  }
   
   const refetchSession = async () => {
     // Better Auth handles session refetching automatically

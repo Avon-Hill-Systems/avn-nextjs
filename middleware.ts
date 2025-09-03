@@ -72,17 +72,21 @@ export async function middleware(request: NextRequest) {
     try {
       const apiBase = resolveApiBase()
       // Better Auth exposes GET /auth/session for the current session
-      const res = await fetch(`${apiBase}/auth/session`, {
+      const url = `${apiBase}/auth/session`
+      log('🟡 Middleware: Probing backend session at', url)
+      const res = await fetch(url, {
         method: 'GET',
         headers: { cookie: request.headers.get('cookie') || '' },
         credentials: 'include',
       })
+      log('🟡 Middleware: backendHasSession status:', res.status, res.statusText)
       if (!res.ok) return false
       const ct = res.headers.get('content-type') || ''
       if (!ct.includes('application/json')) return false
       const data = await res.json().catch(() => null) as unknown as { user?: unknown; session?: unknown; data?: { user?: unknown; session?: unknown } } | null
       const user = data?.user ?? data?.data?.user
       const session = data?.session ?? data?.data?.session
+      log('🟡 Middleware: backendHasSession parsed:', { hasUser: Boolean(user), hasSession: Boolean(session) })
       return Boolean(user || session)
     } catch (e) {
       warn('🔴 Middleware: backendHasSession check failed:', e)

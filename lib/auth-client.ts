@@ -35,6 +35,9 @@ function resolveAuthBase() {
 
 const AUTH_BASE = resolveAuthBase();
 
+// Export resolved base for debugging/visibility in the app
+export const AUTH_BASE_URL = AUTH_BASE;
+
 console.log('🔵 AuthClient: Initializing with base URL:', AUTH_BASE);
 
 export const authClient = createAuthClient({
@@ -52,6 +55,32 @@ export const {
   verifyEmail,
   sendVerificationEmail,
 } = authClient
+
+// Debug helper: probe the session endpoint directly and log details
+export async function debugFetchSession() {
+  const url = `${AUTH_BASE}/session`;
+  try {
+    console.log('🔵 debugFetchSession: Request', { url, credentials: 'include' });
+    const res = await fetch(url, { credentials: 'include' });
+    const ct = res.headers.get('content-type');
+    console.log('🔵 debugFetchSession: Response', {
+      status: res.status,
+      ok: res.ok,
+      contentType: ct,
+    });
+    const text = await res.text();
+    try {
+      const json = JSON.parse(text);
+      console.log('🔵 debugFetchSession: Body keys', Object.keys(json));
+      console.log('🔵 debugFetchSession: Has user?', Boolean(json.user));
+      console.log('🔵 debugFetchSession: Has session?', Boolean(json.session));
+    } catch {
+      console.log('🔵 debugFetchSession: Non-JSON body (first 300 chars):', text.slice(0, 300));
+    }
+  } catch (e) {
+    console.error('🔴 debugFetchSession: Network error', e);
+  }
+}
 
 // Interface for extended signup payload with additional fields
 interface ExtendedSignupPayload {
