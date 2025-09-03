@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getSession, sendVerificationEmail } from "@/lib/auth-client";
+import { getSession, sendVerificationEmail, AUTH_BASE_URL } from "@/lib/auth-client";
 
 // Define proper types for the session object
 interface SessionUser {
@@ -36,6 +36,34 @@ function VerifyEmailContent() {
   const [resending, setResending] = useState(false);
   const [bc] = useState(() => (typeof window !== 'undefined' && 'BroadcastChannel' in window) ? new BroadcastChannel('avn-auth') : null);
   const [verifiedExternally, setVerifiedExternally] = useState(false);
+
+  // If a token is present in the URL (e.g., if an email linked to the frontend), verify directly.
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (!token) return;
+    let cancelled = false;
+    const run = async () => {
+      try {
+        setKind('info');
+        setMessage('Verifying your email...');
+        const target = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+        const url = `${AUTH_BASE_URL}/verify-email?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(`${window.location.origin}${target}`)}`;
+        await fetch(url, { credentials: 'include' });
+        if (!cancelled) {
+          setKind('success');
+          setMessage('Verification complete. Redirecting…');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setKind('error');
+          setMessage('Verification failed. Please try resending the email.');
+        }
+      }
+    };
+    run();
+    return () => { cancelled = true };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Auto-check session and redirect as soon as verification completes
   useEffect(() => {
