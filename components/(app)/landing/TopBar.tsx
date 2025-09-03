@@ -38,13 +38,7 @@ const TopBar: React.FC = () => {
                 >
                   Startups
                 </Link>
-                <Link 
-                  href="/pricing" 
-                  onMouseEnter={() => router.prefetch('/pricing')}
-                  className="text-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Pricing
-                </Link>
+
               </nav>
             </div>
 
@@ -130,14 +124,7 @@ const TopBar: React.FC = () => {
               >
                 For Startups
               </Link>
-              <Link 
-                href="/pricing" 
-                onMouseEnter={() => router.prefetch('/pricing')}
-                className="text-foreground/70 hover:text-foreground transition-colors duration-200 py-2 text-center"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Pricing
-              </Link>
+
             </div>
           </nav>
         </div>

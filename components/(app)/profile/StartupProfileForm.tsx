@@ -183,8 +183,6 @@ export function StartupProfileForm() {
         website: data.website,
         linkedinUrl: data.linkedinUrl || null,
         phone: data.phone,
-        // Always set default remote work policy to 'Office'
-        remoteWork: 'Office' as const,
       };
 
       await upsertMutation.mutateAsync(payload);
