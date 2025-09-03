@@ -77,6 +77,7 @@ export interface StartupProfile {
   website: string;
   linkedinUrl?: string | null;
   phone: string;
+  remoteWork: 'Remote' | 'Office' | 'Both';
   createdAt: string;
   updatedAt: string;
 }
@@ -169,6 +170,7 @@ export interface CreateStartupProfileRequest {
   website: string;
   linkedinUrl?: string | null;
   phone: string;
+  remoteWork: 'Remote' | 'Office' | 'Both';
 }
 
 export interface UpdateStartupProfileRequest {
@@ -180,6 +182,7 @@ export interface UpdateStartupProfileRequest {
   website?: string;
   linkedinUrl?: string | null;
   phone?: string;
+  remoteWork?: 'Remote' | 'Office' | 'Both';
 }
 
 export interface ApiResponse<T> {
