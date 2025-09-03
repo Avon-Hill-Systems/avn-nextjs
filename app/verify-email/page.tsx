@@ -109,7 +109,9 @@ function VerifyEmailContent() {
     setResending(true);
     setMessage("");
     try {
-      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}/verify-email` });
+      // In production, send users back to their dashboard after verifying.
+      const target = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}${target}` });
       setKind("success");
       setMessage("Verification email resent. Check your inbox.");
     } catch (e: unknown) {

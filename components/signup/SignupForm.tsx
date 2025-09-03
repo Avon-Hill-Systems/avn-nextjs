@@ -59,11 +59,12 @@ export default function SignupForm({
     setError(null);
     
     try {
+      const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
       const result: PostSignupResult = await signUpBasic({
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: '/verify-email'
+        callbackURL: defaultCallback
       });
 
       if (!result.ok || result.error) {
@@ -71,8 +72,12 @@ export default function SignupForm({
         return;
       }
 
-      // Successful signup - redirect to email verification page
-      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      // Successful signup - redirect to verification page (dev) or profile (prod)
+      if (process.env.NODE_ENV === 'production') {
+        router.push('/profile');
+      } else {
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      }
       if (onSubmit) {
         onSubmit(data);
       }

@@ -65,6 +65,7 @@ export default function StartupSignupPage() {
     
     try {
       // Step 1: Create user account with Better Auth client (with metadata)
+      const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
       const result: PostSignupResult = await signUpStartup({
         email: data.email,
         password: data.password,
@@ -72,7 +73,7 @@ export default function StartupSignupPage() {
         last_name: data.lastName,
         company: data.companyName,
         is_student: false,
-        callbackURL: '/verify-email',
+        callbackURL: defaultCallback,
       });
 
       // Enhanced error diagnostics
@@ -93,9 +94,13 @@ export default function StartupSignupPage() {
         return;
       }
 
-      // Redirect to email verification page on success
-      console.log('🎯 Redirecting to verify-email...');
-      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      // Redirect after signup: profile (prod) or verify-email (dev)
+      if (process.env.NODE_ENV === 'production') {
+        router.push('/profile');
+      } else {
+        console.log('🎯 Redirecting to verify-email...');
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      }
     } catch (error) {
       console.error('❌ Unexpected error during signup:', error);
       setError('An unexpected error occurred. Please try again.');

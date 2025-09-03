@@ -171,7 +171,8 @@ export async function signUpStartup(params: {
   is_student?: boolean; // default false
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const { email, password, first_name, last_name, company, is_student = false, callbackURL = '/verify-email' } = params;
+  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  const { email, password, first_name, last_name, company, is_student = false, callbackURL = defaultCallback } = params;
   // Use proper typing for extended payload
   const payload: SignupPayload = {
     email,
@@ -194,7 +195,8 @@ export async function signUpStudent(params: {
   last_name: string;
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const { email, password, first_name, last_name, callbackURL = '/verify-email' } = params;
+  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  const { email, password, first_name, last_name, callbackURL = defaultCallback } = params;
   const payload: SignupPayload = {
     email,
     password,
@@ -218,7 +220,8 @@ export async function signUpBasic(params: {
   password: string;
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const { name, email, password, callbackURL = '/verify-email' } = params;
+  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  const { name, email, password, callbackURL = defaultCallback } = params;
   const payload: SignupPayload = { name, email, password, callbackURL };
   return postSignUpEmail(payload);
 }
