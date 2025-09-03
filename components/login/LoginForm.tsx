@@ -53,16 +53,21 @@ export default function LoginForm({
   });
 
   const handleSubmit = async (data: LoginFormData) => {
+    console.log('🔵 LoginForm: Starting login process...');
     setIsLoading(true);
     setError(null);
     
     try {
+      console.log('🔵 LoginForm: Calling signIn.email...');
       const result = await signIn.email({
         email: data.email,
         password: data.password,
       });
       
+      console.log('🔵 LoginForm: signIn.email result:', result);
+      
       if (result.error) {
+        console.log('🔵 LoginForm: Login failed with error:', result.error);
         setError(result.error.message || 'Login failed');
       } else {
         console.log('🔵 LoginForm: Login successful, checking admin status...');
@@ -98,9 +103,11 @@ export default function LoginForm({
         }
       }
     } catch (error) {
+      console.log('🔵 LoginForm: Login process failed with error:', error);
       console.error('Login error:', error);
       setError('An unexpected error occurred');
     } finally {
+      console.log('🔵 LoginForm: Login process finished, setting loading to false');
       setIsLoading(false);
     }
   };
