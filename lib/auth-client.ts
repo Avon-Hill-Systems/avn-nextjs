@@ -82,6 +82,26 @@ export async function debugFetchSession() {
   }
 }
 
+// Custom session hook that uses the correct endpoint
+export async function getCustomSession() {
+  const apiBase = config.api.baseUrl.replace(/\/$/, '');
+  const url = `${apiBase}/api/auth/session`;
+  try {
+    console.log('🔵 getCustomSession: Request', { url, credentials: 'include' });
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) {
+      console.log('🔵 getCustomSession: Response not ok', { status: res.status, statusText: res.statusText });
+      return null;
+    }
+    const data = await res.json();
+    console.log('🔵 getCustomSession: Success', { hasUser: Boolean(data.user), hasSession: Boolean(data.session) });
+    return data;
+  } catch (e) {
+    console.error('🔴 getCustomSession: Network error', e);
+    return null;
+  }
+}
+
 // Interface for extended signup payload with additional fields
 interface ExtendedSignupPayload {
   email: string;

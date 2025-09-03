@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext } from 'react';
-import { useSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useSession, debugFetchSession, AUTH_BASE_URL, getCustomSession } from '@/lib/auth-client';
 import { config } from '@/lib/config';
 
 interface User {
@@ -41,9 +41,31 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: session, isPending: isLoading, error } = useSession();
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
   // Ensure we attempt a one-time legacy cookie clear if session won't load
   let attemptedCookieReset = (globalThis as any).__avnAttemptedCookieReset as boolean | undefined;
+  
+  // Custom session fetching
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const sessionData = await getCustomSession();
+        setSession(sessionData);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to fetch session'));
+        setSession(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchSession();
+  }, []);
   
   // Add detailed logging
   console.log('🔵 AuthProvider: Session state:', {
@@ -86,8 +108,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
   
   const refetchSession = async () => {
-    // Better Auth handles session refetching automatically
     console.log('🔵 AuthProvider: Session refetch requested');
+    try {
+      setIsLoading(true);
+      setError(null);
+      const sessionData = await getCustomSession();
+      setSession(sessionData);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch session'));
+      setSession(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const value: AuthContextType = {
