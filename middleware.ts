@@ -71,16 +71,26 @@ export async function middleware(request: NextRequest) {
   async function backendHasSession(): Promise<boolean> {
     try {
       const apiBase = resolveApiBase()
-      // Better Auth exposes GET /auth/session for the current session
-      const url = `${apiBase}/auth/session`
-      log('🟡 Middleware: Probing backend session at', url)
-      const res = await fetch(url, {
+      // Try preferred endpoint then fallback to legacy
+      const primary = `${apiBase}/auth/session`
+      const fallback = `${apiBase}/auth/get-session`
+      log('🟡 Middleware: Probing backend session at', primary)
+      let res = await fetch(primary, {
         method: 'GET',
         headers: { cookie: request.headers.get('cookie') || '' },
         credentials: 'include',
       })
-      log('🟡 Middleware: backendHasSession status:', res.status, res.statusText)
-      if (!res.ok) return false
+      log('🟡 Middleware: backendHasSession status (primary):', res.status, res.statusText)
+      if (!res.ok) {
+        log('🟡 Middleware: Primary failed, trying fallback at', fallback)
+        res = await fetch(fallback, {
+          method: 'GET',
+          headers: { cookie: request.headers.get('cookie') || '' },
+          credentials: 'include',
+        })
+        log('🟡 Middleware: backendHasSession status (fallback):', res.status, res.statusText)
+        if (!res.ok) return false
+      }
       const ct = res.headers.get('content-type') || ''
       if (!ct.includes('application/json')) return false
       const data = await res.json().catch(() => null) as unknown as { user?: unknown; session?: unknown; data?: { user?: unknown; session?: unknown } } | null
