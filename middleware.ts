@@ -1,6 +1,13 @@
+/* eslint-disable no-console */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { config as appConfig } from './lib/config'
+
+// Lightweight logger to avoid noisy console in production and satisfy linters
+const DEBUG = process.env.NODE_ENV !== 'production'
+const log = (...args: unknown[]) => { if (DEBUG) console.log(...args) }
+const warn = (...args: unknown[]) => { if (DEBUG) console.warn(...args) }
+const errLog = (...args: unknown[]) => { if (DEBUG) console.error(...args) }
 
 
 
@@ -13,9 +20,9 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
 
-    console.log(`🔵 Middleware: START - Processing request for ${pathname}`)
-    console.log(`🔵 Middleware: Request URL: ${request.url}`)
-    console.log(`🔵 Middleware: Request headers:`, {
+    log(`🔵 Middleware: START - Processing request for ${pathname}`)
+    log(`🔵 Middleware: Request URL: ${request.url}`)
+    log(`🔵 Middleware: Request headers:`, {
       origin: request.headers.get('origin'),
       referer: request.headers.get('referer'),
       userAgent: request.headers.get('user-agent')?.substring(0, 100) + '...',
@@ -29,11 +36,11 @@ export async function middleware(request: NextRequest) {
       if (isProd && hostname === 'tostendout.com') {
         const url = new URL(request.url)
         url.hostname = 'www.tostendout.com'
-        console.log(`🟡 Middleware: Canonical redirect to ${url.toString()}`)
+        log(`🟡 Middleware: Canonical redirect to ${url.toString()}`)
         return NextResponse.redirect(url)
       }
     } catch (e) {
-      console.log('⚠️ Middleware: Canonical host check failed:', e)
+      warn('⚠️ Middleware: Canonical host check failed:', e)
     }
   
   // List of protected routes that require authentication
@@ -49,21 +56,16 @@ export async function middleware(request: NextRequest) {
 
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
-  console.log(`🔵 Middleware: Is protected route? ${isProtectedRoute}`)
+  log(`🔵 Middleware: Is protected route? ${isProtectedRoute}`)
 
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route))
-  console.log(`🔵 Middleware: Is admin route? ${isAdminRoute}`)
+  log(`🔵 Middleware: Is admin route? ${isAdminRoute}`)
 
   // Log all cookies in detail
-  console.log(`🔵 Middleware: About to get cookies...`)
+  log(`🔵 Middleware: About to get cookies...`)
   const allCookies = request.cookies.getAll()
-  console.log(`🔵 Middleware: Got ${allCookies.length} cookies`)
-  console.log(`🔵 Middleware: Cookie names:`, allCookies.map(c => c.name))
-  console.log(`🔵 Middleware: All cookies (${allCookies.length}):`, allCookies.map(c => ({
-    name: c.name,
-    value: c.value?.substring(0, 50) + (c.value && c.value.length > 50 ? '...' : ''),
-    hasValue: Boolean(c.value)
-  })))
+  log(`🔵 Middleware: Got ${allCookies.length} cookies`)
+  log(`🔵 Middleware: Cookie names:`, allCookies.map(c => c.name))
 
   // Helper to check session via backend if cookies are present but token name differs
   async function backendHasSession(): Promise<boolean> {
@@ -77,12 +79,12 @@ export async function middleware(request: NextRequest) {
       if (!res.ok) return false
       const ct = res.headers.get('content-type') || ''
       if (!ct.includes('application/json')) return false
-      const data: any = await res.json().catch(() => null)
+      const data = await res.json().catch(() => null) as unknown as { user?: unknown; session?: unknown; data?: { user?: unknown; session?: unknown } } | null
       const user = data?.user ?? data?.data?.user
       const session = data?.session ?? data?.data?.session
       return Boolean(user || session)
     } catch (e) {
-      console.log('🔴 Middleware: backendHasSession check failed:', e)
+      warn('🔴 Middleware: backendHasSession check failed:', e)
       return false
     }
   }
@@ -94,11 +96,11 @@ export async function middleware(request: NextRequest) {
       if (has) {
         const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
         const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
-        console.log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
+        log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
         return NextResponse.redirect(new URL(target, request.url))
       }
     } catch (e) {
-      console.log('⚠️ Middleware: session check failed, allowing page:', e)
+      warn('⚠️ Middleware: session check failed, allowing page:', e)
     }
   }
 
@@ -108,43 +110,36 @@ export async function middleware(request: NextRequest) {
     const regularToken = request.cookies.get('better-auth.session_token')?.value
     const sessionToken = secureToken || regularToken
     
-    console.log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
-    console.log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
-    console.log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
-    
-    if (secureToken) {
-      console.log(`🔵 Middleware: Secure token value: ${secureToken.substring(0, 50)}...`)
-    }
-    if (regularToken) {
-      console.log(`🔵 Middleware: Regular token value: ${regularToken.substring(0, 50)}...`)
-    }
+    log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
+    log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
+    log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
 
     if (!sessionToken) {
-      console.log(`🔴 Middleware: No session token found, redirecting to login`)
-      console.log(`🔴 Middleware: Available cookie names:`, allCookies.map(c => c.name))
+      log(`🔴 Middleware: No session token found, checking backend session before redirect`)
+      log(`🔴 Middleware: Available cookie names:`, allCookies.map(c => c.name))
       // Double-check with backend session endpoint before redirecting
       const hasSession = await backendHasSession()
       if (!hasSession) {
         const loginUrl = new URL('/login', request.url)
         loginUrl.searchParams.set('redirect', pathname)
-        console.log(`🔴 Middleware: Redirecting to: ${loginUrl.toString()}`)
+        log(`🔴 Middleware: Redirecting to: ${loginUrl.toString()}`)
         return NextResponse.redirect(loginUrl)
       }
-      console.log('🟢 Middleware: Backend reported active session; allowing access')
+      log('🟢 Middleware: Backend reported active session; allowing access')
     }
     
     // Note: Removed admin pre-verification to avoid 403 loops; backend guards still protect admin APIs
 
-    console.log(`🟢 Middleware: Session cookie present, allowing access to ${pathname}`)
+    log(`🟢 Middleware: Session cookie present or verified, allowing access to ${pathname}`)
   } else {
-    console.log(`🟢 Middleware: Non-protected route, allowing access to ${pathname}`)
+    log(`🟢 Middleware: Non-protected route, allowing access to ${pathname}`)
   }
 
   // Allow the request to continue for non-protected routes or authenticated users
-  console.log(`🟢 Middleware: Request allowed to continue to ${pathname}`)
+  log(`🟢 Middleware: Request allowed to continue to ${pathname}`)
   return NextResponse.next()
   } catch (error) {
-    console.error('🔴 Middleware: Error occurred:', error)
+    errLog('🔴 Middleware: Error occurred:', error)
     // Allow request to continue on error to avoid breaking the app
     return NextResponse.next()
   }
