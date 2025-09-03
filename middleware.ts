@@ -20,6 +20,21 @@ export async function middleware(request: NextRequest) {
       referer: request.headers.get('referer'),
       userAgent: request.headers.get('user-agent')?.substring(0, 100) + '...',
     })
+
+    // Canonical host redirect (production): force www.tostendout.com
+    // Avoids cross-host cookie issues between apex and www.
+    try {
+      const hostname = request.nextUrl.hostname
+      const isProd = process.env.NODE_ENV === 'production'
+      if (isProd && hostname === 'tostendout.com') {
+        const url = new URL(request.url)
+        url.hostname = 'www.tostendout.com'
+        console.log(`🟡 Middleware: Canonical redirect to ${url.toString()}`)
+        return NextResponse.redirect(url)
+      }
+    } catch (e) {
+      console.log('⚠️ Middleware: Canonical host check failed:', e)
+    }
   
   // List of protected routes that require authentication
   const protectedRoutes = [
