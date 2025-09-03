@@ -46,8 +46,8 @@ const INDUSTRIES = [
   'Other',
 ] as const;
 
-// Startup profile schema - adapted for company information
-const startupProfileSchema = z.object({
+  // Startup profile schema - adapted for company information
+  const startupProfileSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
   companySize: z.string().min(1, "Company size is required"),
   industry: z.array(z.enum(INDUSTRIES)).min(1, "At least one industry is required"),
@@ -345,6 +345,24 @@ export function StartupProfileForm() {
             
             <FormField
               control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-normal">Company Location *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="City, State/Country (e.g., Cambridge, MA)" 
+                      {...field} 
+                      className="bg-background"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="industry"
               render={({ field }) => (
                 <FormItem>
@@ -395,8 +413,6 @@ export function StartupProfileForm() {
                 </FormItem>
               )}
             />
-
-            {/* Remote work policy removed from startup profile */}
           </div>
 
 
