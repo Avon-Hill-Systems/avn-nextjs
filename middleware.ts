@@ -82,29 +82,21 @@ export async function middleware(request: NextRequest) {
   }
 
   // If user hits /login but is already authenticated, send them to intended page
-  if (pathname.startsWith('/login')) {
-    const secureToken = request.cookies.get('__Secure-better-auth.session_token')?.value
-    const regularToken = request.cookies.get('better-auth.session_token')?.value
-    const sessionToken = secureToken || regularToken
-    let alreadyAuthed = Boolean(sessionToken)
-    if (!alreadyAuthed) {
-      alreadyAuthed = await (async () => {
-        try {
-          const apiBase = resolveApiBase()
-          const res = await fetch(`${apiBase}/auth/get-session`, {
-            headers: { cookie: request.headers.get('cookie') || '' },
-            credentials: 'include',
-          })
-          return res.ok
-        } catch {
-          return false
-        }
-      })()
-    }
-    if (alreadyAuthed) {
-      const target = request.nextUrl.searchParams.get('redirect') || '/'
-      console.log(`🟢 Middleware: Authenticated user on /login, redirecting to ${target}`)
-      return NextResponse.redirect(new URL(target, request.url))
+  if (pathname.startsWith('/login') || pathname.startsWith('/verify-email')) {
+    const apiBase = resolveApiBase()
+    try {
+      const res = await fetch(`${apiBase}/auth/get-session`, {
+        headers: { cookie: request.headers.get('cookie') || '' },
+        credentials: 'include',
+      })
+      if (res.ok) {
+        const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
+        const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
+        console.log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
+        return NextResponse.redirect(new URL(target, request.url))
+      }
+    } catch (e) {
+      console.log('⚠️ Middleware: session check failed, allowing page:', e)
     }
   }
 
