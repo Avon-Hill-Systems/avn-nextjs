@@ -178,11 +178,14 @@ export default function StudentSignupPage() {
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="Enter your email"
+                            placeholder="your.name@college.harvard.edu"
                             className="w-full h-10 sm:h-11 text-base"
                             {...field}
                           />
                         </FormControl>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Only Harvard College email addresses (@college.harvard.edu) are accepted
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
