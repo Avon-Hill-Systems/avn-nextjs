@@ -12,11 +12,13 @@ import { config } from '@/lib/config';
 export default function Home() {
   const router = useRouter();
   const { session, isLoading, isAuthenticated } = useAuth();
+  const [isRedirecting, setIsRedirecting] = React.useState(false);
 
   // Handle authenticated user redirects
   useEffect(() => {
-    if (!isLoading && isAuthenticated && session?.user) {
+    if (!isLoading && isAuthenticated && session?.user && !isRedirecting) {
       console.log('🔵 Home: User is authenticated, checking role for redirect');
+      setIsRedirecting(true);
       
       // Check if user is admin and redirect accordingly
       const checkAdminAndRedirect = async () => {
@@ -45,7 +47,7 @@ export default function Home() {
       
       checkAdminAndRedirect();
     }
-  }, [isLoading, isAuthenticated, session, router]);
+  }, [isLoading, isAuthenticated, session, router, isRedirecting]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
@@ -104,8 +106,8 @@ export default function Home() {
     );
   }
 
-  // If authenticated, show loading while redirecting
-  if (isAuthenticated) {
+  // If authenticated and redirecting, show loading while redirecting
+  if (isAuthenticated && isRedirecting) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
