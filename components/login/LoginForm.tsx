@@ -67,17 +67,21 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
-        // Successful login - redirect based on admin status or role
-        // Route based on role stored in session (student vs startup)
+        // Successful login - redirect based on role (force full reload to refresh cookies/session)
         try {
+          const url = new URL(window.location.href);
+          const qpRedirect = url.searchParams.get('redirect');
+
           const sess = await getSession();
           const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
           const isStudent = Boolean(user?.is_student);
-          const target = isStudent ? '/matches' : '/internships/new';
-          router.push(target);
+          const computedTarget = isStudent ? '/matches' : '/internships/new';
+          const target = qpRedirect || computedTarget;
+
+          window.location.assign(target);
         } catch {
           // Fallback if anything goes wrong
-          router.push('/matches');
+          window.location.assign('/matches');
         }
         if (onSubmit) {
           onSubmit(data);
