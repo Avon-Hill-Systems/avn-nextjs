@@ -5,118 +5,52 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
-import { useAuth } from '@/hooks/use-auth';
-import { config } from '@/lib/config';
 
 
 export default function Home() {
   const router = useRouter();
-  const { session, isLoading, isAuthenticated } = useAuth();
-  const [isRedirecting, setIsRedirecting] = React.useState(false);
-
-  // Handle authenticated user redirects
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && session?.user && !isRedirecting) {
-      console.log('🔵 Home: User is authenticated, checking role for redirect');
-      setIsRedirecting(true);
-      
-      // Check if user is admin and redirect accordingly
-      const checkAdminAndRedirect = async () => {
-        try {
-          const apiBase = (config.api.baseUrl || '').replace(/\/$/, '');
-          const verifyRes = await fetch(`${apiBase}/users/admin/verify`, { 
-            credentials: 'include' 
-          });
-          
-          if (verifyRes.ok) {
-            console.log('🔵 Home: User is admin, redirecting to /admin');
-            router.replace('/admin');
-            return;
-          }
-        } catch (error) {
-          console.log('🔵 Home: Admin check failed, proceeding with role-based redirect:', error);
-        }
-        
-        // If not admin, redirect based on user type
-        const user = session.user;
-        const isStudent = Boolean(user.is_student);
-        const target = isStudent ? '/matches' : '/internships/new';
-        console.log(`🔵 Home: User is ${isStudent ? 'student' : 'startup'}, redirecting to ${target}`);
-        router.replace(target);
-      };
-      
-      checkAdminAndRedirect();
-    }
-  }, [isLoading, isAuthenticated, session, router, isRedirecting]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
-    // Only prefetch if user is not authenticated
-    if (!isAuthenticated) {
-      // Prefetch the login page
+    // Prefetch the login page
+    router.prefetch('/login');
+    
+    // Also prefetch other important pages
+    router.prefetch('/students');
+    router.prefetch('/startups');
+    router.prefetch('/pricing');
+    router.prefetch('/signup');
+    
+    // Preload the login page image
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = '/landing/landing2.png';
+    link.as = 'image';
+    document.head.appendChild(link);
+
+    // Set up a more robust prefetching strategy
+    const prefetchLogin = () => {
       router.prefetch('/login');
-      
-      // Also prefetch other important pages
-      router.prefetch('/students');
-      router.prefetch('/startups');
-      router.prefetch('/pricing');
-      router.prefetch('/signup');
-      
-      // Preload the login page image
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = '/landing/landing2.png';
-      link.as = 'image';
-      document.head.appendChild(link);
+    };
 
-      // Set up a more robust prefetching strategy
-      const prefetchLogin = () => {
-        router.prefetch('/login');
-      };
+    // Prefetch on various user interactions to ensure it stays cached
+    const handleUserInteraction = () => {
+      prefetchLogin();
+      // Remove the listener after first interaction to avoid excessive prefetching
+      document.removeEventListener('mousemove', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
 
-      // Prefetch on various user interactions to ensure it stays cached
-      const handleUserInteraction = () => {
-        prefetchLogin();
-        // Remove the listener after first interaction to avoid excessive prefetching
-        document.removeEventListener('mousemove', handleUserInteraction);
-        document.removeEventListener('touchstart', handleUserInteraction);
-      };
+    // Add listeners for user interactions that might indicate intent to navigate
+    document.addEventListener('mousemove', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
 
-      // Add listeners for user interactions that might indicate intent to navigate
-      document.addEventListener('mousemove', handleUserInteraction);
-      document.addEventListener('touchstart', handleUserInteraction);
-
-      // Cleanup
-      return () => {
-        document.removeEventListener('mousemove', handleUserInteraction);
-        document.removeEventListener('touchstart', handleUserInteraction);
-      };
-    }
-  }, [router, isAuthenticated]);
-
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If authenticated and redirecting, show loading while redirecting
-  if (isAuthenticated && isRedirecting) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Redirecting...</p>
-        </div>
-      </div>
-    );
-  }
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousemove', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-background">
