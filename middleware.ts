@@ -20,6 +20,7 @@ export async function middleware(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl
     const postVerify = request.nextUrl.searchParams.get('postVerify') === '1'
+    const postLogin = request.nextUrl.searchParams.get('postLogin') === '1'
 
     log(`🔵 Middleware: START - Processing request for ${pathname}`)
     log(`🔵 Middleware: Request URL: ${request.url}`)
@@ -123,8 +124,9 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute || isAdminRoute) {
     // Allow a one-time pass for post-verification landings to let the app
     // bootstrap and read cookies after cross-site redirects
-    if (postVerify) {
-      log('🟢 Middleware: postVerify flag present; allowing initial access to', pathname)
+    if (postVerify || postLogin) {
+      if (postVerify) log('🟢 Middleware: postVerify flag present; allowing initial access to', pathname)
+      if (postLogin) log('🟢 Middleware: postLogin flag present; allowing initial access to', pathname)
       return NextResponse.next()
     }
     // Check for session token in cookies (try both secure and non-secure variants)
