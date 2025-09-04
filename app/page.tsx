@@ -14,11 +14,14 @@ export default function Home() {
 
   // Redirect authenticated users to their appropriate dashboard
   useEffect(() => {
+    console.log('🔵 Home: useEffect triggered', { isLoading, isAuthenticated, hasSession: !!session, hasUser: !!session?.user });
     if (!isLoading && isAuthenticated && session?.user) {
       const isStudent = Boolean(session.user.is_student);
       const target = isStudent ? '/matches' : '/internships/new';
-      console.log('🔵 Home: Redirecting authenticated user to:', target);
+      console.log('🔵 Home: Redirecting authenticated user to:', target, { user: session.user });
       router.replace(target);
+    } else {
+      console.log('🔵 Home: Not redirecting', { isLoading, isAuthenticated, hasSession: !!session, hasUser: !!session?.user });
     }
   }, [isLoading, isAuthenticated, session, router]);
 
