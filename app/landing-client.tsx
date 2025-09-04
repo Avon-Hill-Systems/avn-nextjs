@@ -19,9 +19,10 @@ export default function LandingPageClient() {
     // Only redirect when we're sure about the auth state
     if (!isLoading && isAuthenticated) {
       console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
-      router.replace('/profile');
+      // Use window.location.href for immediate redirect
+      window.location.href = '/profile';
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading]);
 
   // Immediate redirect check on mount - bypass auth context if needed
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function LandingPageClient() {
         
         if (hasSessionCookie) {
           console.log('🟢 LandingPageClient: Session cookie found, redirecting immediately');
-          router.replace('/profile');
+          window.location.href = '/profile';
           return;
         }
         
@@ -46,7 +47,7 @@ export default function LandingPageClient() {
           const data = await response.json();
           if (data?.user || data?.data?.user) {
             console.log('🟢 LandingPageClient: Backend auth check - redirecting to /profile');
-            router.replace('/profile');
+            window.location.href = '/profile';
           }
         }
       } catch (error) {
@@ -56,7 +57,7 @@ export default function LandingPageClient() {
     
     // Run immediately
     checkAuthImmediately();
-  }, [router]);
+  }, []);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
