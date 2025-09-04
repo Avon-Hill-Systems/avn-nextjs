@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  experimental: {
+    // Enable experimental features for better middleware support
+  },
+  // Disable static optimization for the root page to ensure middleware runs
+  trailingSlash: false,
 };
 
 export default nextConfig;

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { config as appConfig } from './lib/config'
@@ -50,11 +49,13 @@ export async function middleware(request: NextRequest) {
     '/profile',
     '/settings',
     '/matches',
-    '/internships'
+    '/internships',
+    '/interviews',
+    '/matching-system'
   ]
 
   // Admin-only routes
-  const adminRoutes = ['/admin', '/analytics', '/interviews', '/matching-system']
+  const adminRoutes = ['/admin', '/analytics']
 
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))

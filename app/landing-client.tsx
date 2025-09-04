@@ -9,10 +9,16 @@ import { useAuth } from '@/hooks/use-auth';
 
 export default function LandingPageClient() {
   const router = useRouter();
-  const { session, isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
 
-  // Note: Do not client-redirect authenticated users from landing.
-  // SSR/middleware handle redirect to avoid client/server auth races.
+  // Client-side fallback redirect for authenticated users
+  // This handles cases where middleware doesn't run due to caching
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
+      router.replace('/profile');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {

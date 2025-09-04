@@ -7,6 +7,8 @@ import LandingPageClient from './landing-client';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
 
 export default async function Home() {
   // Check for session cookie on server side to force dynamic rendering
