@@ -11,6 +11,23 @@ export default function LandingPageClient() {
   const router = useRouter();
   const { isLoading, isAuthenticated } = useAuth();
 
+  // Immediate cookie check - run synchronously on mount
+  React.useEffect(() => {
+    console.log('🔵 LandingPageClient: Component mounted, checking cookies immediately...');
+    
+    // Check for session cookie synchronously
+    const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
+                            document.cookie.includes('better-auth.session_token');
+    
+    console.log('🔵 LandingPageClient: Immediate cookie check - found:', hasSessionCookie);
+    console.log('🔵 LandingPageClient: All cookies:', document.cookie);
+    
+    if (hasSessionCookie) {
+      console.log('🟢 LandingPageClient: Session cookie found on mount, redirecting immediately');
+      window.location.href = '/profile';
+    }
+  }, []);
+
   // Client-side redirect for authenticated users
   // This handles cases where middleware doesn't run due to caching
   useEffect(() => {
@@ -28,9 +45,14 @@ export default function LandingPageClient() {
   useEffect(() => {
     const checkAuthImmediately = async () => {
       try {
+        console.log('🔵 LandingPageClient: Running immediate auth check...');
+        
         // Check for session cookie directly
         const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
                                 document.cookie.includes('better-auth.session_token');
+        
+        console.log('🔵 LandingPageClient: Session cookie found:', hasSessionCookie);
+        console.log('🔵 LandingPageClient: Document cookies:', document.cookie);
         
         if (hasSessionCookie) {
           console.log('🟢 LandingPageClient: Session cookie found, redirecting immediately');
@@ -39,16 +61,25 @@ export default function LandingPageClient() {
         }
         
         // Fallback: check with backend
+        console.log('🔵 LandingPageClient: No cookie found, checking backend...');
         const response = await fetch('https://api.tostendout.com/auth/session', {
           credentials: 'include',
         });
         
+        console.log('🔵 LandingPageClient: Backend response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('🔵 LandingPageClient: Backend response data:', data);
+          
           if (data?.user || data?.data?.user) {
             console.log('🟢 LandingPageClient: Backend auth check - redirecting to /profile');
             window.location.href = '/profile';
+          } else {
+            console.log('🔵 LandingPageClient: Backend says user is not authenticated');
           }
+        } else {
+          console.log('🔵 LandingPageClient: Backend auth check failed:', response.status);
         }
       } catch (error) {
         console.log('🔵 LandingPageClient: Immediate auth check failed:', error);
