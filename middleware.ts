@@ -136,6 +136,9 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/') {
     log(`🔵 Middleware: Root path detected, adding cache-busting headers`)
     const response = NextResponse.next()
+    // Instruct Vercel to bypass edge cache for this path so
+    // middleware runs and cookies are evaluated on every hit
+    response.headers.set('x-middleware-cache', 'no-cache')
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')
