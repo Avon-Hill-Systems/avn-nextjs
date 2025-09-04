@@ -11,9 +11,10 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 // Force dynamic by using searchParams (even if empty)
-export async function generateMetadata({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   // Use searchParams to force dynamic rendering
-  console.log('🔵 generateMetadata: searchParams:', searchParams);
+  const params = await searchParams;
+  console.log('🔵 generateMetadata: searchParams:', params);
   return {
     title: 'tostendout',
     description: 'Work at a startup this summer',
@@ -22,17 +23,18 @@ export async function generateMetadata({ searchParams }: { searchParams: { [key:
 
 
 
-export default async function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   // Force dynamic rendering by using noStore
   noStore();
   
   // Force dynamic rendering by using current timestamp and searchParams
   const timestamp = Date.now();
-  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', searchParams);
+  const params = await searchParams;
+  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', params);
   
   // Force dynamic rendering by accessing headers
   const headersList = await headers();
-  console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering');
+  console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
   // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
