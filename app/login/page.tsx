@@ -4,7 +4,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { unstable_noStore as noStore } from 'next/cache';
 import LoginTopBar from '@/components/login/LoginTopBar';
-import LoginForm from '@/components/login/LoginForm';
+import LoginFormClient from '@/components/login/LoginFormClient';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -64,7 +64,7 @@ export default async function LoginPage() {
           <div className="flex items-center justify-center p-4 sm:p-6 lg:p-12">
             <div className="w-full max-w-sm sm:max-w-md px-4 sm:px-0">
               <Suspense fallback={<div>Loading...</div>}>
-                <LoginForm />
+                <LoginFormClient />
               </Suspense>
             </div>
           </div>
