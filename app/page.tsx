@@ -11,8 +11,7 @@ export const runtime = 'nodejs';
 export default async function Home() {
   // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('__Secure-__Secure-better-auth.session_token')?.value ||
-                      cookieStore.get('__Secure-better-auth.session_token')?.value ||
+  const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
 
   console.log('🔵 Server Component: Running with session token:', Boolean(sessionToken));

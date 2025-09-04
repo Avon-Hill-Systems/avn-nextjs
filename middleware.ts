@@ -111,9 +111,10 @@ export async function middleware(request: NextRequest) {
     log(`🔵 Middleware: Processing landing page redirect logic`)
     try {
       // Fast path: check known session cookies before probing backend
-      const secureToken = request.cookies.get('__Secure-__Secure-better-auth.session_token')?.value
+      // Check for canonical Better Auth cookie names only
       const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
       const legacyToken = request.cookies.get('better-auth.session_token')?.value
+      const secureToken = regularToken // kept for log structure
       const sessionToken = secureToken || regularToken || legacyToken
 
       log(`🔵 Middleware: Landing page cookie check - secure: ${Boolean(secureToken)}, regular: ${Boolean(regularToken)}, legacy: ${Boolean(legacyToken)}`)
@@ -145,10 +146,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
     // Check for session token in cookies (try both secure and non-secure variants)
-    const secureToken = request.cookies.get('__Secure-__Secure-better-auth.session_token')?.value
     const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
     const legacyToken = request.cookies.get('better-auth.session_token')?.value
-    const sessionToken = secureToken || regularToken || legacyToken
+    const sessionToken = regularToken || legacyToken
     
     log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
     log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
