@@ -9,14 +9,6 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
-// Add headers to prevent caching
-export async function headers() {
-  return {
-    'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-    'Pragma': 'no-cache',
-    'Expires': '0',
-  };
-}
 
 
 export default async function Home() {
