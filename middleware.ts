@@ -106,41 +106,31 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect authenticated users away from landing page to /profile
-  if (pathname === '/') {
-    log(`🔵 Middleware: Processing landing page redirect logic`)
-    try {
-      // Fast path: check known session cookies before probing backend
-      // Check for canonical Better Auth cookie names only
-      const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
-      const legacyToken = request.cookies.get('better-auth.session_token')?.value
-      const secureToken = regularToken // kept for log structure
-      const sessionToken = secureToken || regularToken || legacyToken
 
-      log(`🔵 Middleware: Landing page cookie check - secure: ${Boolean(secureToken)}, regular: ${Boolean(regularToken)}, legacy: ${Boolean(legacyToken)}`)
+    // Redirect authenticated users from ALL unprotected routes to /profile
+  // This provides a coherent UX: authenticated users always go to their dashboard
+  if (!isProtectedRoute && !isAdminRoute) {
+    log(`🔵 Middleware: Checking if authenticated user should be redirected from unprotected route: ${pathname}`)
+    
+    // Check for session token in cookies
+    const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
+    const legacyToken = request.cookies.get('better-auth.session_token')?.value
+    const sessionToken = regularToken || legacyToken
 
-      if (sessionToken) {
-        log(`🟢 Middleware: Auth cookie found on landing page, redirecting to /profile`)
-        return NextResponse.redirect(new URL('/profile', request.url))
-      }
-
-      // Fallback: probe backend in case cookie name differs
-      log(`🔵 Middleware: No cookie found, checking backend session`)
-      const has = await backendHasSession()
-      if (has) {
-        log(`🟢 Middleware: Authenticated user on landing page, redirecting to /profile`)
-        return NextResponse.redirect(new URL('/profile', request.url))
-      }
-      log(`🔵 Middleware: No authentication found, allowing access to landing page`)
-    } catch (e) {
-      warn('⚠️ Middleware: session check failed on landing page, allowing access:', e)
+    if (sessionToken) {
+      log(`🟢 Middleware: Authenticated user on unprotected route ${pathname}, redirecting to /profile`)
+      return NextResponse.redirect(new URL('/profile', request.url))
     }
-  }
 
-  // Allow authenticated users to access login page (for account switching, etc.)
-  if (pathname === '/login') {
-    log(`🔵 Middleware: Allowing access to login page regardless of auth status`)
-    return NextResponse.next()
+    // Fallback: probe backend in case cookie name differs
+    log(`🔵 Middleware: No cookie found, checking backend session for unprotected route`)
+    const has = await backendHasSession()
+    if (has) {
+      log(`🟢 Middleware: Backend confirmed authenticated user on unprotected route ${pathname}, redirecting to /profile`)
+      return NextResponse.redirect(new URL('/profile', request.url))
+    }
+    
+    log(`🔵 Middleware: No authentication found, allowing access to unprotected route ${pathname}`)
   }
 
   if (isProtectedRoute || isAdminRoute) {
