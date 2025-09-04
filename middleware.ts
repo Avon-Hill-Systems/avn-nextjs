@@ -106,20 +106,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // If user hits /login but is already authenticated, send them to intended page
-  if (pathname.startsWith('/login') || pathname.startsWith('/verify-email')) {
-    try {
-      const has = await backendHasSession()
-      if (has) {
-        const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
-        const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
-        log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
-        return NextResponse.redirect(new URL(target, request.url))
-      }
-    } catch (e) {
-      warn('⚠️ Middleware: session check failed, allowing page:', e)
-    }
-  }
+  // REMOVED: Logic that prevented users from accessing /login page
+  // This was causing users to be redirected away from /login even when they needed to log in
+  // if (pathname.startsWith('/login') || pathname.startsWith('/verify-email')) {
+  //   try {
+  //     const has = await backendHasSession()
+  //     if (has) {
+  //       const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
+  //       const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
+  //       log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
+  //       return NextResponse.redirect(new URL(target, request.url))
+  //     }
+  //   } catch (e) {
+  //     warn('⚠️ Middleware: session check failed, allowing page:', e)
+  //   }
+  // }
 
   if (isProtectedRoute || isAdminRoute) {
     // Allow a one-time pass for post-verification landings to let the app
