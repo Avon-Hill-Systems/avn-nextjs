@@ -20,10 +20,18 @@ export default function LandingPageClient() {
     const checkForSessionCookie = () => {
       if (redirectExecuted) return;
       
-      const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
-                              document.cookie.includes('better-auth.session_token');
+      // Check for session cookies (handle both correct and duplicated prefix cases)
+      const hasCorrectSessionCookie = document.cookie.includes('__Secure-better-auth.session_token');
+      const hasLegacySessionCookie = document.cookie.includes('better-auth.session_token');
+      const hasDuplicatedPrefixCookie = document.cookie.includes('__Secure-__Secure-better-auth.session_token');
       
-      console.log('🔵 LandingPageClient: Cookie check - found session cookie:', hasSessionCookie);
+      const hasSessionCookie = hasCorrectSessionCookie || hasLegacySessionCookie || hasDuplicatedPrefixCookie;
+      
+      console.log('🔵 LandingPageClient: Cookie check results:');
+      console.log('  - Correct session cookie:', hasCorrectSessionCookie);
+      console.log('  - Legacy session cookie:', hasLegacySessionCookie);
+      console.log('  - Duplicated prefix cookie:', hasDuplicatedPrefixCookie);
+      console.log('  - Any session cookie found:', hasSessionCookie);
       console.log('🔵 LandingPageClient: Current cookies:', document.cookie);
       
       if (hasSessionCookie) {
@@ -81,9 +89,11 @@ export default function LandingPageClient() {
       try {
         console.log('🔵 LandingPageClient: Running immediate auth check...');
         
-        // Check for session cookie directly
-        const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
-                                document.cookie.includes('better-auth.session_token');
+        // Check for session cookie directly (handle both correct and duplicated prefix cases)
+        const hasCorrectSessionCookie = document.cookie.includes('__Secure-better-auth.session_token');
+        const hasLegacySessionCookie = document.cookie.includes('better-auth.session_token');
+        const hasDuplicatedPrefixCookie = document.cookie.includes('__Secure-__Secure-better-auth.session_token');
+        const hasSessionCookie = hasCorrectSessionCookie || hasLegacySessionCookie || hasDuplicatedPrefixCookie;
         
         console.log('🔵 LandingPageClient: Session cookie found:', hasSessionCookie);
         console.log('🔵 LandingPageClient: Document cookies:', document.cookie);
