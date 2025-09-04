@@ -49,13 +49,11 @@ export async function middleware(request: NextRequest) {
     '/profile',
     '/settings',
     '/matches',
-    '/internships',
-    '/interviews',
-    '/matching-system'
+    '/internships'
   ]
 
   // Admin-only routes
-  const adminRoutes = ['/admin', '/analytics']
+  const adminRoutes = ['/admin', '/analytics', '/interviews', '/matching-system']
 
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -132,6 +130,16 @@ export async function middleware(request: NextRequest) {
     }
     
     log(`🔵 Middleware: No authentication found, allowing access to unprotected route ${pathname}`)
+  }
+
+  // Special handling for root path - force dynamic rendering
+  if (pathname === '/') {
+    log(`🔵 Middleware: Root path detected, adding cache-busting headers`)
+    const response = NextResponse.next()
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    return response
   }
 
   if (isProtectedRoute || isAdminRoute) {

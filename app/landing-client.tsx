@@ -14,11 +14,42 @@ export default function LandingPageClient() {
   // Client-side fallback redirect for authenticated users
   // This handles cases where middleware doesn't run due to caching
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
+    // Immediate redirect check - don't wait for loading to complete
+    if (isAuthenticated) {
       console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
+      router.replace('/profile');
+      return;
+    }
+    
+    // Also check after loading completes
+    if (!isLoading && isAuthenticated) {
+      console.log('🟢 LandingPageClient: Post-loading authenticated user detected, redirecting to /profile');
       router.replace('/profile');
     }
   }, [isAuthenticated, isLoading, router]);
+
+  // Immediate redirect on mount if already authenticated
+  useEffect(() => {
+    // Check if we're already authenticated immediately
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/session', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.user || data?.data?.user) {
+            console.log('🟢 LandingPageClient: Immediate auth check - redirecting to /profile');
+            router.replace('/profile');
+          }
+        }
+      } catch (error) {
+        console.log('🔵 LandingPageClient: Immediate auth check failed:', error);
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {

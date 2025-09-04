@@ -9,6 +9,15 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
+// Add headers to prevent caching
+export async function headers() {
+  return {
+    'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  };
+}
+
 
 export default async function Home() {
   // Check for session cookie on server side to force dynamic rendering
@@ -22,6 +31,27 @@ export default async function Home() {
   if (sessionToken) {
     console.log('🟢 Server Component: Redirecting to /profile');
     redirect('/profile');
+  }
+
+  // Additional check: verify session with backend
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
+    const response = await fetch(`${apiBase}/auth/session`, {
+      headers: {
+        cookie: cookieStore.toString(),
+      },
+      cache: 'no-store',
+    });
+    
+    if (response.ok) {
+      const sessionData = await response.json();
+      if (sessionData?.user || sessionData?.data?.user) {
+        console.log('🟢 Server Component: Backend confirmed session, redirecting to /profile');
+        redirect('/profile');
+      }
+    }
+  } catch (error) {
+    console.log('🔵 Server Component: Backend session check failed:', error);
   }
 
   console.log('🔵 Server Component: Rendering landing page client');
