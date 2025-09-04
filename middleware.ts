@@ -106,21 +106,18 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // REMOVED: Logic that prevented users from accessing /login page
-  // This was causing users to be redirected away from /login even when they needed to log in
-  // if (pathname.startsWith('/login') || pathname.startsWith('/verify-email')) {
-  //   try {
-  //     const has = await backendHasSession()
-  //     if (has) {
-  //       const defaultTarget = pathname.startsWith('/verify-email') ? '/profile' : '/'
-  //       const target = request.nextUrl.searchParams.get('redirect') || defaultTarget
-  //       log(`🟢 Middleware: Valid session on ${pathname}, redirecting to ${target}`)
-  //       return NextResponse.redirect(new URL(target, request.url))
-  //     }
-  //   } catch (e) {
-  //     warn('⚠️ Middleware: session check failed, allowing page:', e)
-  //   }
-  // }
+  // Redirect authenticated users away from landing page to /profile
+  if (pathname === '/') {
+    try {
+      const has = await backendHasSession()
+      if (has) {
+        log(`🟢 Middleware: Authenticated user on landing page, redirecting to /profile`)
+        return NextResponse.redirect(new URL('/profile', request.url))
+      }
+    } catch (e) {
+      warn('⚠️ Middleware: session check failed on landing page, allowing access:', e)
+    }
+  }
 
   if (isProtectedRoute || isAdminRoute) {
     // Allow a one-time pass for post-verification landings to let the app
