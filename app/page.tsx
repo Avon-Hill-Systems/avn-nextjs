@@ -12,7 +12,12 @@ export default function Home() {
   const router = useRouter();
   const { session, isLoading, isAuthenticated } = useAuth();
 
-  // Note: Redirect logic moved to middleware for better performance
+  // Redirect authenticated users from landing to /profile (client-side fallback)
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/profile');
+    }
+  }, [isLoading, isAuthenticated, router]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
