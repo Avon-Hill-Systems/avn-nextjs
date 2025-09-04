@@ -1,6 +1,7 @@
 import React from 'react';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { unstable_noStore as noStore } from 'next/cache';
 import LandingPageClient from './landing-client';
 
 // Force dynamic rendering so middleware can run and check authentication
@@ -22,9 +23,16 @@ export async function generateMetadata({ searchParams }: { searchParams: { [key:
 
 
 export default async function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  // Force dynamic rendering by using noStore
+  noStore();
+  
   // Force dynamic rendering by using current timestamp and searchParams
   const timestamp = Date.now();
   console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', searchParams);
+  
+  // Force dynamic rendering by accessing headers
+  const headersList = await headers();
+  console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering');
   
   // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
