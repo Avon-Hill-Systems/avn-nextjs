@@ -55,6 +55,12 @@ export async function middleware(request: NextRequest) {
   // Admin-only routes
   const adminRoutes = ['/admin', '/analytics', '/interviews', '/matching-system']
 
+  // Routes that should always be accessible without redirecting away,
+  // even if the user is authenticated (prevents bounce loops during
+  // cookie propagation/verification flows).
+  const alwaysAllowRoutes = ['/login', '/signup', '/verify-email']
+  const isAlwaysAllow = alwaysAllowRoutes.some(route => pathname.startsWith(route))
+
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   log(`🔵 Middleware: Is protected route? ${isProtectedRoute}`)
@@ -106,9 +112,14 @@ export async function middleware(request: NextRequest) {
   }
 
 
-    // Redirect authenticated users from ALL unprotected routes to /profile
+  // Redirect authenticated users from ALL unprotected routes to /profile
   // This provides a coherent UX: authenticated users always go to their dashboard
   if (!isProtectedRoute && !isAdminRoute) {
+    // Never redirect away from explicit auth flows/pages
+    if (isAlwaysAllow) {
+      log(`🟢 Middleware: Always-allow route detected (${pathname}); skipping auth redirect checks`)
+      return NextResponse.next()
+    }
     log(`🔵 Middleware: Checking if authenticated user should be redirected from unprotected route: ${pathname}`)
     
     // Check for session token in cookies
