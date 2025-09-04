@@ -10,36 +10,20 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
-// Force dynamic by using searchParams (even if empty)
-export async function generateMetadata({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-  // Use searchParams to force dynamic rendering
-  const params = await searchParams;
-  console.log('🔵 generateMetadata: searchParams:', params);
-  return {
-    title: 'tostendout',
-    description: 'Work at a startup this summer',
-  };
-}
+// Remove generateMetadata to prevent static prerendering
+// The metadata is already defined in layout.tsx
 
 
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+export default async function Home() {
   // Force dynamic rendering by using noStore
   noStore();
   
-  // Force dynamic rendering by using current timestamp and searchParams
-  const timestamp = Date.now();
-  const params = await searchParams;
-  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', params);
-  
-  // Force dynamic rendering by adding a random parameter to prevent caching
-  const randomParam = Math.random().toString(36).substring(7);
-  
-  // Force dynamic rendering by accessing headers
+  // Force dynamic rendering by accessing headers (server-only API prevents static)
   const headersList = await headers();
   console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
-  // Check for session cookie on server side to force dynamic rendering
+  // Check for session cookie on server side
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
@@ -55,8 +39,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
   // Additional check: verify session with backend
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
-    // Prefer the Nest alias which calls Better Auth directly
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/session`, {
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/auth/get-session`, {
       headers: {
         cookie: cookieStore.toString(),
       },
