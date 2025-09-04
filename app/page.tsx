@@ -5,10 +5,22 @@ import { useRouter } from 'next/navigation';
 import TopBar from '@/components/(app)/landing/TopBar';
 import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
+import { useAuth } from '@/hooks/use-auth';
 
 
 export default function Home() {
   const router = useRouter();
+  const { session, isLoading, isAuthenticated } = useAuth();
+
+  // Redirect authenticated users to their appropriate dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && session?.user) {
+      const isStudent = Boolean(session.user.is_student);
+      const target = isStudent ? '/matches' : '/internships/new';
+      console.log('🔵 Home: Redirecting authenticated user to:', target);
+      router.replace(target);
+    }
+  }, [isLoading, isAuthenticated, session, router]);
 
   // Pre-load the login page and its image when the component mounts
   useEffect(() => {
