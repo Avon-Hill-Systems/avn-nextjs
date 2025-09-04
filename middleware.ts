@@ -109,6 +109,18 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from landing page to /profile
   if (pathname === '/') {
     try {
+      // Fast path: check known session cookies before probing backend
+      const secureToken = request.cookies.get('__Secure-__Secure-better-auth.session_token')?.value
+      const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
+      const legacyToken = request.cookies.get('better-auth.session_token')?.value
+      const sessionToken = secureToken || regularToken || legacyToken
+
+      if (sessionToken) {
+        log(`🟢 Middleware: Auth cookie found on landing page, redirecting to /profile`)
+        return NextResponse.redirect(new URL('/profile', request.url))
+      }
+
+      // Fallback: probe backend in case cookie name differs
       const has = await backendHasSession()
       if (has) {
         log(`🟢 Middleware: Authenticated user on landing page, redirecting to /profile`)
