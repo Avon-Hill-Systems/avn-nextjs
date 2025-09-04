@@ -11,31 +11,65 @@ export default function LandingPageClient() {
   const router = useRouter();
   const { isLoading, isAuthenticated } = useAuth();
 
-  // Immediate cookie check - run synchronously on mount
+  // Monitor for session cookie changes and redirect when it appears
   React.useEffect(() => {
-    console.log('🔵 LandingPageClient: Component mounted, checking cookies immediately...');
+    console.log('🔵 LandingPageClient: Component mounted, setting up cookie monitoring...');
     
-    // Check for session cookie synchronously
-    const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
-                            document.cookie.includes('better-auth.session_token');
+    let redirectExecuted = false;
     
-    console.log('🔵 LandingPageClient: Immediate cookie check - found:', hasSessionCookie);
-    console.log('🔵 LandingPageClient: All cookies:', document.cookie);
+    const checkForSessionCookie = () => {
+      if (redirectExecuted) return;
+      
+      const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
+                              document.cookie.includes('better-auth.session_token');
+      
+      console.log('🔵 LandingPageClient: Cookie check - found session cookie:', hasSessionCookie);
+      console.log('🔵 LandingPageClient: Current cookies:', document.cookie);
+      
+      if (hasSessionCookie) {
+        console.log('🟢 LandingPageClient: Session cookie detected, redirecting to /profile');
+        redirectExecuted = true;
+        window.location.href = '/profile';
+      }
+    };
     
-    if (hasSessionCookie) {
-      console.log('🟢 LandingPageClient: Session cookie found on mount, redirecting immediately');
-      window.location.href = '/profile';
-    }
+    // Check immediately
+    checkForSessionCookie();
+    
+    // Set up polling to check for cookie changes
+    const pollInterval = setInterval(() => {
+      checkForSessionCookie();
+    }, 100); // Check every 100ms
+    
+    // Also listen for storage events (in case cookies are set via other tabs)
+    const handleStorageChange = () => {
+      checkForSessionCookie();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Cleanup after 10 seconds to avoid infinite polling
+    const timeout = setTimeout(() => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorageChange);
+      console.log('🔵 LandingPageClient: Cookie monitoring stopped after 10 seconds');
+    }, 10000);
+    
+    return () => {
+      clearInterval(pollInterval);
+      clearTimeout(timeout);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
-  // Client-side redirect for authenticated users
+  // Client-side redirect for authenticated users (backup method)
   // This handles cases where middleware doesn't run due to caching
   useEffect(() => {
     console.log('🔵 LandingPageClient: Auth state changed - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
     
     // Only redirect when we're sure about the auth state
     if (!isLoading && isAuthenticated) {
-      console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
+      console.log('🟢 LandingPageClient: Auth context shows authenticated user, redirecting to /profile');
       // Use window.location.href for immediate redirect
       window.location.href = '/profile';
     }
