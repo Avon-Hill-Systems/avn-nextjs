@@ -11,35 +11,41 @@ export default function LandingPageClient() {
   const router = useRouter();
   const { isLoading, isAuthenticated } = useAuth();
 
-  // Client-side fallback redirect for authenticated users
+  // Client-side redirect for authenticated users
   // This handles cases where middleware doesn't run due to caching
   useEffect(() => {
-    // Immediate redirect check - don't wait for loading to complete
-    if (isAuthenticated) {
-      console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
-      router.replace('/profile');
-      return;
-    }
+    console.log('🔵 LandingPageClient: Auth state changed - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
     
-    // Also check after loading completes
+    // Only redirect when we're sure about the auth state
     if (!isLoading && isAuthenticated) {
-      console.log('🟢 LandingPageClient: Post-loading authenticated user detected, redirecting to /profile');
+      console.log('🟢 LandingPageClient: Authenticated user detected, redirecting to /profile');
       router.replace('/profile');
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Immediate redirect on mount if already authenticated
+  // Immediate redirect check on mount - bypass auth context if needed
   useEffect(() => {
-    // Check if we're already authenticated immediately
-    const checkAuth = async () => {
+    const checkAuthImmediately = async () => {
       try {
-        const response = await fetch('/api/auth/session', {
+        // Check for session cookie directly
+        const hasSessionCookie = document.cookie.includes('__Secure-better-auth.session_token') || 
+                                document.cookie.includes('better-auth.session_token');
+        
+        if (hasSessionCookie) {
+          console.log('🟢 LandingPageClient: Session cookie found, redirecting immediately');
+          router.replace('/profile');
+          return;
+        }
+        
+        // Fallback: check with backend
+        const response = await fetch('https://api.tostendout.com/auth/session', {
           credentials: 'include',
         });
+        
         if (response.ok) {
           const data = await response.json();
           if (data?.user || data?.data?.user) {
-            console.log('🟢 LandingPageClient: Immediate auth check - redirecting to /profile');
+            console.log('🟢 LandingPageClient: Backend auth check - redirecting to /profile');
             router.replace('/profile');
           }
         }
@@ -48,7 +54,8 @@ export default function LandingPageClient() {
       }
     };
     
-    checkAuth();
+    // Run immediately
+    checkAuthImmediately();
   }, [router]);
 
   // Pre-load the login page and its image when the component mounts
