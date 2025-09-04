@@ -10,30 +10,38 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
-// Remove generateMetadata to prevent static prerendering
-// The metadata is already defined in layout.tsx
+// Force dynamic by using searchParams (even if empty)
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  // Use searchParams to force dynamic rendering
+  const params = await searchParams;
+  console.log('🔵 generateMetadata: searchParams:', params);
+  return {
+    title: 'tostendout',
+    description: 'Work at a startup this summer',
+  };
+}
 
 
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   // Force dynamic rendering by using noStore
   noStore();
   
-  // Force dynamic rendering by accessing headers (server-only API prevents static)
+  // Force dynamic rendering by using current timestamp and searchParams
+  const timestamp = Date.now();
+  const params = await searchParams;
+  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', params);
+  
+  // Force dynamic rendering by accessing headers
   const headersList = await headers();
   console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
-  // Add a random timestamp to prevent static rendering
-  const timestamp = Date.now();
-  const randomId = Math.random().toString(36).substring(7);
-  
-  // Check for session cookie on server side
+  // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
 
   console.log('🔵 Server Component: Running with session token:', Boolean(sessionToken));
-  console.log('🔵 Server Component: Timestamp:', timestamp, 'Random ID:', randomId);
 
   // If we have a session token, redirect to profile
   if (sessionToken) {
@@ -44,7 +52,8 @@ export default async function Home() {
   // Additional check: verify session with backend
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/auth/get-session`, {
+    // Prefer the Nest alias which calls Better Auth directly
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/session`, {
       headers: {
         cookie: cookieStore.toString(),
       },
@@ -64,5 +73,5 @@ export default async function Home() {
 
   console.log('🔵 Server Component: Rendering landing page client');
   // Render the client component for non-authenticated users
-  return <LandingPageClient timestamp={timestamp} randomId={randomId} />;
+  return <LandingPageClient />;
 }

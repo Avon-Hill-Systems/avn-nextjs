@@ -7,12 +7,9 @@ import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
 import { useAuth } from '@/hooks/use-auth';
 
-export default function LandingPageClient({ timestamp, randomId }: { timestamp: number; randomId: string }) {
+export default function LandingPageClient() {
   const router = useRouter();
   const { isLoading, isAuthenticated } = useAuth();
-  
-  // Log dynamic values to prove this is running server-side
-  console.log('🔵 LandingPageClient: Received timestamp:', timestamp, 'randomId:', randomId);
 
   // Monitor for session cookie changes and redirect when it appears
   React.useEffect(() => {
@@ -109,7 +106,7 @@ export default function LandingPageClient({ timestamp, randomId }: { timestamp: 
         
         // Fallback: check with backend
         console.log('🔵 LandingPageClient: No cookie found, checking backend...');
-        const response = await fetch('https://api.tostendout.com/auth/get-session', {
+        const response = await fetch('https://api.tostendout.com/auth/session', {
           credentials: 'include',
         });
         

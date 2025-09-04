@@ -1,11 +1,60 @@
-"use client";
-
 import React, { Suspense } from 'react';
 import Image from 'next/image';
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { unstable_noStore as noStore } from 'next/cache';
 import LoginTopBar from '@/components/login/LoginTopBar';
 import LoginForm from '@/components/login/LoginForm';
 
-export default function LoginPage() {
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
+export const fetchCache = 'force-no-store';
+
+export default async function LoginPage() {
+  // Force dynamic rendering by using noStore
+  noStore();
+  
+  // Force dynamic rendering by accessing headers (server-only API prevents static)
+  const headersList = await headers();
+  console.log('🔵 LoginPage: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
+  
+  // Check for session cookie on server side
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
+                      cookieStore.get('better-auth.session_token')?.value;
+
+  console.log('🔵 LoginPage: Running with session token:', Boolean(sessionToken));
+
+  // If we have a session token, redirect to profile
+  if (sessionToken) {
+    console.log('🟢 LoginPage: Redirecting to /profile');
+    redirect('/profile');
+  }
+
+  // Additional check: verify session with backend
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/auth/get-session`, {
+      headers: {
+        cookie: cookieStore.toString(),
+      },
+      cache: 'no-store',
+    });
+    
+    if (response.ok) {
+      const sessionData = await response.json();
+      if (sessionData?.user || sessionData?.data?.user) {
+        console.log('🟢 LoginPage: Backend confirmed session, redirecting to /profile');
+        redirect('/profile');
+      }
+    }
+  } catch (error) {
+    console.log('🔵 LoginPage: Backend session check failed:', error);
+  }
+
+  console.log('🔵 LoginPage: Rendering login page');
   return (
     <div className="min-h-screen bg-background">
       <LoginTopBar />
