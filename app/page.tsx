@@ -32,6 +32,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
   const params = await searchParams;
   console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', params);
   
+  // Force dynamic rendering by adding a random parameter to prevent caching
+  const randomParam = Math.random().toString(36).substring(7);
+  
   // Force dynamic rendering by accessing headers
   const headersList = await headers();
   console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));

@@ -106,7 +106,7 @@ export default function LandingPageClient() {
         
         // Fallback: check with backend
         console.log('🔵 LandingPageClient: No cookie found, checking backend...');
-        const response = await fetch('https://api.tostendout.com/auth/session', {
+        const response = await fetch('https://api.tostendout.com/auth/get-session', {
           credentials: 'include',
         });
         
