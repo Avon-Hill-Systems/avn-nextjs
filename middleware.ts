@@ -112,43 +112,29 @@ export async function middleware(request: NextRequest) {
   }
 
 
-  // Redirect authenticated users from ALL unprotected routes to /profile
-  // This provides a coherent UX: authenticated users always go to their dashboard
-  if (!isProtectedRoute && !isAdminRoute) {
-    // Never redirect away from explicit auth flows/pages
-    if (isAlwaysAllow) {
-      log(`🟢 Middleware: Always-allow route detected (${pathname}); skipping auth redirect checks`)
-      return NextResponse.next()
-    }
-    log(`🔵 Middleware: Checking if authenticated user should be redirected from unprotected route: ${pathname}`)
-    
+  // Only redirect authenticated users from the ROOT path to /profile
+  if (pathname === '/') {
+    log(`🔵 Middleware: Root path detected; checking auth to potentially redirect to /profile`)
     // Check for session token in cookies
     const regularToken = request.cookies.get('__Secure-better-auth.session_token')?.value
     const legacyToken = request.cookies.get('better-auth.session_token')?.value
     const sessionToken = regularToken || legacyToken
 
     if (sessionToken) {
-      log(`🟢 Middleware: Authenticated user on unprotected route ${pathname}, redirecting to /profile`)
+      log(`🟢 Middleware: Authenticated user on root path, redirecting to /profile`)
       return NextResponse.redirect(new URL('/profile', request.url))
     }
 
     // Fallback: probe backend in case cookie name differs
-    log(`🔵 Middleware: No cookie found, checking backend session for unprotected route`)
     const has = await backendHasSession()
     if (has) {
-      log(`🟢 Middleware: Backend confirmed authenticated user on unprotected route ${pathname}, redirecting to /profile`)
+      log(`🟢 Middleware: Backend confirmed authenticated user on root path, redirecting to /profile`)
       return NextResponse.redirect(new URL('/profile', request.url))
     }
-    
-    log(`🔵 Middleware: No authentication found, allowing access to unprotected route ${pathname}`)
-  }
 
-  // Special handling for root path - force dynamic rendering
-  if (pathname === '/') {
-    log(`🔵 Middleware: Root path detected, adding cache-busting headers`)
+    // Not authenticated: allow through and add cache-busting headers
+    log(`🔵 Middleware: Root path unauthenticated; adding cache-busting headers and allowing`)
     const response = NextResponse.next()
-    // Instruct Vercel to bypass edge cache for this path so
-    // middleware runs and cookies are evaluated on every hit
     response.headers.set('x-middleware-cache', 'no-cache')
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
     response.headers.set('Pragma', 'no-cache')
@@ -189,6 +175,7 @@ export async function middleware(request: NextRequest) {
 
     log(`🟢 Middleware: Session cookie present or verified, allowing access to ${pathname}`)
   } else {
+    // Non-protected, non-root route: always allow (no auto-redirects)
     log(`🟢 Middleware: Non-protected route, allowing access to ${pathname}`)
   }
 

@@ -45,8 +45,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
 
   // If we have a session token, redirect to profile
   if (sessionToken) {
-    console.log('🟢 Server Component: Redirecting to /profile');
-    redirect('/profile');
+    console.log('🟢 Server Component: Redirecting to /profile with postLogin flag');
+    redirect('/profile?postLogin=1');
   }
 
   // Additional check: verify session with backend
@@ -63,8 +63,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
     if (response.ok) {
       const sessionData = await response.json();
       if (sessionData?.user || sessionData?.data?.user) {
-        console.log('🟢 Server Component: Backend confirmed session, redirecting to /profile');
-        redirect('/profile');
+        console.log('🟢 Server Component: Backend confirmed session, redirecting to /profile with postLogin flag');
+        redirect('/profile?postLogin=1');
       }
     }
   } catch (error) {

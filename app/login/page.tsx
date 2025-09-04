@@ -29,8 +29,8 @@ export default async function LoginPage() {
 
   // If we have a session token, redirect to profile
   if (sessionToken) {
-    console.log('🟢 LoginPage: Redirecting to /profile');
-    redirect('/profile');
+    console.log('🟢 LoginPage: Redirecting to /profile with postLogin flag');
+    redirect('/profile?postLogin=1');
   }
 
   // Additional check: verify session with backend
@@ -46,8 +46,8 @@ export default async function LoginPage() {
     if (response.ok) {
       const sessionData = await response.json();
       if (sessionData?.user || sessionData?.data?.user) {
-        console.log('🟢 LoginPage: Backend confirmed session, redirecting to /profile');
-        redirect('/profile');
+        console.log('🟢 LoginPage: Backend confirmed session, redirecting to /profile with postLogin flag');
+        redirect('/profile?postLogin=1');
       }
     }
   } catch (error) {
