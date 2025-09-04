@@ -10,6 +10,8 @@ import { getSession, sendVerificationEmail, AUTH_BASE_URL } from "@/lib/auth-cli
 interface SessionUser {
   id: string;
   email: string;
+  emailVerified?: boolean;
+  email_verified?: boolean;
   [key: string]: unknown;
 }
 
@@ -53,7 +55,7 @@ function VerifyEmailContent() {
           setKind('success');
           setMessage('Verification complete. Redirecting…');
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           setKind('error');
           setMessage('Verification failed. Please try resending the email.');
@@ -76,7 +78,7 @@ function VerifyEmailContent() {
       const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user ?? null;
       if (!active) return;
       // Only proceed when email is actually verified
-      const isVerified = Boolean((user as any)?.emailVerified ?? (user as any)?.email_verified);
+      const isVerified = Boolean(user?.emailVerified ?? user?.email_verified);
       if (user && isVerified) {
         setKind("success");
         if (verifiedExternally) {
