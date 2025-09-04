@@ -23,12 +23,17 @@ export default async function Home() {
   const headersList = await headers();
   console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
+  // Add a random timestamp to prevent static rendering
+  const timestamp = Date.now();
+  const randomId = Math.random().toString(36).substring(7);
+  
   // Check for session cookie on server side
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
 
   console.log('🔵 Server Component: Running with session token:', Boolean(sessionToken));
+  console.log('🔵 Server Component: Timestamp:', timestamp, 'Random ID:', randomId);
 
   // If we have a session token, redirect to profile
   if (sessionToken) {
@@ -59,5 +64,5 @@ export default async function Home() {
 
   console.log('🔵 Server Component: Rendering landing page client');
   // Render the client component for non-authenticated users
-  return <LandingPageClient />;
+  return <LandingPageClient timestamp={timestamp} randomId={randomId} />;
 }

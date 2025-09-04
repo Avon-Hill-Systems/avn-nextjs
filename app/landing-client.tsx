@@ -7,9 +7,12 @@ import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
 import { useAuth } from '@/hooks/use-auth';
 
-export default function LandingPageClient() {
+export default function LandingPageClient({ timestamp, randomId }: { timestamp: number; randomId: string }) {
   const router = useRouter();
   const { isLoading, isAuthenticated } = useAuth();
+  
+  // Log dynamic values to prove this is running server-side
+  console.log('🔵 LandingPageClient: Received timestamp:', timestamp, 'randomId:', randomId);
 
   // Monitor for session cookie changes and redirect when it appears
   React.useEffect(() => {
