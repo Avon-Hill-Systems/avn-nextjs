@@ -32,7 +32,7 @@ export default async function LoginPage() {
   // Additional check: verify session with backend
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/auth/get-session`, {
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/get-session`, {
       headers: {
         cookie: cookieStore.toString(),
       },

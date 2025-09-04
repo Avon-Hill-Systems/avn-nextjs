@@ -39,6 +39,22 @@ function VerifyEmailContent() {
   const [bc] = useState(() => (typeof window !== 'undefined' && 'BroadcastChannel' in window) ? new BroadcastChannel('avn-auth') : null);
   const [verifiedExternally, setVerifiedExternally] = useState(false);
 
+  // Helper to ensure we always include postVerify=1 on callback/redirect URLs
+  const withPostVerify = (targetPath: string) => {
+    try {
+      const url = new URL(targetPath, typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+      if (!url.searchParams.get('postVerify')) {
+        url.searchParams.set('postVerify', '1');
+      }
+      return url.pathname + (url.search ? url.search : '');
+    } catch {
+      // Fallback: simple parameter append
+      return targetPath.includes('postVerify=1')
+        ? targetPath
+        : (targetPath.includes('?') ? `${targetPath}&postVerify=1` : `${targetPath}?postVerify=1`);
+    }
+  };
+
   // If a token is present in the URL (e.g., if an email linked to the frontend), verify directly.
   useEffect(() => {
     const token = searchParams.get('token');
@@ -49,7 +65,8 @@ function VerifyEmailContent() {
         setKind('info');
         setMessage('Verifying your email...');
         const target = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
-        const url = `${AUTH_BASE_URL}/verify-email?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(`${window.location.origin}${target}`)}`;
+        const callback = withPostVerify(target);
+        const url = `${AUTH_BASE_URL}/verify-email?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(`${window.location.origin}${callback}`)}`;
         await fetch(url, { credentials: 'include' });
         if (!cancelled) {
           setKind('success');
@@ -88,7 +105,7 @@ function VerifyEmailContent() {
           try { bc?.postMessage({ type: 'verified' }); } catch {}
           try { localStorage.setItem('avn-auth-verified', String(Date.now())); } catch {}
           // After verification, send all users to profile unless a redirect is provided
-          const finalTarget = redirectQuery || '/profile';
+          const finalTarget = withPostVerify(redirectQuery || '/profile');
           // Use full navigation to ensure cookies/session are re-read fresh
           window.location.assign(finalTarget);
         }
@@ -143,7 +160,8 @@ function VerifyEmailContent() {
     try {
       // In production, send users back to their dashboard after verifying.
       const target = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
-      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}${target}` });
+      const callback = withPostVerify(target);
+      await sendVerificationEmail({ email, callbackURL: `${window.location.origin}${callback}` });
       setKind("success");
       setMessage("Verification email resent. Check your inbox.");
     } catch (e: unknown) {

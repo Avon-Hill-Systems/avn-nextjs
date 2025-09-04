@@ -55,8 +55,8 @@ export async function middleware(request: NextRequest) {
   async function backendHasSession(): Promise<boolean> {
     try {
       const apiBase = resolveApiBase()
-      // Try Nest alias first (direct Better Auth call), then fallback to Better Auth route
-      const primary = `${apiBase}/api/auth/session`
+      // Prefer explicit Nest alias first, then Better Auth canonical endpoint
+      const primary = `${apiBase}/api/auth/get-session`
       const fallback = `${apiBase}/auth/get-session`
       let res = await fetch(primary, {
         method: 'GET',

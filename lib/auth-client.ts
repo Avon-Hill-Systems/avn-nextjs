@@ -52,13 +52,15 @@ export const {
 
 // Custom session hook that uses the correct endpoint
 export async function getCustomSession() {
-  // Hardcode the API base URL to ensure we're calling the correct domain
+  // Prefer the Better Auth canonical endpoint first
   const apiBase = process.env.NODE_ENV === 'production' ? 'https://api.tostendout.com' : 'http://localhost:8000';
-  const url = `${apiBase}/api/auth/session`;
+  const primary = `${apiBase}/api/auth/get-session`;
+  const fallback = `${apiBase}/auth/get-session`;
   try {
-    const res = await fetch(url, { credentials: 'include' });
+    let res = await fetch(primary, { credentials: 'include' });
     if (!res.ok) {
-      return null;
+      res = await fetch(fallback, { credentials: 'include' });
+      if (!res.ok) return null;
     }
     const data = await res.json();
     return data;

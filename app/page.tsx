@@ -46,8 +46,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
   // Additional check: verify session with backend
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
-    // Prefer the Nest alias which calls Better Auth directly
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/session`, {
+    // Prefer the API alias for session (matches expected path)
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/get-session`, {
       headers: {
         cookie: cookieStore.toString(),
       },
