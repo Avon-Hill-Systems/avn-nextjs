@@ -150,7 +150,6 @@ export async function middleware(request: NextRequest) {
     const legacyToken = request.cookies.get('better-auth.session_token')?.value
     const sessionToken = regularToken || legacyToken
     
-    log(`🔵 Middleware: Secure token present? ${Boolean(secureToken)}`)
     log(`🔵 Middleware: Regular token present? ${Boolean(regularToken)}`)
     log(`🔵 Middleware: Session token present? ${Boolean(sessionToken)}`)
 
