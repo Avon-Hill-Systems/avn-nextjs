@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import Footer from '@/components/(app)/landing/Footer';
 import { useAuth } from '@/hooks/use-auth';
 
+// Force dynamic rendering so middleware can run and check authentication
+export const dynamic = 'force-dynamic';
+
 
 export default function Home() {
   const router = useRouter();
