@@ -67,34 +67,31 @@ export default function LoginForm({
       if (result.error) {
         setError(result.error.message || 'Login failed');
       } else {
-        // Successful login - redirect based on role (force full reload to refresh cookies/session)
+        // Successful login - redirect based on role
         try {
           console.log('🔵 LoginForm: Sign-in succeeded. AUTH_BASE_URL:', AUTH_BASE_URL);
-          // Probe session endpoint once before redirect to capture status/cookies info
-          await debugFetchSession();
+          
+          // Wait a moment for cookies to be set
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           const url = new URL(window.location.href);
           const qpRedirect = url.searchParams.get('redirect');
 
           const sess = await getSession();
           const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user;
           const isStudent = Boolean(user?.is_student);
-          const computedTarget = isStudent ? '/matches' : '/internships/new';
+          const computedTarget = isStudent ? '/matches' : '/profile';
           const target = qpRedirect || computedTarget;
 
-          // Use API bounce in production to ensure cookie persistence across navigations
-          const isProdHost = /tostendout\.com$/i.test(window.location.host);
-          const baseApi = config.api.baseUrl.replace(/\/$/, '');
-          const absoluteTarget = new URL(target, window.location.origin).toString();
-          if (isProdHost) {
-            const bounce = `${baseApi}/auth/bounce?redirect=${encodeURIComponent(absoluteTarget)}`;
-            console.log('🔵 LoginForm: Redirecting via bounce:', bounce);
-            window.location.assign(bounce);
-          } else {
-            window.location.assign(absoluteTarget);
-          }
-        } catch {
+          console.log('🔵 LoginForm: Redirecting to:', target);
+          // Add postLogin flag to help middleware recognize fresh login
+          const targetUrl = new URL(target, window.location.origin);
+          targetUrl.searchParams.set('postLogin', '1');
+          window.location.assign(targetUrl.toString());
+        } catch (error) {
+          console.error('🔴 LoginForm: Redirect error:', error);
           // Fallback if anything goes wrong
-          window.location.assign('/matches');
+          window.location.assign('/profile');
         }
         if (onSubmit) {
           onSubmit(data);
