@@ -9,9 +9,23 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
+// Force dynamic by using searchParams (even if empty)
+export async function generateMetadata({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  // Use searchParams to force dynamic rendering
+  console.log('🔵 generateMetadata: searchParams:', searchParams);
+  return {
+    title: 'tostendout',
+    description: 'Work at a startup this summer',
+  };
+}
 
 
-export default async function Home() {
+
+export default async function Home({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  // Force dynamic rendering by using current timestamp and searchParams
+  const timestamp = Date.now();
+  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', searchParams);
+  
   // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
