@@ -167,10 +167,9 @@ export async function middleware(request: NextRequest) {
       // Double-check with backend session endpoint before redirecting
       const hasSession = await backendHasSession()
       if (!hasSession) {
-        const loginUrl = new URL('/login', request.url)
-        loginUrl.searchParams.set('redirect', pathname)
-        log(`🔴 Middleware: Redirecting to: ${loginUrl.toString()}`)
-        return NextResponse.redirect(loginUrl)
+        const landingUrl = new URL('/', request.url)
+        log(`🔴 Middleware: Unauthenticated on protected route; redirecting to: ${landingUrl.toString()}`)
+        return NextResponse.redirect(landingUrl)
       }
       log('🟢 Middleware: Backend reported active session; allowing access')
     }
