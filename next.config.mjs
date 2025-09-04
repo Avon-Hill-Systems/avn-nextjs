@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -10,12 +9,9 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
-    // Enable experimental features for better middleware support
+    // keep defaults
   },
-  // Disable static optimization for the root page to ensure middleware runs
   trailingSlash: false,
-  // Force no-cache headers for the landing page so middleware and
-  // server-side cookie checks always run on Vercel/CDN
   async headers() {
     return [
       {
@@ -26,8 +22,9 @@ const nextConfig: NextConfig = {
           { key: 'Expires', value: '0' },
         ],
       },
-    ]
+    ];
   },
 };
 
 export default nextConfig;
+
