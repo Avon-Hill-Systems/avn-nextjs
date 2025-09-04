@@ -137,6 +137,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Allow authenticated users to access login page (for account switching, etc.)
+  if (pathname === '/login') {
+    log(`🔵 Middleware: Allowing access to login page regardless of auth status`)
+    return NextResponse.next()
+  }
+
   if (isProtectedRoute || isAdminRoute) {
     // Allow a one-time pass for post-verification landings to let the app
     // bootstrap and read cookies after cross-site redirects
