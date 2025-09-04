@@ -71,7 +71,6 @@ export function StudentProfile() {
       if (fileInput) fileInput.value = '';
     } catch (err) {
       setError('Failed to upload resume. Please try again.');
-      console.error('Upload error:', err);
     } finally {
       setIsUploading(false);
     }
@@ -90,7 +89,6 @@ export function StudentProfile() {
       setIsFirstUpload(true);
     } catch (err) {
       setError('Failed to delete resume. Please try again.');
-      console.error('Delete error:', err);
     } finally {
       setIsDeleting(false);
     }
@@ -98,11 +96,6 @@ export function StudentProfile() {
 
   const handleViewResume = async () => {
     if (!user?.id || !resumeMetadata) return;
-
-    console.log('🔍 Resume View - Starting process:', {
-      userId: user.id,
-      resumeMetadata
-    });
 
     try {
       // Ensure we have metadata from cache
@@ -113,17 +106,9 @@ export function StudentProfile() {
 
       // Now fetch the actual file content for download
       const fileUrl = `${config.api.baseUrl}/users/${user.id}/resume`;
-      console.log('🌐 Fetching file from URL:', fileUrl);
       
       const fileResponse = await fetch(fileUrl, {
         credentials: 'include',
-      });
-      
-      console.log('📥 File fetch response:', {
-        status: fileResponse.status,
-        statusText: fileResponse.statusText,
-        headers: Object.fromEntries(fileResponse.headers.entries()),
-        url: fileResponse.url
       });
       
       if (!fileResponse.ok) {
@@ -132,27 +117,19 @@ export function StudentProfile() {
 
       // Check content type
       const contentType = fileResponse.headers.get('content-type');
-      console.log('📄 Response content type:', contentType);
       
       // Get the blob and create a download link
       const blob = await fileResponse.blob();
-      console.log('📦 Blob created:', {
-        size: blob.size,
-        type: blob.type
-      });
       
       const url = window.URL.createObjectURL(blob);
-      console.log('🔗 Object URL created:', url);
       
       // Use the filename from our stored metadata (this preserves the original filename)
       const downloadFilename = resumeMetadata.filename || 'resume';
-      console.log('📥 Using filename from metadata for download:', downloadFilename);
       
       // Create a temporary link element and trigger download
       const link = document.createElement('a');
       link.href = url;
       link.download = downloadFilename;
-      console.log('📥 Triggering download with filename:', downloadFilename);
       
       document.body.appendChild(link);
       link.click();
@@ -160,10 +137,8 @@ export function StudentProfile() {
       // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      console.log('✅ Download completed successfully');
       
     } catch (err) {
-      console.error('❌ Resume view error:', err);
       setError('Failed to view resume. Please try again.');
     }
   };

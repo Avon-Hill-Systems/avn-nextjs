@@ -5,10 +5,6 @@ import { config } from './config';
 // Resolve Better Auth base URL. Prefer explicit NEXT_PUBLIC_AUTH_URL if set.
 // If it lacks a path (e.g. http://localhost:8000), append authBasePath (default /auth).
 function resolveAuthBase() {
-  console.log('🔵 resolveAuthBase: config.api.authUrl:', config.api.authUrl);
-  console.log('🔵 resolveAuthBase: config.api.baseUrl:', config.api.baseUrl);
-  console.log('🔵 resolveAuthBase: config.api.authBasePath:', config.api.authBasePath);
-  
   const provided = config.api.authUrl;
   if (provided) {
     try {
@@ -17,19 +13,16 @@ function resolveAuthBase() {
         u.pathname = config.api.authBasePath;
       }
       const result = u.toString().replace(/\/$/, '');
-      console.log('🔵 resolveAuthBase: Using provided authUrl, result:', result);
       return result;
     } catch {
       // Fallback to concatenation
       const withPath = provided.endsWith('/') ? provided.slice(0, -1) : provided;
       const result = `${withPath}${config.api.authBasePath}`.replace(/\/$/, '');
-      console.log('🔵 resolveAuthBase: Using provided authUrl (fallback), result:', result);
       return result;
     }
   }
   const base = config.api.baseUrl.endsWith('/') ? config.api.baseUrl.slice(0, -1) : config.api.baseUrl;
   const result = `${base}${config.api.authBasePath}`.replace(/\/$/, '');
-  console.log('🔵 resolveAuthBase: Using baseUrl, result:', result);
   return result;
 }
 
@@ -37,8 +30,6 @@ const AUTH_BASE = resolveAuthBase();
 
 // Export resolved base for debugging/visibility in the app
 export const AUTH_BASE_URL = AUTH_BASE;
-
-console.log('🔵 AuthClient: Initializing with base URL:', AUTH_BASE);
 
 export const authClient = createAuthClient({
   baseURL: AUTH_BASE,
@@ -57,30 +48,7 @@ export const {
 } = authClient
 
 // Debug helper: probe the session endpoint directly and log details
-export async function debugFetchSession() {
-  const url = `${AUTH_BASE}/get-session`; // Fixed: use correct Better Auth endpoint
-  try {
-    console.log('🔵 debugFetchSession: Request', { url, credentials: 'include' });
-    const res = await fetch(url, { credentials: 'include' });
-    const ct = res.headers.get('content-type');
-    console.log('🔵 debugFetchSession: Response', {
-      status: res.status,
-      ok: res.ok,
-      contentType: ct,
-    });
-    const text = await res.text();
-    try {
-      const json = JSON.parse(text);
-      console.log('🔵 debugFetchSession: Body keys', Object.keys(json));
-      console.log('🔵 debugFetchSession: Has user?', Boolean(json.user));
-      console.log('🔵 debugFetchSession: Has session?', Boolean(json.session));
-    } catch {
-      console.log('🔵 debugFetchSession: Non-JSON body (first 300 chars):', text.slice(0, 300));
-    }
-  } catch (e) {
-    console.error('🔴 debugFetchSession: Network error', e);
-  }
-}
+// Removed verbose debugFetchSession logging helper
 
 // Custom session hook that uses the correct endpoint
 export async function getCustomSession() {
@@ -88,22 +56,13 @@ export async function getCustomSession() {
   const apiBase = process.env.NODE_ENV === 'production' ? 'https://api.tostendout.com' : 'http://localhost:8000';
   const url = `${apiBase}/api/auth/session`;
   try {
-    console.log('🔵 getCustomSession: Config debug', { 
-      configApiBaseUrl: config.api.baseUrl,
-      hardcodedApiBase: apiBase,
-      url,
-      credentials: 'include' 
-    });
     const res = await fetch(url, { credentials: 'include' });
     if (!res.ok) {
-      console.log('🔵 getCustomSession: Response not ok', { status: res.status, statusText: res.statusText });
       return null;
     }
     const data = await res.json();
-    console.log('🔵 getCustomSession: Success', { hasUser: Boolean(data.user), hasSession: Boolean(data.session) });
     return data;
   } catch (e) {
-    console.error('🔴 getCustomSession: Network error', e);
     return null;
   }
 }
@@ -140,8 +99,6 @@ type SignupPayload = Partial<ExtendedSignupPayload> & {
 
 async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult> {
   const url = `${AUTH_BASE}/sign-up/email`;
-  console.log('🔵 AuthClient: Making signup request to:', url);
-  console.log('🔵 AuthClient: Payload:', JSON.stringify(payload, null, 2));
   
   try {
     const res = await fetch(url, {
@@ -151,18 +108,8 @@ async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult
       body: JSON.stringify(payload),
     });
     
-    console.log('🔵 AuthClient: Response status:', res.status);
-    console.log('🔵 AuthClient: Response headers:', Object.fromEntries(res.headers.entries()));
-    
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      // Log full debug info to console to aid investigation
-      console.error('Better Auth signup failed', {
-        status: res.status,
-        statusText: res.statusText,
-        url: url,
-        bodyText: text,
-      });
       return {
         ok: false,
         error: `HTTP ${res.status}`,
@@ -171,19 +118,10 @@ async function postSignUpEmail(payload: SignupPayload): Promise<PostSignupResult
         bodyText: text,
       };
     }
-    
-    const responseText = await res.text();
-    console.log('🔵 AuthClient: Success response:', responseText);
+    await res.text();
     return { ok: true };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Network error';
-    console.error('Better Auth signup network error', e);
-    console.error('🔵 AuthClient: Error details:', {
-      message: msg,
-      name: e instanceof Error ? e.name : 'Unknown',
-      stack: e instanceof Error ? e.stack : undefined,
-      url: url
-    });
     return { ok: false, error: msg };
   }
 }
@@ -197,7 +135,8 @@ export async function signUpStartup(params: {
   is_student?: boolean; // default false
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  // Always send users to verify-email after signup; that page will redirect to profile after verification
+  const defaultCallback = '/verify-email';
   const { email, password, first_name, last_name, company, is_student = false, callbackURL = defaultCallback } = params;
   // Use proper typing for extended payload
   const payload: SignupPayload = {
@@ -221,7 +160,8 @@ export async function signUpStudent(params: {
   last_name: string;
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  // Always send users to verify-email after signup; that page will redirect to profile after verification
+  const defaultCallback = '/verify-email';
   const { email, password, first_name, last_name, callbackURL = defaultCallback } = params;
   const payload: SignupPayload = {
     email,
@@ -233,9 +173,6 @@ export async function signUpStudent(params: {
     is_student: true,
   };
   
-  console.log('🔵 signUpStudent: Starting signup for:', email);
-  console.log('🔵 signUpStudent: AUTH_BASE resolved to:', AUTH_BASE);
-  
   return postSignUpEmail(payload);
 }
 
@@ -246,7 +183,7 @@ export async function signUpBasic(params: {
   password: string;
   callbackURL?: string;
 }): Promise<PostSignupResult> {
-  const defaultCallback = process.env.NODE_ENV === 'production' ? '/profile' : '/verify-email';
+  const defaultCallback = '/verify-email';
   const { name, email, password, callbackURL = defaultCallback } = params;
   const payload: SignupPayload = { name, email, password, callbackURL };
   return postSignUpEmail(payload);

@@ -92,7 +92,6 @@ export function NewInternshipForm() {
       setShowSuccessModal(true);
       form.reset();
     } catch (error) {
-      console.error("Error creating internship:", error);
       setError("Failed to create internship posting. Please try again.");
     } finally {
       setIsLoading(false);

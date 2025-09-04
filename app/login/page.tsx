@@ -18,18 +18,14 @@ export default async function LoginPage() {
   
   // Force dynamic rendering by accessing headers (server-only API prevents static)
   const headersList = await headers();
-  console.log('🔵 LoginPage: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
   // Check for session cookie on server side
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
 
-  console.log('🔵 LoginPage: Running with session token:', Boolean(sessionToken));
-
   // If we have a session token, redirect to profile
   if (sessionToken) {
-    console.log('🟢 LoginPage: Redirecting to /profile with postLogin flag');
     redirect('/profile?postLogin=1');
   }
 
@@ -46,15 +42,12 @@ export default async function LoginPage() {
     if (response.ok) {
       const sessionData = await response.json();
       if (sessionData?.user || sessionData?.data?.user) {
-        console.log('🟢 LoginPage: Backend confirmed session, redirecting to /profile with postLogin flag');
         redirect('/profile?postLogin=1');
       }
     }
   } catch (error) {
-    console.log('🔵 LoginPage: Backend session check failed:', error);
   }
 
-  console.log('🔵 LoginPage: Rendering login page');
   return (
     <div className="min-h-screen bg-background">
       <LoginTopBar />

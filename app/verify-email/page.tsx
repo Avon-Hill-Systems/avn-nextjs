@@ -75,7 +75,9 @@ function VerifyEmailContent() {
       // Better Auth client returns either { user, session } or { data: { user, session }, error }
       const user = (sess as unknown as SessionResponse)?.user ?? (sess as unknown as SessionResponse)?.data?.user ?? null;
       if (!active) return;
-      if (user) {
+      // Only proceed when email is actually verified
+      const isVerified = Boolean((user as any)?.emailVerified ?? (user as any)?.email_verified);
+      if (user && isVerified) {
         setKind("success");
         if (verifiedExternally) {
           setMessage("Email verified. You can close this tab.");

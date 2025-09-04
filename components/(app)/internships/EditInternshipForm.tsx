@@ -53,8 +53,6 @@ export default function EditInternshipForm({ internship }: { internship: Interns
     setIsLoading(true);
     try {
       await update.mutateAsync({ ...data });
-    } catch (e) {
-      console.error(e);
     } finally {
       setIsLoading(false);
     }

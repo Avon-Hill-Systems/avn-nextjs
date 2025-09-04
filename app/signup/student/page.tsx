@@ -51,13 +51,6 @@ export default function StudentSignupPage() {
   });
 
   const handleSubmit = async (data: StudentSignupData) => {
-    console.log('🚀 Starting student signup process with data:', {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      acceptTerms: data.acceptTerms
-    });
-    
     setIsLoading(true);
     setError(null);
     
@@ -75,13 +68,6 @@ export default function StudentSignupPage() {
       // Enhanced error diagnostics
       const errorMessage = result?.error;
       if (errorMessage || result.ok === false) {
-        console.error('❌ Signup returned error:', errorMessage || result);
-        if (result.status) {
-          console.error('❌ Signup HTTP status:', result.status, result.statusText || '');
-        }
-        if (result.bodyText) {
-          console.error('❌ Signup response body:', result.bodyText);
-        }
         setError(
           typeof errorMessage === 'string'
             ? errorMessage
@@ -90,18 +76,11 @@ export default function StudentSignupPage() {
         return;
       }
 
-      // Redirect after signup: profile (prod) or verify-email (dev)
-      if (process.env.NODE_ENV === 'production') {
-        router.push('/profile');
-      } else {
-        console.log('🎯 Redirecting to verify-email...');
-        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
-      }
+      // Redirect after signup: always go to verify-email; that page will handle final redirect after verification
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
-      console.error('❌ Unexpected error during signup:', error);
       setError('An unexpected error occurred. Please try again.');
     } finally {
-      console.log('🏁 Signup process finished, setting loading to false');
       setIsLoading(false);
     }
   };

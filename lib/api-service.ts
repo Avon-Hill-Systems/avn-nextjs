@@ -211,9 +211,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
-    }
+    
 
     // Get session token from cookies
     // Do not attempt to read HttpOnly cookies client-side; rely on credentials: 'include'
@@ -233,15 +231,11 @@ class ApiClient {
         ...options,
       });
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`📡 API Response: ${response.status} ${response.statusText}`);
-      }
+      
 
       if (!response.ok) {
         const errorText = await response.text();
-        if (process.env.NODE_ENV === 'development') {
-          console.error(`❌ API Error ${response.status}:`, errorText);
-        }
+        
         
         return {
           error: `HTTP ${response.status}: ${response.statusText}`,
@@ -254,22 +248,13 @@ class ApiClient {
       const contentLength = response.headers.get('content-length');
       
       if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('📡 Empty response or non-JSON content, returning success without data');
-        }
         return { data: undefined };
       }
 
       const data = await response.json();
-      if (process.env.NODE_ENV === 'development') {
-        console.log('✅ API Response received');
-      }
       
       return { data };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('❌ API Request failed:', error);
-      }
       return {
         error: 'Network error',
         message: error instanceof Error ? error.message : 'Unknown error'

@@ -12,7 +12,7 @@ export default function ActiveInternshipsPage() {
 
   const onDelete = async (id: string) => {
     if (!confirm('Delete this internship? This cannot be undone.')) return;
-    try { await del.mutateAsync(id); } catch (e) { console.error(e); }
+    try { await del.mutateAsync(id); } catch (e) { /* ignore */ }
   };
 
   return (

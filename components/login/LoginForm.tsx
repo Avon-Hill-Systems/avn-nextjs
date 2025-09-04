@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signIn, getSession, debugFetchSession, AUTH_BASE_URL } from '@/lib/auth-client';
+import { signIn, getSession, AUTH_BASE_URL } from '@/lib/auth-client';
 import { config } from '@/lib/config';
 
 interface SessionResponse {
@@ -69,8 +69,6 @@ export default function LoginForm({
       } else {
         // Successful login - redirect based on role
         try {
-          console.log('🔵 LoginForm: Sign-in succeeded. AUTH_BASE_URL:', AUTH_BASE_URL);
-          
           // Wait a moment for cookies to be set
           await new Promise(resolve => setTimeout(resolve, 100));
           
@@ -83,13 +81,11 @@ export default function LoginForm({
           const computedTarget = isStudent ? '/matches' : '/profile';
           const target = qpRedirect || computedTarget;
 
-          console.log('🔵 LoginForm: Redirecting to:', target);
           // Add postLogin flag to help middleware recognize fresh login
           const targetUrl = new URL(target, window.location.origin);
           targetUrl.searchParams.set('postLogin', '1');
           window.location.assign(targetUrl.toString());
         } catch (error) {
-          console.error('🔴 LoginForm: Redirect error:', error);
           // Fallback if anything goes wrong
           window.location.assign('/profile');
         }
@@ -98,7 +94,6 @@ export default function LoginForm({
         }
       }
     } catch (error) {
-      console.error('Login error:', error);
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);

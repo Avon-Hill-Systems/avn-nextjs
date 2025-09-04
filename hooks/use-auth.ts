@@ -12,7 +12,7 @@ export function useAuth() {
       await signOut();
       router.push('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // Swallow logout errors silently
     }
   }, [router]);
 

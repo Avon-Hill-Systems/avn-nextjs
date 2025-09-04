@@ -14,7 +14,6 @@ export const fetchCache = 'force-no-store';
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   // Use searchParams to force dynamic rendering
   const params = await searchParams;
-  console.log('🔵 generateMetadata: searchParams:', params);
   return {
     title: 'tostendout',
     description: 'Work at a startup this summer',
@@ -30,22 +29,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
   // Force dynamic rendering by using current timestamp and searchParams
   const timestamp = Date.now();
   const params = await searchParams;
-  console.log('🔵 Server Component: Rendering at timestamp:', timestamp, 'searchParams:', params);
   
   // Force dynamic rendering by accessing headers
   const headersList = await headers();
-  console.log('🔵 Server Component: Headers accessed, forcing dynamic rendering', headersList.get('user-agent'));
   
   // Check for session cookie on server side to force dynamic rendering
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('__Secure-better-auth.session_token')?.value ||
                       cookieStore.get('better-auth.session_token')?.value;
 
-  console.log('🔵 Server Component: Running with session token:', Boolean(sessionToken));
-
   // If we have a session token, redirect to profile
   if (sessionToken) {
-    console.log('🟢 Server Component: Redirecting to /profile with postLogin flag');
     redirect('/profile?postLogin=1');
   }
 
@@ -63,15 +57,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
     if (response.ok) {
       const sessionData = await response.json();
       if (sessionData?.user || sessionData?.data?.user) {
-        console.log('🟢 Server Component: Backend confirmed session, redirecting to /profile with postLogin flag');
         redirect('/profile?postLogin=1');
       }
     }
   } catch (error) {
-    console.log('🔵 Server Component: Backend session check failed:', error);
   }
-
-  console.log('🔵 Server Component: Rendering landing page client');
   // Render the client component for non-authenticated users
   return <LandingPageClient />;
 }

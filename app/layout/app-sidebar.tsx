@@ -98,7 +98,7 @@ export function AppSidebar() {
       try {
         setExpandedItems(JSON.parse(savedExpanded));
       } catch (error) {
-        console.warn('Failed to parse saved sidebar state:', error);
+        // ignore parse errors
       }
     }
   }, []);
