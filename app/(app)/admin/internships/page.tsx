@@ -9,6 +9,7 @@ import { AdminUserDetail } from "@/components/(app)/admin/AdminUserDetail";
 
 export default function AdminPostedInternshipsPage() {
   const { data, isLoading, isError, error } = useAllInternshipsQuery(true);
+  const [detailUserId, setDetailUserId] = React.useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -30,7 +31,6 @@ export default function AdminPostedInternshipsPage() {
   }
 
   const items = data || [];
-  const [detailUserId, setDetailUserId] = React.useState<string | null>(null);
 
   function Poster({ userId }: { userId: string }) {
     const { data: user } = useUserQuery(userId, !!userId);
