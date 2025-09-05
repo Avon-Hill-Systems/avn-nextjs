@@ -55,22 +55,21 @@ export async function middleware(request: NextRequest) {
   async function backendHasSession(): Promise<boolean> {
     try {
       const apiBase = resolveApiBase()
-      // Prefer explicit Nest alias first, then Better Auth canonical endpoint
-      const primary = `${apiBase}/api/auth/get-session`
-      const fallback = `${apiBase}/auth/get-session`
-      let res = await fetch(primary, {
-        method: 'GET',
-        headers: { cookie: request.headers.get('cookie') || '' },
-        credentials: 'include',
-      })
-      if (!res.ok) {
-        res = await fetch(fallback, {
+      const urls = [
+        `${apiBase}/api/auth/get-session`,
+        `${apiBase}/api/auth/session`,
+        `${apiBase}/auth/get-session`,
+      ]
+      let res: Response | null = null
+      for (const u of urls) {
+        res = await fetch(u, {
           method: 'GET',
           headers: { cookie: request.headers.get('cookie') || '' },
           credentials: 'include',
         })
-        if (!res.ok) return false
+        if (res.ok) break
       }
+      if (!res || !res.ok) return false
       const ct = res.headers.get('content-type') || ''
       if (!ct.includes('application/json')) return false
       const data = await res.json().catch(() => null) as unknown as { user?: unknown; session?: unknown; data?: { user?: unknown; session?: unknown } } | null

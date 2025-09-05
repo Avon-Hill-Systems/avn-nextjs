@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Auto-attempt clearing legacy cookies once per page load to fix stuck sessions
     if (!attemptedCookieReset) {
       (globalThis as any).__avnAttemptedCookieReset = true;
-      const clearUrl = `${config.api.baseUrl.replace(/\/$/, '')}/auth/clear-legacy-cookies`;
+      const clearUrl = `${config.api.baseUrl.replace(/\/$/, '')}/api/auth/clear-legacy-cookies`;
       fetch(clearUrl, { method: 'POST', credentials: 'include' }).catch(() => {});
     }
   }

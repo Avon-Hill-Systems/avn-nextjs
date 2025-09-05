@@ -52,21 +52,23 @@ export const {
 
 // Custom session hook that uses the correct endpoint
 export async function getCustomSession() {
-  // Prefer the Better Auth canonical endpoint first
+  // Try a chain of endpoints to be resilient across deploys
   const apiBase = process.env.NODE_ENV === 'production' ? 'https://api.tostendout.com' : 'http://localhost:8000';
-  const primary = `${apiBase}/api/auth/get-session`;
-  const fallback = `${apiBase}/auth/get-session`;
-  try {
-    let res = await fetch(primary, { credentials: 'include' });
-    if (!res.ok) {
-      res = await fetch(fallback, { credentials: 'include' });
-      if (!res.ok) return null;
+  const endpoints = [
+    `${apiBase}/api/auth/get-session`,
+    `${apiBase}/api/auth/session`,
+    `${apiBase}/auth/get-session`,
+  ];
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) continue;
+      return await res.json();
+    } catch {
+      // try next
     }
-    const data = await res.json();
-    return data;
-  } catch (e) {
-    return null;
   }
+  return null;
 }
 
 // Interface for extended signup payload with additional fields

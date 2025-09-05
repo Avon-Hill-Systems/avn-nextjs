@@ -32,21 +32,26 @@ export default async function LoginPage() {
   // Additional check: verify session with backend
   try {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://api.tostendout.com';
-    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/auth/get-session`, {
-      headers: {
-        cookie: cookieStore.toString(),
-      },
-      cache: 'no-store',
-    });
-    
-    if (response.ok) {
-      const sessionData = await response.json();
-      if (sessionData?.user || sessionData?.data?.user) {
-        redirect('/profile?postLogin=1');
-      }
+    const base = apiBase.replace(/\/$/, '');
+    const urls = [
+      `${base}/api/auth/get-session`,
+      `${base}/api/auth/session`,
+      `${base}/auth/get-session`,
+    ];
+    for (const u of urls) {
+      try {
+        const response = await fetch(u, {
+          headers: { cookie: cookieStore.toString() },
+          cache: 'no-store',
+        });
+        if (!response.ok) continue;
+        const sessionData = await response.json();
+        if (sessionData?.user || sessionData?.data?.user) {
+          redirect('/profile?postLogin=1');
+        }
+      } catch {}
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 
   return (
     <div className="min-h-screen bg-background">
