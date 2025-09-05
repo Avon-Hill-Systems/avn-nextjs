@@ -1,8 +1,11 @@
 "use client";
 
-import { useAllInternshipsQuery } from "@/lib/api-service";
+import { useAllInternshipsQuery, useUserQuery } from "@/lib/api-service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog } from "@/components/ui/dialog";
+import React from "react";
+import { AdminUserDetail } from "@/components/(app)/admin/AdminUserDetail";
 
 export default function AdminPostedInternshipsPage() {
   const { data, isLoading, isError, error } = useAllInternshipsQuery(true);
@@ -27,6 +30,17 @@ export default function AdminPostedInternshipsPage() {
   }
 
   const items = data || [];
+  const [detailUserId, setDetailUserId] = React.useState<string | null>(null);
+
+  function Poster({ userId }: { userId: string }) {
+    const { data: user } = useUserQuery(userId, !!userId);
+    const name = [user?.first_name, user?.last_name].filter(Boolean).join(" ") || "Unknown";
+    return (
+      <button className="text-primary underline" onClick={() => setDetailUserId(userId)}>
+        {name} ({user?.email || 'email unknown'})
+      </button>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -50,7 +64,23 @@ export default function AdminPostedInternshipsPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground line-clamp-3">{internship.description}</p>
+                <div className="text-sm">
+                  <span className="font-medium text-foreground">Posted by:</span>{' '}
+                  <Poster userId={internship.userId} />
+                </div>
+
+                <div>
+                  <div className="text-sm font-medium text-foreground mb-1">Description</div>
+                  <p className="text-sm text-muted-foreground">{internship.description}</p>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-foreground mb-1">Requirements</div>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{internship.requirements}</p>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-foreground mb-1">Responsibilities</div>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{internship.responsibilities}</p>
+                </div>
                 <div className="text-xs text-muted-foreground">
                   <span>Start: {new Date(internship.startDate).toLocaleDateString()}</span>
                   <span className="mx-2">•</span>
@@ -64,7 +94,13 @@ export default function AdminPostedInternshipsPage() {
           ))}
         </div>
       )}
+
+      {/* Detail Modal */}
+      <Dialog open={Boolean(detailUserId)} onOpenChange={(o) => !o && setDetailUserId(null)}>
+        {detailUserId && (
+          <AdminUserDetail userId={detailUserId} onClose={() => setDetailUserId(null)} />
+        )}
+      </Dialog>
     </div>
   );
 }
-

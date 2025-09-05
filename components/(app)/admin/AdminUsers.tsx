@@ -14,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Dialog } from "@/components/ui/dialog";
+import { AdminUserDetail } from "./AdminUserDetail";
 
 type StudentProfile = {
   major: string;
@@ -79,6 +81,8 @@ export default function AdminUsers() {
 
   const students = studentPage?.items || [];
   const startups = startupPage?.items || [];
+
+  const [detailUserId, setDetailUserId] = React.useState<string | null>(null);
 
   const nextStudents = () => {
     if (studentPage?.nextCursor) {
@@ -179,7 +183,11 @@ export default function AdminUsers() {
                 const profileAndResume = studentComplete && hasResume;
                 return (
                   <TableRow key={u.id}>
-                    <TableCell className="font-medium">{name}</TableCell>
+                    <TableCell className="font-medium">
+                      <button className="text-primary underline" onClick={() => setDetailUserId(u.id)}>
+                        {name}
+                      </button>
+                    </TableCell>
                     <TableCell>{u.email}</TableCell>
                     <TableCell>{s ? (s.technical ? "Yes" : "No") : "-"}</TableCell>
                     <TableCell>{s?.major || "-"}</TableCell>
@@ -254,7 +262,11 @@ export default function AdminUsers() {
                 const startupComplete = Boolean(p && p.companyName && p.location && p.website);
                 return (
                   <TableRow key={u.id}>
-                    <TableCell className="font-medium">{name}</TableCell>
+                    <TableCell className="font-medium">
+                      <button className="text-primary underline" onClick={() => setDetailUserId(u.id)}>
+                        {name}
+                      </button>
+                    </TableCell>
                     <TableCell>{u.email}</TableCell>
                     <TableCell>{p?.companyName || "-"}</TableCell>
                     <TableCell>{p?.location || "-"}</TableCell>
@@ -290,6 +302,13 @@ export default function AdminUsers() {
           </div>
         </div>
       )}
+
+      {/* Detail Modal */}
+      <Dialog open={Boolean(detailUserId)} onOpenChange={(o) => !o && setDetailUserId(null)}>
+        {detailUserId && (
+          <AdminUserDetail userId={detailUserId} onClose={() => setDetailUserId(null)} />
+        )}
+      </Dialog>
     </div>
   );
 }

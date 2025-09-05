@@ -21,6 +21,15 @@ export default function AnalyticsDashboard() {
   const studentSeries = (series.students || []).map((p) => ({ date: new Date(p.day), value: p.value }));
   const startupSeries = (series.startups || []).map((p) => ({ date: new Date(p.day), value: p.value }));
 
+  const accumulate = (arr: { date: Date; value: number }[]) => {
+    let sum = 0;
+    return [...arr]
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .map((p) => ({ date: p.date, value: (sum += p.value) }));
+  };
+  const studentSeriesCumulative = accumulate(studentSeries);
+  const startupSeriesCumulative = accumulate(startupSeries);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-6">
@@ -34,6 +43,10 @@ export default function AnalyticsDashboard() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <TimeSeriesChart title="Students Over Time" data={studentSeries} />
         <TimeSeriesChart title="Startups Over Time" data={startupSeries} />
+      </div>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <TimeSeriesChart title="Cumulative Students" data={studentSeriesCumulative} />
+        <TimeSeriesChart title="Cumulative Startups" data={startupSeriesCumulative} />
       </div>
     </div>
   );
