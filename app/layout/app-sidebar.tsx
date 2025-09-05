@@ -90,6 +90,7 @@ export function AppSidebar() {
   const { session, isAuthenticated, logout } = useAuth();
   const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+  const [checkedAdmin, setCheckedAdmin] = React.useState<boolean>(false);
 
   // Load expanded items from localStorage on mount
   React.useEffect(() => {
@@ -121,8 +122,38 @@ export function AppSidebar() {
   }, [isAuthenticated, isAdmin, session?.user?.is_student]);
 
   // Removed admin verification fetch to avoid unnecessary 403s and loops.
+  // Re-enable admin verification to expose admin navigation for admins
   React.useEffect(() => {
-    if (!isAuthenticated) setIsAdmin(false);
+    let cancelled = false;
+    async function verifyAdmin() {
+      if (!isAuthenticated) {
+        if (!cancelled) {
+          setIsAdmin(false);
+          setCheckedAdmin(false);
+        }
+        return;
+      }
+      try {
+        const base = (config.api.baseUrl || '').replace(/\/$/, '');
+        const res = await fetch(`${base}/users/admin/verify`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!cancelled) {
+          setIsAdmin(res.ok);
+          setCheckedAdmin(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setIsAdmin(false);
+          setCheckedAdmin(true);
+        }
+      }
+    }
+    verifyAdmin();
+    return () => {
+      cancelled = true;
+    };
   }, [isAuthenticated]);
 
   const toggleItem = (title: string) => {
