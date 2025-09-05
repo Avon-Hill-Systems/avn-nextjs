@@ -30,6 +30,7 @@ export function StudentProfile() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isFirstUpload, setIsFirstUpload] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Cached resume via React Query
   const { data: resumeMetadata, isLoading } = useResumeQuery(user?.id);
@@ -50,11 +51,64 @@ export function StudentProfile() {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setCvFile(file);
-      setError(null);
-      setSuccessMessage(null);
+    if (file) onSelectFile(file);
+  };
+
+  const validateFile = (file: File): string | null => {
+    const maxBytes = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = new Set([
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ]);
+    const allowedExt = new Set(['pdf', 'doc', 'docx']);
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!allowedExt.has(ext) && !allowedTypes.has(file.type)) {
+      return 'Unsupported file type. Please upload PDF, DOC, or DOCX.';
     }
+    if (file.size > maxBytes) {
+      return 'File is too large. Maximum size is 5MB.';
+    }
+    return null;
+  };
+
+  const onSelectFile = (file: File) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      setCvFile(null);
+      return;
+    }
+    setCvFile(file);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) onSelectFile(file);
   };
 
   const handleUpload = async () => {
@@ -248,10 +302,18 @@ export function StudentProfile() {
                   </div>
                   
                   {/* Replace resume section */}
-                  <div className="text-center p-6 border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/30">
+                  <div
+                    className={`text-center p-6 border-2 border-dashed rounded-lg bg-muted/30 transition-colors ${
+                      isDragging ? 'border-blue-400 bg-blue-50/50' : 'border-muted-foreground/20'
+                    }`}
+                    onDragEnter={handleDragEnter}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
                     <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground mb-2">
-                      Replace your CV
+                      {isDragging ? 'Drop the file here…' : 'Replace your CV'}
                     </p>
                     <p className="text-xs text-muted-foreground mb-3">
                       PDF, DOC, or DOCX (max 5MB)
@@ -300,29 +362,37 @@ export function StudentProfile() {
                 </div>
               ) : (
                 // Show upload area when no resume exists
-                <div className="text-center p-8 border-2 border-dashed border-muted-foreground/20 rounded-lg flex-1 flex flex-col items-center justify-center bg-muted/30">
-                <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  {cvFile ? cvFile.name : "Upload your CV"}
-                </p>
-                <p className="text-xs text-muted-foreground mb-4">
-                  PDF, DOC, or DOCX (max 5MB)
-                </p>
-                <Input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="cv-upload"
-                />
-                <Button
-                  onClick={() => document.getElementById('cv-upload')?.click()}
-                  variant="outline"
-                  size="sm"
-                    className="mb-3"
+                <div
+                  className={`text-center p-8 border-2 border-dashed rounded-lg flex-1 flex flex-col items-center justify-center bg-muted/30 transition-colors ${
+                    isDragging ? 'border-blue-400 bg-blue-50/50' : 'border-muted-foreground/20'
+                  }`}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
                 >
-                  Choose File
-                </Button>
+                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {isDragging ? 'Drop the file here…' : (cvFile ? cvFile.name : 'Upload your CV')}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    PDF, DOC, or DOCX (max 5MB)
+                  </p>
+                  <Input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="cv-upload"
+                  />
+                  <Button
+                    onClick={() => document.getElementById('cv-upload')?.click()}
+                    variant="outline"
+                    size="sm"
+                    className="mb-3"
+                  >
+                    Choose File
+                  </Button>
               
               {cvFile && (
                     <div className="mt-3 p-3 bg-background rounded-lg border w-full">
