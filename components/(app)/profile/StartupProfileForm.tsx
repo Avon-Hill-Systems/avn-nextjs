@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -65,6 +66,7 @@ const startupProfileSchema = z.object({
 type StartupProfileFormData = z.infer<typeof startupProfileSchema>;
 
 export function StartupProfileForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -450,8 +452,8 @@ export function StartupProfileForm() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center mt-6">
-            <Button 
-              onClick={() => setShowSuccessModal(false)}
+            <Button
+              onClick={() => router.push("/internships/new")}
               className="px-8"
             >
               Continue
